@@ -1,0 +1,12 @@
+{
+  "type": "record",
+  "name": "UserRegistered",
+  "namespace": "com.synapse.platform",
+  "doc": "Emitted when a new user completes registration.",
+  "fields": [
+    {"name": "userId", "type": "string", "doc": "UUID of the newly registered user"},
+    {"name": "email", "type": "string", "doc": "User email address"},
+    {"name": "tenantId", "type": "string", "doc": "Tenant the user belongs to"},
+    {"name": "registeredAt", "type": "string", "doc": "ISO-8601 registration timestamp"}
+  ]
+}

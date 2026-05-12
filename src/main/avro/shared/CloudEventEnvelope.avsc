@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "CloudEventEnvelope",
+  "namespace": "com.synapse.shared",
+  "doc": "CloudEvents 1.0 envelope for all Synapse domain events.",
+  "fields": [
+    {"name": "specversion", "type": "string", "default": "1.0", "doc": "CloudEvents spec version"},
+    {"name": "id", "type": "string", "doc": "Unique event identifier (UUID)"},
+    {"name": "source", "type": "string", "doc": "Event source URI (e.g. /platform-svc/auth)"},
+    {"name": "type", "type": "string", "doc": "Event type (e.g. com.synapse.platform.UserRegistered)"},
+    {"name": "subject", "type": ["null", "string"], "default": null, "doc": "Event subject"},
+    {"name": "time", "type": "string", "doc": "ISO-8601 timestamp"},
+    {"name": "tenantid", "type": "string", "doc": "Tenant identifier"},
+    {"name": "datacontenttype", "type": "string", "default": "application/json", "doc": "Content type of data"},
+    {"name": "traceparent", "type": ["null", "string"], "default": null, "doc": "W3C Trace Context traceparent header"}
+  ]
+}

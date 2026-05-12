@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "UserId",
+  "namespace": "com.synapse.shared",
+  "doc": "Strongly-typed user identifier.",
+  "fields": [
+    {"name": "value", "type": "string", "doc": "UUID string of the user"}
+  ]
+}

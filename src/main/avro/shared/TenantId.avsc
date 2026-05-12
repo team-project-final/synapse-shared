@@ -1,0 +1,9 @@
+{
+  "type": "record",
+  "name": "TenantId",
+  "namespace": "com.synapse.shared",
+  "doc": "Strongly-typed tenant identifier.",
+  "fields": [
+    {"name": "value", "type": "string", "doc": "UUID string of the tenant"}
+  ]
+}
