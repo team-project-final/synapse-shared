@@ -43,12 +43,20 @@
   - dev 환경 전용 (최소 사양)
   - VPC 내부 통신만 허용 (퍼블릭 접근 제한)
   - 비용: 월 $200 이내
+  - RDS, Redis, MSK, OpenSearch는 private subnet에 배치하고 EKS node security group에서만 접근 허용
+  - RDS storage encryption, Redis AUTH/in-transit encryption, MSK TLS, OpenSearch HTTPS를 기본값으로 적용
+  - 실제 엔드포인트/비밀번호/토큰/ArgoCD admin password는 Git 문서에 기록하지 않고 플레이스홀더만 사용
 - **Duration**: 2일
 - **RULE Reference**: wiki 14_배포_가이드 §2, wiki 10_환경_설정_템플릿
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**구현 메모**:
+- Terraform 베이스라인: `synapse-shared/infra/aws/dev/`
+- 접근 가이드: `synapse-shared/docs/infra/dev-access.md`
+- 실제 apply와 smoke test는 AWS 자격 증명 및 비용 승인 후 진행한다.
+
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done
 
 ---
 

@@ -9,37 +9,38 @@
 ## Step 1: AWS 인프라 프로비저닝
 
 ### 1.1 TASK 시작
-- [ ] Step Goal / Done When / Scope / Input 확인
-- [ ] PRD_W1 해당 요구사항 확인 (인프라 프로비저닝)
-- [ ] Duration 산정 확인 (2일)
+- [x] Step Goal / Done When / Scope / Input 확인
+- [x] PRD_W1 해당 요구사항 확인 (인프라 프로비저닝)
+- [x] Duration 산정 확인 (2일)
 
 ### 1.2 요구사항 분석
-- [ ] EKS/RDS/MSK/ElastiCache/OpenSearch 각 서비스 스펙 정의
-- [ ] ArgoCD ApplicationSet 구성 요건 분석 (5서비스x3환경)
-- [ ] VPC/서브넷/보안그룹 설계 요건 분석
-- [ ] Instructions 초안 → TASK 문서 반영
+- [x] EKS/RDS/MSK/ElastiCache/OpenSearch 각 서비스 스펙 정의
+- [x] ArgoCD ApplicationSet 구성 요건 분석 (5서비스x3환경)
+- [x] VPC/서브넷/보안그룹 설계 요건 분석
+- [x] Instructions 초안 → TASK 문서 반영
 
 ### 1.3 Security 1차 검토 (네트워크 보안)
-- [ ] VPC 내부 통신만 허용 (퍼블릭 접근 제한)
-- [ ] 보안 그룹 인바운드/아웃바운드 규칙 정의
-- [ ] IAM Role/Policy 최소 권한 원칙 적용
-- [ ] 결과 → TASK Constraints 반영
+- [x] VPC 내부 통신만 허용 (퍼블릭 접근 제한)
+- [x] 보안 그룹 인바운드/아웃바운드 규칙 정의
+- [x] IAM Role/Policy 최소 권한 원칙 적용
+- [x] 결과 → TASK Constraints 반영
 
 ### 1.4 인프라 아키텍처 설계
-- [ ] EKS 클러스터 노드 구성 (3 node) 설계
-- [ ] RDS PostgreSQL 16 (db.t3.medium) 구성 설계
-- [ ] MSK Kafka 3.x (3 broker) + Schema Registry 설계
-- [ ] ElastiCache Redis 7 (cache.t3.micro) 설계
-- [ ] OpenSearch 8.x (1 node dev) + nori 플러그인 설계
-- [ ] Duration(final) 갱신
+- [x] EKS 클러스터 노드 구성 (3 node) 설계
+- [x] RDS PostgreSQL 16 (db.t3.medium) 구성 설계
+- [x] MSK Kafka 3.x (3 broker) + Schema Registry 설계
+- [x] ElastiCache Redis 7 (cache.t3.micro) 설계
+- [x] OpenSearch 8.x (1 node dev) + nori 플러그인 설계
+- [x] Duration(final) 갱신
 
 ### 1.5 Security 2차 검토
-- [ ] RDS 암호화 at-rest/in-transit 설정 확인
-- [ ] MSK TLS 통신 설정 확인
-- [ ] ElastiCache AUTH 토큰 설정 확인
-- [ ] 결과 → TASK Constraints 반영
+- [x] RDS 암호화 at-rest/in-transit 설정 확인
+- [x] MSK TLS 통신 설정 확인
+- [x] ElastiCache AUTH 토큰 설정 확인
+- [x] 결과 → TASK Constraints 반영
 
 ### 1.6 N/A (인프라 — DTO/Entity 해당 없음)
+- [x] N/A 처리
 
 ### 1.7 Terraform/eksctl 구현
 - [ ] EKS 클러스터 생성 (eksctl 또는 Terraform)
@@ -48,6 +49,8 @@
 - [ ] ElastiCache Redis 클러스터 생성
 - [ ] OpenSearch 도메인 생성 + nori 플러그인
 - [ ] ArgoCD 설치 + ApplicationSet(5서비스x3환경) 구성
+
+> Terraform 베이스라인 작성 완료: `synapse-shared/infra/aws/dev/`. 실제 생성은 AWS 자격 증명 및 비용 승인 후 `terraform plan/apply` 단계에서 수행한다.
 
 ### 1.8 접속 테스트
 - [ ] kubectl get nodes → Ready 확인
@@ -59,10 +62,12 @@
 - [ ] 팀원 접근 권한 부여 확인
 
 ### 1.9 N/A (인프라 — Controller 해당 없음)
+- [x] N/A 처리
 
 ### 1.10 N/A (인프라 — View 해당 없음)
+- [x] N/A 처리
 
-**Step 1 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 1 Status**: [ ] Not Started / [x] In Progress / [ ] Done
 
 ---
 

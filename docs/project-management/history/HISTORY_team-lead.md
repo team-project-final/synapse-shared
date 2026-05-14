@@ -11,7 +11,7 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 1 | AWS 인프라 프로비저닝 | Not Started | — | — | |
+| Step 1 | AWS 인프라 프로비저닝 | In Progress | 2026-05-14 | — | Terraform 베이스라인 작성, AWS apply/접속 테스트 대기 |
 | Step 2 | Docker Compose 4-서비스 구성 | Not Started | — | — | |
 | Step 3 | CI/CD 파이프라인 구성 | Not Started | — | — | |
 
@@ -67,9 +67,20 @@
 
 #### 2026-05-14 (수)
 - **완료**:
+  - Step 1 요구사항/보안/아키텍처 설계 검토 완료
+  - `synapse-shared/infra/aws/dev/` Terraform 베이스라인 작성
+  - `synapse-shared/docs/infra/dev-access.md` 접근 정보 문서 작성
+  - `synapse-shared/docs/infra/dev-network-design.md` VPC/subnet/route/security group 설계표 작성
+  - TASK Constraints에 private subnet, SG 제한, 암호화/시크릿 원칙 반영
 - **진행 중**:
+  - AWS 자격 증명 및 비용 승인 후 `terraform plan/apply`
 - **이슈**:
+  - 실제 EKS/RDS/MSK/Redis/OpenSearch 생성과 smoke test는 아직 미실행
+  - TASK의 3-node EKS + 3-broker MSK 구성은 월 $200 제한 초과 가능성이 있어 apply 전 비용 재확인 필요
 - **다음**:
+  - Terraform validate/plan 실행
+  - AWS 내부 접근 경로(SSM/VPN/bastion) 결정
+  - apply 후 `kubectl get nodes`, RDS/MSK/Redis/OpenSearch/ArgoCD 접속 로그 기록
 
 #### 2026-05-15 (목)
 - **완료**:
