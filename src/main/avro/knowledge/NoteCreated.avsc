@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "NoteCreated",
+  "namespace": "com.synapse.knowledge",
+  "doc": "Emitted when a new note is created.",
+  "fields": [
+    {"name": "noteId", "type": "string", "doc": "UUID of the created note"},
+    {"name": "userId", "type": "string", "doc": "UUID of the note author"},
+    {"name": "tenantId", "type": "string", "doc": "Tenant identifier"},
+    {"name": "title", "type": "string", "doc": "Note title"},
+    {"name": "createdAt", "type": "string", "doc": "ISO-8601 creation timestamp"}
+  ]
+}

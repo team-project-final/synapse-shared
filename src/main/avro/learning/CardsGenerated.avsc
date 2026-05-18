@@ -1,0 +1,13 @@
+{
+  "type": "record",
+  "name": "CardsGenerated",
+  "namespace": "com.synapse.learning",
+  "doc": "Emitted when AI generates flashcards from a note.",
+  "fields": [
+    {"name": "noteId", "type": "string", "doc": "Source note UUID"},
+    {"name": "userId", "type": "string", "doc": "UUID of the requesting user"},
+    {"name": "tenantId", "type": "string", "doc": "Tenant identifier"},
+    {"name": "cardCount", "type": "int", "doc": "Number of cards generated"},
+    {"name": "generatedAt", "type": "string", "doc": "ISO-8601 generation timestamp"}
+  ]
+}
