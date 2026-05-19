@@ -19,7 +19,6 @@ Desktop.ini
 # === Java / Gradle ===
 build/
 .gradle/
-!gradle/wrapper/gradle-wrapper.jar
 bin/
 out/
 *.class
@@ -27,3 +26,6 @@ out/
 *.war
 *.ear
 hs_err_pid*
+
+# Gradle wrapper jar must be committed for CI
+!gradle/wrapper/gradle-wrapper.jar
