@@ -11,12 +11,12 @@
 
 - **Step Goal**: 팀장이 AWS 인프라(EKS, RDS, MSK, ElastiCache, OpenSearch)와 ArgoCD를 프로비저닝하여 4-서비스 배포 기반을 확보한다.
 - **Done When**:
-  - [ ] EKS 클러스터 정상 가동 (kubectl get nodes → Ready)
-  - [ ] RDS PostgreSQL 16 인스턴스 접속 가능
-  - [ ] MSK(Kafka) 클러스터 브로커 접속 가능
-  - [ ] ElastiCache(Redis 7) 접속 가능
-  - [ ] OpenSearch 도메인 접속 가능
-  - [ ] ArgoCD 대시보드 접근 가능
+  - [x] EKS 클러스터 정상 가동 (kubectl get nodes → Ready)
+  - [x] RDS PostgreSQL 16 인스턴스 접속 가능
+  - [x] MSK(Kafka) 클러스터 브로커 접속 가능
+  - [x] ElastiCache(Redis 7) 접속 가능
+  - [x] OpenSearch 도메인 접속 가능
+  - [x] ArgoCD 대시보드 접근 가능
 - **Scope**:
   - In Scope:
     - EKS 클러스터 생성 (3 node)

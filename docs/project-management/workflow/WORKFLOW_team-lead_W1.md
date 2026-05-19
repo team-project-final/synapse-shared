@@ -9,20 +9,20 @@
 ## Step 1: AWS 인프라 프로비저닝
 
 ### 1.1 TASK 시작
-- [ ] Step Goal / Done When / Scope / Input 확인
-- [ ] PRD_W1 해당 요구사항 확인 (인프라 프로비저닝)
-- [ ] Duration 산정 확인 (2일)
+- [x] Step Goal / Done When / Scope / Input 확인
+- [x] PRD_W1 해당 요구사항 확인 (인프라 프로비저닝)
+- [x] Duration 산정 확인 (2일)
 
 ### 1.2 요구사항 분석
-- [ ] EKS/RDS/MSK/ElastiCache/OpenSearch 각 서비스 스펙 정의
-- [ ] ArgoCD ApplicationSet 구성 요건 분석 (5서비스x3환경)
-- [ ] VPC/서브넷/보안그룹 설계 요건 분석
-- [ ] Instructions 초안 → TASK 문서 반영
+- [x] EKS/RDS/MSK/ElastiCache/OpenSearch 각 서비스 스펙 정의
+- [x] ArgoCD ApplicationSet 구성 요건 분석 (5서비스x3환경)
+- [x] VPC/서브넷/보안그룹 설계 요건 분석
+- [x] Instructions 초안 → TASK 문서 반영
 
 ### 1.3 Security 1차 검토 (네트워크 보안)
-- [ ] VPC 내부 통신만 허용 (퍼블릭 접근 제한)
-- [ ] 보안 그룹 인바운드/아웃바운드 규칙 정의
-- [ ] IAM Role/Policy 최소 권한 원칙 적용
+- [x] VPC 내부 통신만 허용 (퍼블릭 접근 제한)
+- [x] 보안 그룹 인바운드/아웃바운드 규칙 정의
+- [x] IAM Role/Policy 최소 권한 원칙 적용
 - [ ] 결과 → TASK Constraints 반영
 
 ### 1.4 인프라 아키텍처 설계
