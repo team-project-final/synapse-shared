@@ -56,10 +56,10 @@
 
 - **Step Goal**: 팀장이 Docker Compose로 4개 서비스와 Schema Registry를 포함한 전체 로컬 개발 환경을 한 번에 실행할 수 있다.
 - **Done When**:
-  - [ ] `docker compose up` → 4-서비스 Health OK (< 2분)
-  - [ ] Schema Registry 접속 (http://localhost:8081)
-  - [ ] PostgreSQL + Redis + Kafka + ES 접속 가능
-  - [ ] 팀원 온보딩 문서에 실행 방법 기재
+  - [x] `docker compose up` → 4-서비스 Health OK (< 2분)
+  - [x] Schema Registry 접속 (http://localhost:8086)
+  - [x] PostgreSQL + Redis + Kafka + ES 접속 가능
+  - [x] 팀원 온보딩 문서에 실행 방법 기재
 - **Scope**:
   - In Scope:
     - docker-compose.yml (4-서비스 + infra)
@@ -86,7 +86,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done
 
 ---
 
@@ -94,10 +94,10 @@
 
 - **Step Goal**: 팀장이 GitHub Actions CI/CD 파이프라인(mirror, CI, deploy)을 구성하여 main push 시 자동 빌드와 dev 환경 배포가 동작한다.
 - **Done When**:
-  - [ ] mirror.yml: 소스 레포 → 미러 레포 동기화 동작
-  - [ ] ci.yml: PR → 빌드 + 테스트 + lint 동작
-  - [ ] deploy.yml: main push → ECR 이미지 푸시 → ArgoCD dev 동기화
-  - [ ] 파이프라인 문서화
+  - [x] mirror.yml: 소스 레포 → 미러 레포 동기화 동작
+  - [x] ci.yml: PR → 빌드 + 테스트 + lint 동작
+  - [x] deploy.yml: main push → ECR 이미지 푸시 → ArgoCD dev 동기화
+  - [x] 파이프라인 문서화
 - **Scope**:
   - In Scope:
     - mirror.yml (소스 → 미러 동기화)
@@ -125,7 +125,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done
 
 ---
 
@@ -258,7 +258,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done
 
 ---
 

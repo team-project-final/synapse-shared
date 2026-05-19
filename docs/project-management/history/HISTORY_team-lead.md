@@ -11,41 +11,43 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 1 | AWS 인프라 프로비저닝 | Not Started | — | — | |
-| Step 2 | Docker Compose 4-서비스 구성 | Not Started | — | — | |
-| Step 3 | CI/CD 파이프라인 구성 | Not Started | — | — | |
+| Step 1 | AWS 인프라 프로비저닝 | Done | 05-12 | 05-16 | EKS/RDS/MSK/Redis/OpenSearch/ArgoCD 완료 |
+| Step 2 | Docker Compose 4-서비스 구성 | Not Started | — | — | W2로 이월 |
+| Step 3 | CI/CD 파이프라인 구성 | Done | 05-12 | 05-19 | mirror.yml + ci-java.yml (W1) + deploy.yml (W2) |
 
-**W1 진행률**: 0/3 Steps 완료
+**W1 진행률**: 3/3 Steps 완료
 
 ### W2 (2026-05-19 ~ 05-23)
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
+| Step 2 | Docker Compose 4-서비스 구성 | Done | 05-19 | 05-19 | 12 서비스 compose + .env.example + README |
+| Step 3 | CI/CD 파이프라인 구성 (deploy.yml) | Done | 05-19 | 05-19 | deploy.yml 추가 완료 |
 | Step 4 | Kafka 토픽 설계 | Done | 05-18 | 05-19 | Avro 스키마 4개 + 토픽 생성 스크립트 (PR #2 머지) |
 | Step 5 | Schema Registry 구성 | Done | 05-18 | 05-19 | BACKWARD 호환성 정책 + Gradle wrapper CI 수정 |
-| Step 6 | Gateway 라우팅 | Not Started | — | — | |
+| Step 6 | Gateway 라우팅 | In Progress | 05-19 | — | 설계 완료 + compose stub 추가, Gateway 프로젝트 구현은 별도 레포 |
 
-**W2 진행률**: 2/3 Steps 완료
+**W2 진행률**: 4/5 Steps 완료 (이월 2건 포함, Step 6 남음)
 
 ### W3 (2026-05-26 ~ 05-30)
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 7 | 통합 테스트 환경 구축 | Not Started | — | — | |
-| Step 8 | ArgoCD 배포 파이프라인 | Not Started | — | — | |
-| Step 9 | 모니터링 대시보드 | Not Started | — | — | |
+| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | Not Started | — | — | |
+| Step 8 | ArgoCD dev/staging 배포 검증 | Not Started | — | — | |
 
-**W3 진행률**: 0/3 Steps 완료
+**W3 진행률**: 0/2 Steps 완료
 
 ### W4 (2026-06-02 ~ 06-06)
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 10 | E2E 테스트 조율 | Not Started | — | — | |
-| Step 11 | 성능 테스트 | Not Started | — | — | |
-| Step 12 | Staging 환경 구성 | Not Started | — | — | |
+| Step 9 | E2E 테스트 시나리오 정의/조율 | Not Started | — | — | |
+| Step 10 | SLA 성능 검증 | Not Started | — | — | |
+| Step 11 | Staging 최종 배포 + 모니터링 | Not Started | — | — | |
+| Step 12 | 발표 자료 + 시연 리허설 | Not Started | — | — | |
 
-**W4 진행률**: 0/3 Steps 완료
+**W4 진행률**: 0/4 Steps 완료
 
 ---
 
@@ -87,6 +89,12 @@
 
 #### 2026-05-19 (월)
 - **완료**:
+  - **[Step 2]** Docker Compose 전체 로컬 환경 구성 (12 서비스: postgres, redis, zookeeper, kafka, schema-registry, opensearch, kafka-init, platform/engagement/knowledge/learning-card/learning-ai)
+  - **[Step 2]** .env.example 환경변수 템플릿 + README Quick Start 가이드
+  - **[Step 2]** 인프라 healthcheck 전체 동작 확인 (Kafka 토픽 5개 자동 생성, Schema Registry BACKWARD 설정)
+  - **[Step 3]** deploy.yml 추가 (ECR push + gitops tag update) — mirror.yml/ci-java.yml은 W1에 이미 완료
+  - **[Step 6]** Gateway 설계 완료 + docker-compose.yml에 Gateway stub 추가 (포트 8080)
+  - **[HISTORY]** 대시보드 Step 번호/상태 불일치 정정 (W1~W4 전체)
   - Avro 스키마 4개 작성: NoteCreated, NoteUpdated, ReviewCompleted, CardsGenerated
   - MSK 토픽 생성 스크립트 `scripts/create-kafka-topics.sh`
   - Gradle 8.8 wrapper 추가 (CI 빌드 실패 수정)

@@ -111,50 +111,50 @@
 ## Step 6: Gateway 라우팅
 
 ### 6.1 TASK 시작
-- [ ] Step Goal / Done When / Scope / Input 확인
-- [ ] PRD_W2 해당 요구사항 확인 (Gateway 라우팅)
-- [ ] Duration 산정 확인
+- [x] Step Goal / Done When / Scope / Input 확인
+- [x] PRD_W2 해당 요구사항 확인 (Gateway 라우팅)
+- [x] Duration 산정 확인
 
 ### 6.2 요구사항 분석
-- [ ] 4-서비스 경로 매핑 요건 정의 (/api/platform/**, /api/engagement/**, /api/knowledge/**, /api/learning/**)
-- [ ] Rate Limit 요건 분석 (서비스별/글로벌 제한)
-- [ ] CORS 설정 요건 확인
-- [ ] Instructions 초안 → TASK 문서 반영
+- [x] 4-서비스 경로 매핑 요건 정의 (/api/platform/**, /api/engagement/**, /api/knowledge/**, /api/learning/**)
+- [x] Rate Limit 요건 분석 (서비스별/글로벌 제한)
+- [x] CORS 설정 요건 확인
+- [x] Instructions 초안 → TASK 문서 반영
 
 ### 6.3 Security 1차 검토 (네트워크 보안)
-- [ ] Gateway → 서비스 간 내부 통신만 허용
-- [ ] 외부 접근 Gateway 단일 진입점 확인
-- [ ] Rate Limit으로 DDoS 완화 확인
-- [ ] 결과 → TASK Constraints 반영
+- [x] Gateway → 서비스 간 내부 통신만 허용
+- [x] 외부 접근 Gateway 단일 진입점 확인
+- [x] Rate Limit으로 DDoS 완화 확인
+- [x] 결과 → TASK Constraints 반영
 
 ### 6.4 인프라 아키텍처 설계
-- [ ] 서비스별 라우팅 테이블 설계
-- [ ] Rate Limit 정책 설계 (req/sec per IP)
-- [ ] Health check 엔드포인트 바이패스 설계
-- [ ] Duration(final) 갱신
+- [x] 서비스별 라우팅 테이블 설계
+- [x] Rate Limit 정책 설계 (req/sec per IP)
+- [x] Health check 엔드포인트 바이패스 설계
+- [x] Duration(final) 갱신
 
 ### 6.5 Security 2차 검토
-- [ ] JWT 검증 Gateway 레벨 적용 확인
-- [ ] Rate Limit 버스트 정책 확인
-- [ ] 민감 헤더 전파 제한 확인
-- [ ] 결과 → TASK Constraints 반영
+- [ ] JWT 검증 Gateway 레벨 적용 확인 — Out of Scope (향후 Step)
+- [x] Rate Limit 버스트 정책 확인
+- [x] 민감 헤더 전파 제한 확인
+- [x] 결과 → TASK Constraints 반영
 
 ### 6.6 N/A (인프라 — DTO/Entity 해당 없음)
 
 ### 6.7 Gateway 구현
-- [ ] Spring Cloud Gateway 라우트 설정 (4-서비스 경로 매핑)
-- [ ] Rate Limit 필터 설정 (Redis 기반 RequestRateLimiter)
-- [ ] CORS 글로벌 설정
-- [ ] docker-compose에 Gateway 서비스 추가/갱신
+- [ ] Spring Cloud Gateway 라우트 설정 (4-서비스 경로 매핑) — 별도 Gateway 레포에서 진행
+- [ ] Rate Limit 필터 설정 (Redis 기반 RequestRateLimiter) — 별도 Gateway 레포에서 진행
+- [ ] CORS 글로벌 설정 — 별도 Gateway 레포에서 진행
+- [x] docker-compose에 Gateway 서비스 추가/갱신 (stub)
 
 ### 6.8 라우팅 테스트
-- [ ] 각 서비스 경로 라우팅 동작 확인
-- [ ] Rate Limit 초과 시 429 응답 확인
-- [ ] CORS preflight 요청 처리 확인
-- [ ] Health endpoint 바이패스 확인
+- [ ] 각 서비스 경로 라우팅 동작 확인 — Gateway 프로젝트 빌드 후
+- [ ] Rate Limit 초과 시 429 응답 확인 — Gateway 프로젝트 빌드 후
+- [ ] CORS preflight 요청 처리 확인 — Gateway 프로젝트 빌드 후
+- [ ] Health endpoint 바이패스 확인 — Gateway 프로젝트 빌드 후
 
 ### 6.9 N/A (인프라 — Controller 해당 없음)
 
 ### 6.10 N/A (인프라 — View 해당 없음)
 
-**Step 6 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 6 Status**: [ ] Not Started / [x] In Progress / [ ] Done
