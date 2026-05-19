@@ -107,9 +107,15 @@
   - `gradlew` 실행 권한 추가
   - Schema Registry BACKWARD 호환성 정책 검증
   - PR #2 (`feat/w2-kafka-schemas`) CI 통과 및 main 머지
-- **진행 중**:
-- **이슈**: CI 실패 — gradlew 누락 → wrapper 추가 후 Permission denied → chmod +x 로 해결
-- **다음**: gitops 레포 Task 2 (terraform apply), Task 9 (PRD 검수), Task 8 (EKS provider swap)
+- **진행 중**: —
+- **이슈**:
+  - CI gradlew 누락 → wrapper 추가 후 Permission denied → chmod +x 로 해결
+  - Spring Boot 4.0.6 + Gateway 5.0.1에서 YAML routes 미로드 버그 → 프로그래밍 방식으로 전환
+  - YAML globalcors 미동작 → CorsWebFilter 빈으로 전환
+  - Gradle 8.14+ 필요 (Boot 4.0.6 요구사항)
+  - Dockerfile alpine에서 gradlew CRLF 문제 → dos2unix + bash 추가
+  - ECR synapse-gateway 레포지토리 미존재 → aws ecr create-repository로 생성
+- **다음**: W3 Step 7 (Kafka E2E 검증), Step 8 (ArgoCD dev/staging 배포 검증)
 
 **(오후 — gitops 레포 작업)**:
 - **완료**:
