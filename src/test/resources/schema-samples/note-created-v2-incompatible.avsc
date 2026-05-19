@@ -1,0 +1,40 @@
+{
+  "type": "record",
+  "name": "NoteCreated",
+  "namespace": "com.synapse.event.knowledge",
+  "doc": "Incompatible evolution of NoteCreated with a required category field.",
+  "fields": [
+    {
+      "name": "noteId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "category",
+      "type": "string"
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "default": 0
+    }
+  ]
+}

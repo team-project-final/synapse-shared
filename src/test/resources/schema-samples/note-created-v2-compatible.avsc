@@ -1,0 +1,44 @@
+{
+  "type": "record",
+  "name": "NoteCreated",
+  "namespace": "com.synapse.event.knowledge",
+  "doc": "Compatible evolution of NoteCreated with an optional summary field.",
+  "fields": [
+    {
+      "name": "noteId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "tenantId",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "title",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "content",
+      "type": "string",
+      "default": ""
+    },
+    {
+      "name": "summary",
+      "type": [
+        "null",
+        "string"
+      ],
+      "default": null
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      },
+      "default": 0
+    }
+  ]
+}
