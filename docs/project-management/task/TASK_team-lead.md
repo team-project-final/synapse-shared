@@ -222,12 +222,12 @@
 - **Step Name**: Gateway 라우팅/Rate Limit
 - **Step Goal**: 팀장이 Spring Cloud Gateway에서 4개 서비스로의 라우팅과 Rate Limit을 설정한다.
 - **Done When**:
-  - [ ] Gateway → platform-svc 라우팅 동작
-  - [ ] Gateway → engagement-svc 라우팅 동작
-  - [ ] Gateway → knowledge-svc 라우팅 동작
-  - [ ] Gateway → learning-svc 라우팅 동작
-  - [ ] Rate Limit 설정 적용 (Redis 기반)
-  - [ ] Rate Limit 초과 시 429 응답 확인
+  - [x] Gateway → platform-svc 라우팅 동작
+  - [x] Gateway → engagement-svc 라우팅 동작
+  - [x] Gateway → knowledge-svc 라우팅 동작
+  - [x] Gateway → learning-svc 라우팅 동작
+  - [x] Rate Limit 설정 적용 (Redis 기반)
+  - [x] Rate Limit 초과 시 429 응답 확인
 - **Scope**:
   - In Scope:
     - Spring Cloud Gateway 프로젝트 설정
@@ -258,7 +258,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [x] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done
 
 ---
 

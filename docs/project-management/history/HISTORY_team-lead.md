@@ -25,9 +25,9 @@
 | Step 3 | CI/CD 파이프라인 구성 (deploy.yml) | Done | 05-19 | 05-19 | deploy.yml 추가 완료 |
 | Step 4 | Kafka 토픽 설계 | Done | 05-18 | 05-19 | Avro 스키마 4개 + 토픽 생성 스크립트 (PR #2 머지) |
 | Step 5 | Schema Registry 구성 | Done | 05-18 | 05-19 | BACKWARD 호환성 정책 + Gradle wrapper CI 수정 |
-| Step 6 | Gateway 라우팅 | In Progress | 05-19 | — | 설계 완료 + compose stub 추가, Gateway 프로젝트 구현은 별도 레포 |
+| Step 6 | Gateway 라우팅 | Done | 05-19 | 05-19 | Boot 4.0.6 + Gateway 5.0.1, 프로그래밍 방식 라우트/Rate Limit/CORS |
 
-**W2 진행률**: 4/5 Steps 완료 (이월 2건 포함, Step 6 남음)
+**W2 진행률**: 5/5 Steps 완료
 
 ### W3 (2026-05-26 ~ 05-30)
 
@@ -93,7 +93,12 @@
   - **[Step 2]** .env.example 환경변수 템플릿 + README Quick Start 가이드
   - **[Step 2]** 인프라 healthcheck 전체 동작 확인 (Kafka 토픽 5개 자동 생성, Schema Registry BACKWARD 설정)
   - **[Step 3]** deploy.yml 추가 (ECR push + gitops tag update) — mirror.yml/ci-java.yml은 W1에 이미 완료
-  - **[Step 6]** Gateway 설계 완료 + docker-compose.yml에 Gateway stub 추가 (포트 8080)
+  - **[Step 6]** Spring Cloud Gateway 구현 완료 (synapse-gateway 레포)
+    - Boot 4.0.6 + Cloud 2025.1.1 + Gateway 5.0.1
+    - 프로그래밍 방식 라우트 (Boot 4.0.6 YAML 라우트 버그 대응)
+    - Rate Limit: RedisRateLimiter(1, 60) IP 기반 — 429 at #64 확인
+    - CORS: CorsWebFilter (localhost:3000/8080)
+    - docker-compose.yml gateway stub → 실제 빌드 이미지 교체
   - **[HISTORY]** 대시보드 Step 번호/상태 불일치 정정 (W1~W4 전체)
   - Avro 스키마 4개 작성: NoteCreated, NoteUpdated, ReviewCompleted, CardsGenerated
   - MSK 토픽 생성 스크립트 `scripts/create-kafka-topics.sh`

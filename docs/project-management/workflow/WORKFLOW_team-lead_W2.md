@@ -142,19 +142,19 @@
 ### 6.6 N/A (인프라 — DTO/Entity 해당 없음)
 
 ### 6.7 Gateway 구현
-- [ ] Spring Cloud Gateway 라우트 설정 (4-서비스 경로 매핑) — 별도 Gateway 레포에서 진행
-- [ ] Rate Limit 필터 설정 (Redis 기반 RequestRateLimiter) — 별도 Gateway 레포에서 진행
-- [ ] CORS 글로벌 설정 — 별도 Gateway 레포에서 진행
-- [x] docker-compose에 Gateway 서비스 추가/갱신 (stub)
+- [x] Spring Cloud Gateway 라우트 설정 (4-서비스 경로 매핑) — RoutesConfig.java (프로그래밍 방식, Boot 4.0.6 YAML 라우트 버그 대응)
+- [x] Rate Limit 필터 설정 (Redis 기반 RedisRateLimiter) — RoutesConfig.java (1 req/sec, burst 60)
+- [x] CORS 글로벌 설정 — CorsConfig.java (CorsWebFilter)
+- [x] docker-compose에 Gateway 서비스 추가/갱신 (실제 빌드 이미지)
 
 ### 6.8 라우팅 테스트
-- [ ] 각 서비스 경로 라우팅 동작 확인 — Gateway 프로젝트 빌드 후
-- [ ] Rate Limit 초과 시 429 응답 확인 — Gateway 프로젝트 빌드 후
-- [ ] CORS preflight 요청 처리 확인 — Gateway 프로젝트 빌드 후
-- [ ] Health endpoint 바이패스 확인 — Gateway 프로젝트 빌드 후
+- [x] 각 서비스 경로 라우팅 동작 확인 (500 — stub upstream, 404 — 미매치 경로)
+- [x] Rate Limit 초과 시 429 응답 확인 (#64에서 429 발생)
+- [x] CORS preflight 요청 처리 확인 (Access-Control-Allow-Origin 헤더 확인)
+- [x] Health endpoint 확인 (/actuator/health → UP, Redis UP)
 
 ### 6.9 N/A (인프라 — Controller 해당 없음)
 
 ### 6.10 N/A (인프라 — View 해당 없음)
 
-**Step 6 Status**: [ ] Not Started / [x] In Progress / [ ] Done
+**Step 6 Status**: [ ] Not Started / [ ] In Progress / [x] Done
