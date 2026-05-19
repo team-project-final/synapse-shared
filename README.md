@@ -65,4 +65,3 @@ SCHEMA_REGISTRY_URL=http://localhost:8086 ./gradlew testSchemasTask
 | `ci-java.yml` | PR → main | Gradle build + Modulith verify |
 | `schema-check.yml` | PR (*.avsc 변경) | Avro 스키마 호환성 검증 |
 | `mirror.yml` | push main | synapse-mirror 자동 동기화 |
-| `deploy.yml` | push main | Docker build → ECR push → gitops tag patch |
