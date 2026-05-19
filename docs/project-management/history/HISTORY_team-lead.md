@@ -21,11 +21,11 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 4 | Kafka 토픽 설계 | Not Started | — | — | |
-| Step 5 | Schema Registry 구성 | Not Started | — | — | |
+| Step 4 | Kafka 토픽 설계 | Done | 05-18 | 05-19 | Avro 스키마 4개 + 토픽 생성 스크립트 (PR #2 머지) |
+| Step 5 | Schema Registry 구성 | Done | 05-18 | 05-19 | BACKWARD 호환성 정책 + Gradle wrapper CI 수정 |
 | Step 6 | Gateway 라우팅 | Not Started | — | — | |
 
-**W2 진행률**: 0/3 Steps 완료
+**W2 진행률**: 2/3 Steps 완료
 
 ### W3 (2026-05-26 ~ 05-30)
 
@@ -87,9 +87,16 @@
 
 #### 2026-05-19 (월)
 - **완료**:
+  - Avro 스키마 4개 작성: NoteCreated, NoteUpdated, ReviewCompleted, CardsGenerated
+  - MSK 토픽 생성 스크립트 `scripts/create-kafka-topics.sh`
+  - Gradle 8.8 wrapper 추가 (CI 빌드 실패 수정)
+  - `.gitignore` 순서 수정 (`!gradle-wrapper.jar` 예외가 `*.jar` 뒤로)
+  - `gradlew` 실행 권한 추가
+  - Schema Registry BACKWARD 호환성 정책 검증
+  - PR #2 (`feat/w2-kafka-schemas`) CI 통과 및 main 머지
 - **진행 중**:
-- **이슈**:
-- **다음**:
+- **이슈**: CI 실패 — gradlew 누락 → wrapper 추가 후 Permission denied → chmod +x 로 해결
+- **다음**: gitops 레포 Task 2 (terraform apply), Task 9 (PRD 검수), Task 8 (EKS provider swap)
 
 #### 2026-05-20 (화)
 - **완료**:
@@ -185,5 +192,6 @@
 
 | 날짜 | 변경 사항 |
 |------|-----------|
+| 2026-05-19 | W2 Step 4-5 완료: Kafka 스키마 + Schema Registry + Gradle wrapper CI 수정 |
 | 2026-05-11 | W2/W3/W4 대시보드 및 로그 템플릿 추가 |
 | 2026-05-11 | 초기 템플릿 생성 |
