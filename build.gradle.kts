@@ -145,9 +145,10 @@ tasks.register("testSchemasTask") {
             user,
             password,
         )
+        val latestVersionStatus = latestVersionConnection.responseCode
         val latestVersionResponse = readResponse(latestVersionConnection)
 
-        if (latestVersionConnection.responseCode == 404) {
+        if (latestVersionStatus == 404) {
             logger.warn(
                 "Schema subject {} does not exist in the configured registry yet. Parsed schemas locally and skipped remote compatibility checks.",
                 subject,
@@ -155,7 +156,9 @@ tasks.register("testSchemasTask") {
             return@doLast
         }
 
-        requireSuccess(latestVersionConnection, "Fetch latest schema version for $subject")
+        if (latestVersionStatus !in 200..299) {
+            error("Fetch latest schema version for $subject failed with HTTP $latestVersionStatus: $latestVersionResponse")
+        }
         logger.lifecycle("Latest schema version for {} is available: {}", subject, latestVersionResponse)
 
         verifyCompatibility(registryUrl, subject, baseSchemaFile, true, user, password)

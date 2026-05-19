@@ -33,7 +33,8 @@ if (-not (Test-Path -LiteralPath $SchemaPath)) {
 }
 
 $headers = New-SchemaRegistryHeaders -Username $Username -Password $Password
-$schema = Get-Content -LiteralPath $SchemaPath -Raw -Encoding UTF8
+$resolvedSchemaPath = (Resolve-Path -LiteralPath $SchemaPath).Path
+$schema = [System.IO.File]::ReadAllText($resolvedSchemaPath, [System.Text.Encoding]::UTF8)
 
 $compatibilityBody = @{ compatibility = $Compatibility } | ConvertTo-Json -Compress
 $compatibilityResponse = Invoke-RestMethod `
