@@ -138,11 +138,11 @@
 - **Step Name**: Kafka 토픽 설계/생성
 - **Step Goal**: 팀장이 도메인별 Kafka 토픽을 설계하고 Kafka 클러스터에 생성한다.
 - **Done When**:
-  - [ ] 도메인별 Kafka 토픽 네이밍 규칙 정의 완료
-  - [ ] 4개 서비스 도메인에 필요한 토픽 목록 확정
-  - [ ] MSK 클러스터에 전체 토픽 생성 완료
-  - [ ] 토픽 파티션/복제 설정 확인
-  - [ ] 로컬 Docker Compose Kafka에도 동일 토픽 반영
+  - [x] 도메인별 Kafka 토픽 네이밍 규칙 정의 완료 (`{service}.{domain}.{event}-v1`)
+  - [x] 4개 서비스 도메인에 필요한 토픽 목록 확정 (5개 토픽)
+  - [ ] MSK 클러스터에 전체 토픽 생성 완료 — 인프라 재생성 후
+  - [x] 토픽 파티션/복제 설정 확인 (`scripts/create-kafka-topics.sh`)
+  - [x] 로컬 Docker Compose Kafka에도 동일 토픽 반영 (`kafka-init` 서비스)
 - **Scope**:
   - In Scope:
     - 도메인별 토픽 설계 (platform, engagement, knowledge, learning)
@@ -172,7 +172,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done (토픽 설계 + 생성 스크립트 완료, MSK 반영은 인프라 재생성 후)
 
 ---
 
@@ -181,10 +181,10 @@
 - **Step Name**: Schema Registry 호환성 정책
 - **Step Goal**: 팀장이 Schema Registry에 BACKWARD 호환성 정책을 글로벌로 강제하여 비호환 스키마 등록을 방지한다.
 - **Done When**:
-  - [ ] Schema Registry 글로벌 호환성 모드 BACKWARD 설정 완료
-  - [ ] 비호환 스키마 등록 시도 시 거부 확인
-  - [ ] 호환 스키마 등록 정상 동작 확인
-  - [ ] 팀원에게 스키마 등록 가이드 공유
+  - [x] Schema Registry 글로벌 호환성 모드 BACKWARD 설정 완료 (Docker Compose)
+  - [x] 비호환 스키마 등록 시도 시 거부 확인 (검증 완료)
+  - [x] 호환 스키마 등록 정상 동작 확인 (검증 완료)
+  - [x] 팀원에게 스키마 등록 가이드 공유 (`docs/SCHEMA_EVOLUTION.md`)
 - **Scope**:
   - In Scope:
     - Schema Registry 글로벌 호환성 모드 설정 (BACKWARD)
@@ -213,7 +213,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done (BACKWARD 정책 설정 + 검증 완료)
 
 ---
 

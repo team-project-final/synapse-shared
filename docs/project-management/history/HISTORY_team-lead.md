@@ -98,6 +98,16 @@
 - **이슈**: CI 실패 — gradlew 누락 → wrapper 추가 후 Permission denied → chmod +x 로 해결
 - **다음**: gitops 레포 Task 2 (terraform apply), Task 9 (PRD 검수), Task 8 (EKS provider swap)
 
+**(오후 — gitops 레포 작업)**:
+- **완료**:
+  - terraform apply: 기존 인프라(다른 PC) 확인, 중복 생성분 24개 리소스 destroy 완료
+  - EKS provider swap: ExternalSecret → aws-secrets-manager, 이미지 → ECR, ClusterSecretStore 매니페스트 추가
+  - PRD W2 검수: FR-GO-201/205/206 완료, 203/204 매니페스트 완료
+  - gitops 프로젝트 관리 문서 갱신 (TASK/WORKFLOW/HISTORY/HANDOFF)
+  - gitops PR #21 생성 (`feat/w2-dev-deploy`)
+  - shared 프로젝트 관리 문서 갱신
+- **이슈**: terraform state가 새 bucket이라 기존 인프라 인식 못함 → 중복 리소스 생성 사고 → 즉시 destroy로 정리
+
 #### 2026-05-20 (화)
 - **완료**:
 - **진행 중**:
@@ -192,6 +202,6 @@
 
 | 날짜 | 변경 사항 |
 |------|-----------|
-| 2026-05-19 | W2 Step 4-5 완료: Kafka 스키마 + Schema Registry + Gradle wrapper CI 수정 |
+| 2026-05-19 | W2 Step 4-5 완료 + gitops EKS provider swap + PRD 검수 + 문서 갱신 |
 | 2026-05-11 | W2/W3/W4 대시보드 및 로그 템플릿 추가 |
 | 2026-05-11 | 초기 템플릿 생성 |
