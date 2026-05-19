@@ -152,14 +152,29 @@ services:
   # ── Gateway ──────────────────────────────────────
 
   gateway:
-    image: eclipse-temurin:21-jre-alpine
+    build:
+      context: ../synapse-gateway
+      dockerfile: Dockerfile
     container_name: synapse-gateway
-    entrypoint: ["sh", "-c", "echo 'gateway stub — replace with real Gateway image' && sleep infinity"]
     ports:
       - "8080:8080"
     depends_on:
       redis:
         condition: service_healthy
+    environment:
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: 6379
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_local_pw}
+      PLATFORM_SVC_URI: http://platform-svc:8080
+      ENGAGEMENT_SVC_URI: http://engagement-svc:8080
+      KNOWLEDGE_SVC_URI: http://knowledge-svc:8080
+      LEARNING_SVC_URI: http://learning-card-svc:8080
+    healthcheck:
+      test: ["CMD-SHELL", "curl -f http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
     networks:
       - synapse-net
 
