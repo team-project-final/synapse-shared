@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-test-003",
+  "source": "learning-card-svc",
+  "type": "learning.card.review-completed",
+  "subject": "card/e2e-card-01",
+  "time": "2026-05-20T09:02:00Z",
+  "tenantid": "tenant-e2e-001",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest00000000000000000000003-0000000000000003-01",
+  "data": {
+    "cardId": "e2e-card-01",
+    "userId": "e2e-user-01",
+    "tenantId": "tenant-e2e-001",
+    "rating": "GOOD",
+    "nextReviewAt": "2026-05-21T09:00:00Z",
+    "reviewedAt": "2026-05-20T09:02:00Z"
+  }
+}
