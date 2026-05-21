@@ -1,0 +1,16 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-err-001",
+  "source": "platform-svc",
+  "type": "platform.auth.user-registered",
+  "subject": "user/e2e-err-user",
+  "time": "2026-05-20T10:00:00Z",
+  "tenantid": "tenant-e2e-001",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest0000000000000000000err1-000000000000err1-01",
+  "data": {
+    "email": "error-user@test.synapse.dev",
+    "tenantId": "tenant-e2e-001",
+    "registeredAt": "2026-05-20T10:00:00Z"
+  }
+}
