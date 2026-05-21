@@ -33,5 +33,13 @@ echo "[CHECK] learning.cards:"
 docker exec "$CONTAINER" psql -U "$USER" -d "$DB" -c \
   "SELECT id, front, tenant_id FROM learning.cards WHERE id LIKE 'e2e-%';"
 
+echo "[CHECK] engagement.user_profiles:"
+docker exec "$CONTAINER" psql -U "$USER" -d "$DB" -c \
+  "SELECT user_id, display_name, xp_total, level FROM engagement.user_profiles WHERE user_id LIKE 'e2e-%';"
+
+echo "[CHECK] learning.ai_generation_history:"
+docker exec "$CONTAINER" psql -U "$USER" -d "$DB" -c \
+  "SELECT id, note_id, card_count, status FROM learning.ai_generation_history WHERE id LIKE 'e2e-%';"
+
 echo ""
 echo "=== Done ==="

@@ -1,0 +1,12 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-err-003",
+  "source": "platform-svc",
+  "type": "platform.auth.user-registered",
+  "subject": "user/e2e-err-empty",
+  "time": "2026-05-20T10:02:00Z",
+  "tenantid": "tenant-e2e-001",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest0000000000000000000err3-000000000000err3-01",
+  "data": {}
+}
