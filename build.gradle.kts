@@ -135,7 +135,7 @@ tasks.register("testSchemasTask") {
         val subject = "knowledge.note.note-created-v1-value"
         val user = schemaRegistryUser.orNull
         val password = schemaRegistryPassword.orNull
-        val baseSchemaFile = file("src/main/avro/knowledge/note-created-v1.avsc")
+        val baseSchemaFile = file("src/main/avro/knowledge/NoteCreated.avsc")
         val compatibleSchemaFile = file("src/test/resources/schema-samples/note-created-v2-compatible.avsc")
         val incompatibleSchemaFile = file("src/test/resources/schema-samples/note-created-v2-incompatible.avsc")
 

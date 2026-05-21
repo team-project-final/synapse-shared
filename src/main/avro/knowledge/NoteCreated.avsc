@@ -8,6 +8,7 @@
     {"name": "userId", "type": "string", "doc": "UUID of the note author"},
     {"name": "tenantId", "type": "string", "doc": "Tenant identifier"},
     {"name": "title", "type": "string", "doc": "Note title"},
+    {"name": "content", "type": ["null", "string"], "default": null, "doc": "Content body of the note (optional for backward compat)"},
     {"name": "createdAt", "type": "string", "doc": "ISO-8601 creation timestamp"}
   ]
 }

@@ -1,7 +1,7 @@
 param(
     [string]$RegistryUrl = "http://localhost:8081",
     [string]$Subject = "knowledge.note.note-created-v1-value",
-    [string]$SchemaPath = ".\src\main\avro\knowledge\note-created-v1.avsc",
+    [string]$SchemaPath = ".\src\main\avro\knowledge\NoteCreated.avsc",
     [string]$Compatibility = "BACKWARD_TRANSITIVE",
     [string]$Username,
     [string]$Password

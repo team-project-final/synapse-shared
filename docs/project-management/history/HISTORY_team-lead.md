@@ -135,9 +135,21 @@
 
 #### 2026-05-21 (수)
 - **완료**:
-- **진행 중**:
+  - **[gitops 8차]** terraform re-apply 인프라 재기동
+  - **[gitops 8차]** EKS managed node group SG 문제 해결 — eks-cluster-sg-*가 terraform eks_nodes SG와 다른 문제 → 4개 인프라 SG에 수동 추가
+  - **[gitops 8차]** liveness probe initialDelaySeconds 30s → 90s (gitops PR #35)
+  - **[gitops 8차]** 3/5 서비스 Healthy: engagement-svc, knowledge-svc, learning-card
+  - **[gitops 8차]** staging overlay 5개 서비스 생성 + ApplicationSet (gitops PR #34)
+  - **[gitops 8차]** ExternalSecret dev 5/5 SecretSynced + ClusterSecretStore Valid
+  - **[gitops 8차]** ESO IRSA 설정 완료 (role: synapse-dev-eso-role)
+  - **[shared]** E2E 테스트 인프라 선제 준비 (PR #5 머지)
+  - **[shared]** 에러/멀티테넌트 샘플, DB 시드 V004/V005, 검증 스크립트 3개
+  - **[shared]** synapse-shared 브랜치 정리 (2개 삭제)
+  - **[shared]** 핸드오프 + 가이드 문서 현행화
 - **이슈**:
-- **다음**:
+  - platform-svc: DB 기동 후 `mfa_credentials` 테이블 미존재 → Flyway migration 또는 ddl-auto 수정 필요 (앱 레벨)
+  - learning-ai: Python uvicorn restart 반복 → 서비스 레포 코드 레벨 문제 (앱 레벨)
+- **다음**: platform-svc/learning-ai 앱 코드 수정 → 5/5 Healthy 달성 → dev 환경 검증 스크립트 실행
 
 #### 2026-05-22 (목)
 - **완료**:

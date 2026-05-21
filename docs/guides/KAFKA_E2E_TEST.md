@@ -83,10 +83,31 @@ bash scripts/kafka-e2e-test.sh learning.card.review-completed-v1 review-complete
 bash scripts/kafka-e2e-test.sh learning.ai.cards-generated-v1 cards-generated.json
 ```
 
-## 전체 스모크 테스트 (한 번에 실행)
+## 일괄 실행 옵션
+
+### 정상 흐름만 (5개 토픽)
 
 ```bash
 bash scripts/kafka-e2e-test.sh --all
+```
+
+### 에러/멀티테넌트 케이스만
+
+```bash
+bash scripts/kafka-e2e-test.sh --error-cases
+```
+
+에러 케이스 포함 항목:
+- 존재하지 않는 토픽 produce 시도
+- `error/missing-required-field.json` — 필수 필드 누락
+- `error/invalid-tenant.json` — 유효하지 않은 테넌트
+- `error/empty-data.json` — 빈 데이터
+- `multi-tenant/*.json` — tenant-e2e-002 전체 이벤트 (4종)
+
+### 전체 (정상 + 에러 + 멀티테넌트)
+
+```bash
+bash scripts/kafka-e2e-test.sh --full
 ```
 
 ## 트러블슈팅

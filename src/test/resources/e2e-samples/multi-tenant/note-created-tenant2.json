@@ -1,0 +1,19 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-test-mt-002",
+  "source": "knowledge-svc",
+  "type": "knowledge.note.note-created",
+  "subject": "note/e2e-note-mt-01",
+  "time": "2026-05-20T09:06:00Z",
+  "tenantid": "tenant-e2e-002",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest000000000000000000mt002-00000000000mt002-01",
+  "data": {
+    "noteId": "e2e-note-mt-01",
+    "userId": "e2e-user-03",
+    "tenantId": "tenant-e2e-002",
+    "title": "Multi-Tenant Note Test",
+    "content": "Note from tenant-e2e-002 for cross-tenant isolation verification.",
+    "createdAt": "2026-05-20T09:06:00Z"
+  }
+}

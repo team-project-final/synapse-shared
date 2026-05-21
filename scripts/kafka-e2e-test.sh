@@ -128,8 +128,11 @@ run_error_cases() {
   produce_and_consume "platform.auth.user-registered-v1" "error/invalid-tenant.json"
   produce_and_consume "platform.auth.user-registered-v1" "error/empty-data.json"
 
-  # Test 3: multi-tenant sample
+  # Test 3: multi-tenant samples (all event types for tenant-e2e-002)
   produce_and_consume "platform.auth.user-registered-v1" "multi-tenant/user-registered-tenant2.json"
+  produce_and_consume "knowledge.note.note-created-v1" "multi-tenant/note-created-tenant2.json"
+  produce_and_consume "learning.card.review-completed-v1" "multi-tenant/review-completed-tenant2.json"
+  produce_and_consume "learning.ai.cards-generated-v1" "multi-tenant/cards-generated-tenant2.json"
 }
 
 print_report() {
