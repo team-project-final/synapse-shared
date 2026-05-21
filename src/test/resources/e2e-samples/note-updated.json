@@ -1,0 +1,18 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-test-005",
+  "source": "knowledge-svc",
+  "type": "knowledge.note.note-updated",
+  "subject": "note/e2e-note-01",
+  "time": "2026-05-20T09:04:00Z",
+  "tenantid": "tenant-e2e-001",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest00000000000000000000005-0000000000000005-01",
+  "data": {
+    "noteId": "e2e-note-01",
+    "tenantId": "tenant-e2e-001",
+    "title": "E2E Test Note (Updated)",
+    "content": "This note has been updated for Kafka E2E validation.",
+    "updatedAt": "2026-05-20T09:04:00Z"
+  }
+}
