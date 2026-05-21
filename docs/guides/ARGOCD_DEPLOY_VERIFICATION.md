@@ -6,8 +6,8 @@
 
 - **Generator**: Matrix (5 services x environments)
 - **Services**: platform-svc, engagement-svc, knowledge-svc, learning-card, learning-ai
-- **Environments**: dev (자동 sync, `applicationset.yaml`), staging (수동 sync, `applicationset-staging.yaml`)
-- **Sync Policy**: dev=automated (prune: true, selfHeal: true), staging=manual
+- **Environments**: dev (자동 sync), staging (수동 sync, `applicationset-staging.yaml`)
+- **Sync Policy**: automated (prune: true, selfHeal: true)
 - **Source**: `synapse-gitops` repo, `apps/{service}/overlays/{env}` 경로
 - **targetRevision**: `main`
 

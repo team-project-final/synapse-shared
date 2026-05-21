@@ -1,0 +1,17 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-err-002",
+  "source": "platform-svc",
+  "type": "platform.auth.user-registered",
+  "subject": "user/e2e-err-tenant",
+  "time": "2026-05-20T10:01:00Z",
+  "tenantid": "tenant-nonexistent-999",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest0000000000000000000err2-000000000000err2-01",
+  "data": {
+    "userId": "e2e-err-tenant-user",
+    "email": "bad-tenant@test.synapse.dev",
+    "tenantId": "tenant-nonexistent-999",
+    "registeredAt": "2026-05-20T10:01:00Z"
+  }
+}
