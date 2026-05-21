@@ -6,7 +6,7 @@
 
 - **Generator**: Matrix (5 services x environments)
 - **Services**: platform-svc, engagement-svc, knowledge-svc, learning-card, learning-ai
-- **Environments**: dev (현재), staging/prod (추후)
+- **Environments**: dev (자동 sync), staging (수동 sync, `applicationset-staging.yaml`)
 - **Sync Policy**: automated (prune: true, selfHeal: true)
 - **Source**: `synapse-gitops` repo, `apps/{service}/overlays/{env}` 경로
 - **targetRevision**: `main`
@@ -16,20 +16,40 @@
 ```
 apps/
 ├── platform-svc/
-│   ├── base/          (deployment, service, configmap, externalsecret)
-│   └── overlays/dev/  (replicas=1, DEBUG, dev DB/Redis/Kafka endpoints)
+│   ├── base/              (deployment, service, configmap, externalsecret)
+│   └── overlays/
+│       ├── dev/           (replicas=1, DEBUG, automated sync)
+│       └── staging/       (replicas=2, INFO, manual sync)
 ├── engagement-svc/
 │   ├── base/
-│   └── overlays/dev/
+│   └── overlays/{dev,staging}/
 ├── knowledge-svc/
 │   ├── base/
-│   └── overlays/dev/
+│   └── overlays/{dev,staging}/
 ├── learning-card/
 │   ├── base/
-│   └── overlays/dev/
+│   └── overlays/{dev,staging}/
 └── learning-ai/
     ├── base/
-    └── overlays/dev/
+    └── overlays/{dev,staging}/
+```
+
+### Staging 환경 현황 (2026-05-21 갱신)
+
+- staging overlay 생성 완료 (5개 서비스)
+- ApplicationSet: `synapse-apps-staging` (수동 Sync)
+- namespace: `synapse-staging`
+- replicas: 2, LOG_LEVEL: INFO, SPRING_PROFILES_ACTIVE: staging
+
+```bash
+# Staging 앱 상태 확인
+kubectl get applications -n argocd -l environment=staging
+
+# Staging 수동 Sync
+argocd app sync synapse-<service>-staging
+
+# Staging Pod 확인
+kubectl get pods -n synapse-staging
 ```
 
 ### 이미지 업데이트 전략
