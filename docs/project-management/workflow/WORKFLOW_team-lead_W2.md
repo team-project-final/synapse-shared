@@ -21,8 +21,8 @@
 - [x] Instructions 초안 → TASK 문서 반영
 
 ### 4.3 Security 1차 검토 (네트워크 보안)
-- [ ] Kafka ACL 토픽별 생산자/소비자 권한 정의 — MSK 배포 후
-- [ ] SASL/TLS 인증 설정 확인 — MSK 배포 후
+- [ ] Kafka ACL 토픽별 생산자/소비자 권한 정의 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` ACL 섹션)
+- [ ] SASL/TLS 인증 설정 확인 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` TLS 섹션)
 - [x] 토픽 접근 제어 최소 권한 원칙 적용 (설계 완료)
 - [x] 결과 → TASK Constraints 반영
 
@@ -33,21 +33,21 @@
 - [x] Duration(final) 갱신
 
 ### 4.5 Security 2차 검토
-- [ ] 토픽 메시지 암호화 전송 (TLS) 확인 — MSK 배포 후
-- [ ] 민감 데이터 토픽 접근 제한 확인 — MSK 배포 후
+- [ ] 토픽 메시지 암호화 전송 (TLS) 확인 — 다음 gitops 세션에서 openssl s_client로 검증
+- [ ] 민감 데이터 토픽 접근 제한 확인 — 다음 gitops 세션에서 ACL 또는 IAM Policy 적용
 - [x] 결과 → TASK Constraints 반영
 
 ### 4.6 N/A (인프라 — DTO/Entity 해당 없음)
 
 ### 4.7 Kafka 토픽 생성
-- [ ] MSK/Kafka 클러스터에 토픽 생성 — MSK 배포 후 (`scripts/create-kafka-topics.sh` 준비됨)
+- [ ] MSK/Kafka 클러스터에 토픽 생성 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` "다음 세션 실행 절차" 섹션)
 - [x] 각 토픽 파티션 수 / 복제 팩터 설정 (스크립트에 반영)
 - [x] 토픽 config 설정 (retention.ms, cleanup.policy)
 - [x] docker-compose에 토픽 자동 생성 스크립트 반영 (`kafka-init` 서비스)
 
 ### 4.8 토픽 검증 테스트
 - [x] kafka-topics.sh --list 로 토픽 목록 확인 (Docker Compose 검증)
-- [ ] kafka-console-producer/consumer 로 메시지 송수신 테스트 — MSK 배포 후
+- [ ] kafka-console-producer/consumer 로 메시지 송수신 테스트 — 다음 gitops 세션에서 MSK 토픽 생성 직후 실행
 - [x] 파티션 배분 확인 (Docker Compose 검증)
 - [x] docker compose 환경에서 토픽 자동 생성 확인
 

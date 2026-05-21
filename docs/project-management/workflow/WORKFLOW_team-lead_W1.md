@@ -162,7 +162,7 @@
 ### 1.8 파이프라인 테스트
 - [x] dummy commit → mirror.yml 동작 확인 (PR #2 머지 시 확인)
 - [x] PR 생성 → ci.yml 빌드+테스트 확인 (PR #2에서 확인)
-- [ ] main push → deploy.yml ECR push + ArgoCD 동기화 확인 — Dockerfile 준비 후 테스트
+- [x] main push → deploy.yml ECR push + ArgoCD 동기화 확인 — gitops 세션에서 5개 서비스 ECR push + ArgoCD Sync 동작 확인 (05-21)
 - [x] CI 실행 시간 < 5분 확인
 
 ### 1.9 N/A (인프라 — Controller 해당 없음)
