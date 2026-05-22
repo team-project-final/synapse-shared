@@ -1,6 +1,6 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-05-22 (W2 → W3 전환)
+> **최종 갱신**: 2026-05-22 (W3 선행 준비 세션)
 > **현재 주차**: W3
 > **갱신자**: @VelkaressiaBlutkrone
 
@@ -80,7 +80,9 @@
 4. [gitops] ServiceMonitor 5개 + Grafana 대시보드
      → 완료 기준: Grafana Explore에서 5개 앱 메트릭 조회
 5. [shared] 서비스별 Kafka 구현 상태 확인 + E2E 준비
-     → 완료 기준: kafka-e2e-test.sh --all PASS
+     → ✅ 선행 완료 (05-22): 이벤트 매트릭스 + E2E 시나리오 + 리포트 템플릿 + 샘플 데이터
+     → 잔여: 팀원 체크리스트 전달 (Day 1) + 팀원 PR 리뷰 (Day 2~) + E2E 실행 (Day 3~4)
+     → 상세 계획: docs/superpowers/plans/2026-05-22-w3-work-composition.md
 6. [gitops] terraform state 정리 (SG/OIDC 코드 반영)
      → 완료 기준: terraform plan → no unexpected drift
 ```
