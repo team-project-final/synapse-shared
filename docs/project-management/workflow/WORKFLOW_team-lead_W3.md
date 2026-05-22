@@ -14,22 +14,22 @@
 - [x] Duration 산정 확인 (2일: Day 3~4)
 
 ### 1.2 요구사항 분석
-- [ ] Kafka 이벤트 체인 E2E 시나리오 목록 도출
-- [ ] 서비스 간 이벤트 발행/소비 매핑표 작성
-- [ ] 코드 리뷰 승인 기준 정의 (PR 템플릿, 리뷰어 지정)
-- [ ] Instructions 초안 → TASK 문서 반영
+- [x] Kafka 이벤트 체인 E2E 시나리오 목록 도출 → `docs/guides/E2E_SCENARIOS_W3.md`
+- [x] 서비스 간 이벤트 발행/소비 매핑표 작성 → `docs/guides/EVENT_FLOW_MATRIX.md`
+- [x] 코드 리뷰 승인 기준 정의 (PR 템플릿, 리뷰어 지정) → TASK Step 7 갱신 완료
+- [x] Instructions 초안 → TASK 문서 반영 (05-22 선행 준비)
 
 ### 1.3 Security 1차 검토
-- [ ] Kafka 토픽 ACL 설정 확인 (서비스별 발행/소비 권한)
-- [ ] 이벤트 페이로드 민감정보 포함 여부 점검
-- [ ] 서비스 간 인증 토큰 전파 방식 확인
-- [ ] 결과 → TASK Constraints 반영
+- [ ] Kafka 토픽 ACL 설정 확인 (서비스별 발행/소비 권한) — Day 1 gitops 세션에서 확인
+- [x] 이벤트 페이로드 민감정보 포함 여부 점검 → UserRegistered.email만 PII (EVENT_FLOW_MATRIX.md §4)
+- [x] 서비스 간 인증 토큰 전파 방식 확인 → CloudEvent traceparent 기반 (TASK Constraints 반영)
+- [x] 결과 → TASK Constraints 반영 (05-22 선행 준비)
 
 ### 1.4 E2E 테스트 시나리오 설계
-- [ ] gamification 이벤트 체인 시나리오 (카드 복습 → XP 적립 → 레벨업 → 배지 수여 → 알림)
-- [ ] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림)
-- [ ] card.review.due 이벤트 체인 시나리오 (스케줄러 → Kafka → 알림 발송)
-- [ ] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재)
+- [x] gamification 이벤트 체인 시나리오 (카드 복습 → XP 적립 → 레벨업 → 배지 수여 → 알림) → E2E_SCENARIOS_W3.md S2
+- [ ] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림) — W3 범위 외, W4 이월
+- [x] card.review.due 이벤트 체인 시나리오 (스케줄러 → Kafka → 알림 발송) → E2E_SCENARIOS_W3.md S3 (샘플 추가 완료)
+- [ ] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재) — W4 범위
 - [ ] Duration(final) 갱신
 
 ### 1.5 Security 2차 검토

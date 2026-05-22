@@ -112,6 +112,31 @@ spring:
 3. Consumer: 토픽 메시지 수신 → 비즈니스 로직 실행 확인 (로그 + DB 확인)
 4. 단위 테스트 통과
 
-## E2E 검증 가이드
+## 코드 리뷰 승인 기준
 
-구현 완료 후 `docs/guides/KAFKA_E2E_TEST.md`의 시나리오를 순서대로 실행하세요.
+PR 리뷰 시 아래 항목을 체크합니다. 상세 기준은 [TASK_team-lead.md](../project-management/task/TASK_team-lead.md) Step 7 참조.
+
+- [ ] Avro 스키마 호환성 (BACKWARD)
+- [ ] CloudEvent 래핑 필드 전부 포함
+- [ ] Consumer Group 네이밍 (`{service-name}-group`)
+- [ ] 멱등성 (eventId 기반 중복 체크)
+- [ ] 단위 테스트 존재 (Producer mock / Consumer mock)
+- [ ] application.yml Kafka 설정 (bootstrap-servers, Schema Registry URL, consumer group-id)
+- [ ] 에러 핸들링 (역직렬화 실패 시 로그 + 스킵)
+
+## 일정
+
+| 이벤트 | 날짜 | 비고 |
+|--------|------|------|
+| Kafka 구현 착수 | 05-26 (화) | MSK 토픽 생성 확인 후 |
+| **PR 생성 기한** | **05-27 (수)** | Day 2 종료까지 |
+| 코드 리뷰 1차 | 05-27~28 | 팀장 리뷰 |
+| PR 머지 조율 | 05-28 (목) | 리뷰 통과분부터 순차 |
+| E2E 검증 | 05-28~29 | 구현 완료 서비스부터 |
+
+## 참조 문서
+
+- 이벤트 흐름 매트릭스: [EVENT_FLOW_MATRIX.md](./EVENT_FLOW_MATRIX.md)
+- E2E 시나리오: [E2E_SCENARIOS_W3.md](./E2E_SCENARIOS_W3.md)
+- E2E 검증 가이드: [KAFKA_E2E_TEST.md](./KAFKA_E2E_TEST.md)
+- MSK 토픽 설정: [MSK_TOPIC_SETUP.md](./MSK_TOPIC_SETUP.md)

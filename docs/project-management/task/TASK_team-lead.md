@@ -290,24 +290,36 @@
     - 이벤트 소싱 패턴
 - **Input**: 각 서비스 Kafka Producer/Consumer 코드, 토픽 목록, 스키마 정의
 - **Instructions**:
-  1. 서비스 간 이벤트 흐름 매트릭스 작성 (Producer → Topic → Consumer)
+  1. 서비스 간 이벤트 흐름 매트릭스 작성 (Producer → Topic → Consumer) → `docs/guides/EVENT_FLOW_MATRIX.md`
   2. Docker Compose로 전체 서비스 기동
-  3. E2E 이벤트 흐름 테스트 (시나리오별)
+  3. E2E 이벤트 흐름 테스트 (시나리오별) → `docs/guides/E2E_SCENARIOS_W3.md`
   4. 이벤트 유실/지연 확인
   5. 코드 리뷰 일정 조율 (PR 단위)
   6. 리뷰 피드백 정리 및 반영 추적
   7. 이벤트 흐름 다이어그램 최종 업데이트
+- **코드 리뷰 승인 기준** (PR 리뷰 시 필수 체크):
+  - [ ] Avro 스키마 호환성: Schema Registry에 등록 가능 (BACKWARD)
+  - [ ] CloudEvent 래핑: `CloudEventEnvelope.avsc` 필드 전부 포함 (specversion, id, source, type, subject, time, tenantid, traceparent)
+  - [ ] Consumer Group: `{service-name}-group` 패턴 준수
+  - [ ] 멱등성: eventId 기반 중복 처리 로직 존재
+  - [ ] 단위 테스트: Producer mock / Consumer mock 테스트 존재
+  - [ ] application.yml: Kafka bootstrap-servers + Schema Registry URL + consumer group-id 설정
+  - [ ] 에러 핸들링: 역직렬화 실패 시 로그 + 스킵 (DLT는 Phase 2)
 - **Output Format**: 이벤트 흐름 매트릭스 + E2E 테스트 결과 + 코드 리뷰 피드백 목록
 - **Constraints**:
   - 이벤트 전달 보장: at-least-once
   - E2E 이벤트 전달 시간 < 5초
   - 코드 리뷰 피드백 48시간 내 반영
+- **Security Constraints (W3)**:
+  - PII: UserRegistered 스키마의 `email` 필드가 유일한 PII — Consumer(engagement-svc) 로그 출력 시 마스킹 권장
+  - Kafka ACL/IAM: MSK 인증 방식에 따라 ACL(SASL 비사용) 또는 IAM Policy(SASL_SSL) 적용 — Day 1 gitops 세션에서 확인
+  - 서비스 간 추적: CloudEvent `traceparent` 필드 기반 분산 추적
 - **Duration**: 2일
 - **RULE Reference**: wiki 03_아키텍처_정의서 §이벤트 설계, wiki 09_Git_규칙_정의서 §코드 리뷰
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done
 
 ---
 
