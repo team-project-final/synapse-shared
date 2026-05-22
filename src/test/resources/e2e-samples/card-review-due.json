@@ -1,0 +1,17 @@
+{
+  "specversion": "1.0",
+  "id": "e2e-test-006",
+  "source": "learning-card-svc",
+  "type": "learning.card.review-due",
+  "subject": "user/e2e-user-01",
+  "time": "2026-05-26T06:00:00Z",
+  "tenantid": "tenant-e2e-001",
+  "datacontenttype": "application/avro",
+  "traceparent": "00-e2etest00000000000000000000006-0000000000000006-01",
+  "data": {
+    "userId": "e2e-user-01",
+    "tenantId": "tenant-e2e-001",
+    "dueCardCount": 3,
+    "scheduledAt": "2026-05-26T06:00:00Z"
+  }
+}
