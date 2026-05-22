@@ -2,14 +2,15 @@
 
 > **목적**: W3~W4 Kafka E2E 검증 전에 각 서비스가 준비해야 할 항목
 
-## 현재 인프라 상태 (2026-05-21 갱신)
+## 현재 인프라 상태 (2026-05-22 갱신)
 
 | 항목 | 상태 |
 |------|------|
-| dev 환경 | 5개 서비스 ArgoCD Synced (안정화 진행중) |
+| dev 환경 | **5/5 서비스 ArgoCD Synced + Healthy** ✅ |
 | staging 환경 | overlay 생성 완료, 수동 Sync 대기 |
 | ArgoCD 접속 | SSM 포트 포워딩 → http://localhost:9090 |
 | ECR 이미지 | 6개 서비스 push 완료 (1.0.0 + dev-latest) |
+| MSK 토픽 | W3 Day 1 (05-26) 생성 예정 |
 
 > **Note**: 인프라는 비용 관리 목적으로 작업 세션 외에는 destroy 상태입니다. `terraform apply` 후 endpoint가 변경되므로, 최신 접속 정보는 gitops 레포의 `HANDOFF_W2.md`를 참조하세요.
 

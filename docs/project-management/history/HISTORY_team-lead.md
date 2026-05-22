@@ -29,14 +29,19 @@
 
 **W2 진행률**: 5/5 Steps 완료
 
-### W3 (2026-05-26 ~ 05-30)
+### W3 (2026-05-26 ~ 05-29, 4영업일)
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | Not Started | — | — | |
-| Step 8 | ArgoCD dev/staging 배포 검증 | Not Started | — | — | |
+| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | 계획 수립 완료, 팀원 구현 W3 진행 예정 |
+| Step 8 | ArgoCD dev/staging 배포 검증 | In Progress | 05-22 | — | 5/5 Healthy 달성, staging sync 대기 |
 
-**W3 진행률**: 0/2 Steps 완료
+**W3 진행률**: 0/2 Steps 완료 (계획 수립 + 선행 조건 확보 완료)
+
+**05-22 달성 사항:**
+- platform-svc / learning-ai 앱 코드 수정 완료 → **dev 5/5 Healthy 달성**
+- W3 Day 1~4 일별 작업 계획 수립
+- MSK 토픽 생성 절차 확인 (Day 1 gitops 세션 실행 예정)
 
 ### W4 (2026-06-02 ~ 06-06)
 

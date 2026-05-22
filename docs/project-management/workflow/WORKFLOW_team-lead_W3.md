@@ -9,9 +9,9 @@
 ## Step 7: 전체 통합 테스트 조율
 
 ### 1.1 TASK 시작
-- [ ] Step Goal / Done When / Scope / Input 확인
-- [ ] PRD_W3 해당 요구사항 확인 (서비스 간 통합 검증)
-- [ ] Duration 산정 확인
+- [x] Step Goal / Done When / Scope / Input 확인
+- [x] PRD_W3 해당 요구사항 확인 (서비스 간 통합 검증 — FR-TL-201)
+- [x] Duration 산정 확인 (2일: Day 3~4)
 
 ### 1.2 요구사항 분석
 - [ ] Kafka 이벤트 체인 E2E 시나리오 목록 도출
@@ -65,7 +65,7 @@
 - [ ] 미해결 이슈 목록화 및 우선순위 지정
 - [ ] RULE Reference → TASK 반영
 
-**Step 7 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 7 Status**: [ ] Not Started / [x] In Progress / [ ] Done
 
 ---
 
@@ -126,4 +126,4 @@
 - [ ] staging 배포 승인 프로세스 문서화
 - [ ] RULE Reference → TASK 반영
 
-**Step 8 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 8 Status**: [ ] Not Started / [x] In Progress / [ ] Done
