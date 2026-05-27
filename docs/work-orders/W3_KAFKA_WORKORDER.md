@@ -37,12 +37,14 @@ W3 목표는 모든 producer 토픽 발행 + consumer 처리(PRD_W3 FR-*-201 계
 
 ## 추적 (Day 2~3 갱신)
 
+> **Day 2 조회 (2026-05-27 오전, `gh pr list`)**: Kafka Producer/Consumer work-order 산출물 PR **0/5**. 열린 PR 2건은 work-order 범위(Kafka 발행/소비) 밖. 기한은 오늘 EOD — 미도착 시 EOD 후 ❌ 표기.
+
 | 서비스 | PR 생성 | 리뷰 | 머지 | 비고 |
 |--------|:------:|:----:|:----:|------|
-| platform-svc | ⏳ | — | — | |
-| knowledge-svc | ⏳ | — | — | |
-| learning-card | ⏳ | — | — | |
-| learning-ai | ⏳ | — | — | |
-| engagement-svc | ⏳ | — | — | |
+| platform-svc | ⏳ | — | — | PR [#33](https://github.com/team-project-final/synapse-platform-svc/pull/33) 열림 — W2 완료/MSA 테스트 env, **Kafka 파일 0건 → work-order 아님** |
+| knowledge-svc | ⏳ | — | — | PR [#23](https://github.com/team-project-final/synapse-knowledge-svc/pull/23) 열림 — 그래프 조회 API + 청킹(in-process `@TransactionalEventListener`) + `note-created-v1.avsc` 스키마 기반작업. **Kafka NoteCreated/Updated Producer 미포함** (스키마는 선행 토대로 관련) |
+| learning-card | ⏳ | — | — | 열린 PR 없음 |
+| learning-ai | ⏳ | — | — | 열린 PR 없음 |
+| engagement-svc | ⏳ | — | — | 열린 PR 없음 |
 
 > 상태: ⏳ 대기 / 🔄 진행 / ✅ 완료 / ❌ 미착수(기한 초과)
