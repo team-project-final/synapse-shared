@@ -1,0 +1,90 @@
+name: Deploy Service (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      gitops_app:
+        description: "gitops apps/<name> (synapse- 접두사 없음). 예: engagement-svc"
+        required: true
+        type: string
+      ecr_repository:
+        description: "ECR 리포 경로. 예: synapse/engagement-svc"
+        required: true
+        type: string
+      build_context:
+        description: "docker build 컨텍스트 경로"
+        required: false
+        type: string
+        default: "."
+      dockerfile:
+        description: "Dockerfile 경로(컨텍스트 기준)"
+        required: false
+        type: string
+        default: "Dockerfile"
+    secrets:
+      AWS_ROLE_ARN:
+        required: true
+      GITOPS_TOKEN:
+        required: true
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v3
+
+      - name: Build and push image
+        id: build
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          REPO: ${{ inputs.ecr_repository }}
+          TAG: ${{ github.sha }}
+        run: |
+          IMAGE="${REGISTRY}/${REPO}:${TAG}"
+          docker build -f "${{ inputs.build_context }}/${{ inputs.dockerfile }}" -t "$IMAGE" "${{ inputs.build_context }}"
+          docker push "$IMAGE"
+          echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
+
+      - name: Bump gitops image tag
+        env:
+          TAG: ${{ steps.build.outputs.tag }}
+        run: |
+          git clone --depth 1 \
+            "https://x-access-token:${{ secrets.GITOPS_TOKEN }}@github.com/team-project-final/synapse-gitops.git" _gitops
+          cd _gitops
+
+          KUSTOMIZATION="apps/${{ inputs.gitops_app }}/overlays/dev/kustomization.yaml"
+          if [ ! -f "$KUSTOMIZATION" ]; then
+            echo "::error::Kustomization not found: $KUSTOMIZATION (gitops_app 입력 확인)"
+            exit 1
+          fi
+
+          yq -i '.images[0].newTag = strenv(TAG)' "$KUSTOMIZATION"
+
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "No gitops changes."
+            exit 0
+          fi
+          git commit -m "deploy: bump ${{ inputs.gitops_app }} to ${TAG}"
+          git push
