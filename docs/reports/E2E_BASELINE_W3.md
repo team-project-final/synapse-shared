@@ -31,9 +31,10 @@
 - 근본 원인: E2E 샘플(`e2e-samples/*.json`)이 **멀티라인 pretty-print JSON**(17~19줄). `kafka-console-producer`는 **줄 단위로 메시지 분리** → 각 샘플이 ~17개 단편 메시지로 발행되고, consumer `--max-messages 1`이 첫 줄(`{`)만 읽어 `"specversion"` 미검출 → WARN.
 - 영향: **전송 경로(produce→consume)는 정상 검증됨.** 다만 CloudEvent 페이로드 단위 검증은 현재 harness로는 불완전.
 - 후속(W3 Day2~ 또는 W4): 샘플을 `jq -c`로 1라인 압축하거나, 스크립트가 produce 전 메시지를 compact하도록 개선. (Day1 베이스라인 범위 밖)
+- **✅ 해결 (Day 2, 05-27)**: `scripts/kafka-e2e-test.sh`에 `compact_json` 헬퍼 추가 — produce 직전 `jq -c`로 1라인 압축(깨진 JSON은 `tr -d '\r\n'` fallback). 샘플 1개 = 메시지 1개로 발행되어 consumer가 온전한 CloudEvent를 읽고 `"specversion"` 검출. 클린 토픽 재검증 결과 `--all` 5/5 모두 `[CONSUME] OK — validated`(WARN 0건), `--full` 13/13 PASSED. CloudEvent 페이로드 단위 round-trip 검증이 이제 신뢰 가능.
 
 ## 해석
 
 - 이 테스트는 **전송 경로(토픽 produce→consume)** 검증이며, 서비스의 consumer 비즈니스 로직은 검증하지 않는다.
-- CloudEvent 페이로드 단위 검증은 D-2 후속 개선 후 신뢰 가능.
+- CloudEvent 페이로드 단위 round-trip 검증은 D-2 해결(Day 2)로 **신뢰 가능**. (단, consumer 비즈니스 로직 검증은 서비스 구현 도착 시 시나리오 테스트로 별도 확장)
 - 서비스 구현 도착 시(Day 2~3) `E2E_SCENARIOS_W3.md` 시나리오로 consumer 처리까지 확장 검증.

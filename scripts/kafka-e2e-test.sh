@@ -20,6 +20,21 @@ PASS_COUNT=0
 FAIL_COUNT=0
 START_TIME=$(date +%s)
 
+# Compact a JSON sample to a single line so kafka-console-producer sends it as
+# ONE message. The producer splits stdin on newlines, so multi-line pretty JSON
+# would otherwise be fragmented into ~1 message per line (see E2E_BASELINE_W3 D-2).
+# Valid JSON → jq -c (also normalizes); malformed JSON (error fixtures) → raw
+# single-line via tr, so transport-level error cases still produce one message.
+compact_json() {
+  local f="$1"
+  if command -v jq >/dev/null 2>&1 && jq -e . "$f" >/dev/null 2>&1; then
+    jq -c . "$f"
+  else
+    tr -d '\r\n' < "$f"
+    printf '\n'
+  fi
+}
+
 usage() {
   cat <<'USAGE'
 Usage: bash scripts/kafka-e2e-test.sh <topic> <sample-json>
@@ -52,11 +67,12 @@ produce_and_consume() {
   echo "=== Testing: $t ($f) ==="
   echo "[PRODUCE] Sending message from $f ..."
 
-  # Produce via docker exec
-  if ! docker exec -i "$CONTAINER" kafka-console-producer \
+  # Produce via docker exec — compact to a single line so the whole CloudEvent
+  # is sent as one message (not one message per pretty-printed line).
+  if ! compact_json "$filepath" | docker exec -i "$CONTAINER" kafka-console-producer \
     --bootstrap-server kafka:29092 \
     --topic "$t" \
-    < "$filepath" 2>/dev/null; then
+    2>/dev/null; then
     if [ "$expect_fail" = "true" ]; then
       echo "[PRODUCE] Expected failure — OK"
       PASS_COUNT=$((PASS_COUNT + 1))
