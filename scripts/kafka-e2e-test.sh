@@ -6,12 +6,14 @@
 #   bash scripts/kafka-e2e-test.sh --all
 #   bash scripts/kafka-e2e-test.sh --error-cases
 #   bash scripts/kafka-e2e-test.sh --scenarios
+#   bash scripts/kafka-e2e-test.sh --avro        # 실제 Avro+Registry 라운드트립(계약 검증)
 #   bash scripts/kafka-e2e-test.sh --full
 set -euo pipefail
 
 BROKER="${KAFKA_BROKERS:-localhost:9092}"
 CONTAINER="${KAFKA_CONTAINER:-synapse-kafka}"
 SAMPLES_DIR="src/test/resources/e2e-samples"
+SCHEMA_DIR="${SCHEMA_DIR:-src/main/avro}"
 TIMEOUT="${CONSUME_TIMEOUT:-10}"
 
 topic="${1:-}"
@@ -52,6 +54,7 @@ Examples:
   bash scripts/kafka-e2e-test.sh --all
   bash scripts/kafka-e2e-test.sh --error-cases
   bash scripts/kafka-e2e-test.sh --scenarios
+  bash scripts/kafka-e2e-test.sh --avro
   bash scripts/kafka-e2e-test.sh --full
 USAGE
 }
@@ -198,6 +201,70 @@ run_scenarios() {
     "opensearch notes 인덱스 갱신 + learning-ai note-updated 로그 — §S4"
 }
 
+# --- Avro round-trip (Schema Registry) -----------------------------------------
+# 실제 계약 검증: bare typed Avro record per topic을 shared .avsc로 produce → consume.
+# kafka-avro-console-producer가 subject(<topic>-value)를 레지스트리에 자동 등록하므로
+# "Avro 직렬화 + 레지스트리 등록 + 역직렬화 round-trip"을 한 번에 검증한다.
+# (참고: --all/--scenarios는 JSON 바이트 전송 스모크일 뿐 Avro 계약 검증이 아님 — EVENT_CONTRACT_STANDARD Avro 채택)
+SR_CONTAINER="${SR_CONTAINER:-synapse-schema-registry}"
+SR_URL_INTERNAL="${SR_URL_INTERNAL:-http://schema-registry:8081}"
+KAFKA_INTERNAL="${KAFKA_INTERNAL:-kafka:29092}"
+
+avro_roundtrip() {
+  local topic="$1" avsc="$2" value="$3" schema
+  if [ ! -f "$avsc" ]; then
+    echo "[AVRO] FAIL — schema 없음: $avsc"; FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+  fi
+  schema=$(jq -c . "$avsc") || { echo "[AVRO] FAIL — 잘못된 스키마: $avsc"; FAIL_COUNT=$((FAIL_COUNT + 1)); return 1; }
+  echo "=== [AVRO] $topic ($(basename "$avsc")) ==="
+  if ! printf '%s\n' "$value" | docker exec -i "$SR_CONTAINER" kafka-avro-console-producer \
+      --bootstrap-server "$KAFKA_INTERNAL" --topic "$topic" \
+      --property schema.registry.url="$SR_URL_INTERNAL" \
+      --property value.schema="$schema" >/dev/null 2>&1; then
+    echo "[AVRO][PRODUCE] FAIL (스키마 등록/직렬화 실패 — 호환성 또는 값 불일치 가능)"
+    FAIL_COUNT=$((FAIL_COUNT + 1)); return 1
+  fi
+  echo "[AVRO][PRODUCE] OK — subject ${topic}-value 등록 + 발행"
+  local out
+  out=$(docker exec "$SR_CONTAINER" kafka-avro-console-consumer \
+      --bootstrap-server "$KAFKA_INTERNAL" --topic "$topic" \
+      --from-beginning --max-messages 1 --timeout-ms "$((TIMEOUT * 1000))" \
+      --property schema.registry.url="$SR_URL_INTERNAL" 2>/dev/null) || true
+  if echo "$out" | grep -q '"userId"'; then
+    echo "[AVRO][CONSUME] OK — Avro 역직렬화/검증"
+    PASS_COUNT=$((PASS_COUNT + 1))
+  else
+    echo "[AVRO][CONSUME] FAIL — 메시지 없음/형식 불일치"
+    FAIL_COUNT=$((FAIL_COUNT + 1))
+  fi
+  echo ""
+}
+
+run_avro() {
+  echo ""
+  echo "========================================="
+  echo "  Avro Round-trip ($SR_CONTAINER, $SR_URL_INTERNAL)"
+  echo "  bare typed record per topic + subject 자동 등록"
+  echo "========================================="
+  echo ""
+  avro_roundtrip "platform.auth.user-registered-v1" "$SCHEMA_DIR/platform/UserRegistered.avsc" \
+    '{"eventId":"evt-ur-1","userId":"u-1","email":"e2e@test.synapse.dev","tenantId":"t-1","registeredAt":"2026-06-01T00:00:00Z","occurredAt":0}'
+  avro_roundtrip "knowledge.note.note-created-v1" "$SCHEMA_DIR/knowledge/NoteCreated.avsc" \
+    '{"eventId":"evt-nc-1","noteId":"n-1","userId":"u-1","tenantId":"t-1","deckId":null,"title":"E2E Note","content":null,"createdAt":"2026-06-01T00:00:00Z","occurredAt":0}'
+  avro_roundtrip "knowledge.note.note-updated-v1" "$SCHEMA_DIR/knowledge/NoteUpdated.avsc" \
+    '{"eventId":"evt-nu-1","noteId":"n-1","userId":"u-1","tenantId":"t-1","title":"E2E Note v2","updatedAt":"2026-06-01T00:05:00Z","occurredAt":0}'
+  avro_roundtrip "learning.card.review-completed-v1" "$SCHEMA_DIR/learning/ReviewCompleted.avsc" \
+    '{"eventId":"evt-rc-1","cardId":"c-1","userId":"u-1","tenantId":"t-1","rating":"GOOD","nextReviewAt":"2026-06-03T00:00:00Z","reviewedAt":"2026-06-01T00:00:00Z","occurredAt":0}'
+  avro_roundtrip "learning.card.review-due-v1" "$SCHEMA_DIR/learning/CardReviewDue.avsc" \
+    '{"eventId":"evt-rd-1","tenantId":"t-1","userId":"u-1","dueCardCount":3,"dueDate":"2026-06-01","occurredAt":0}'
+  avro_roundtrip "engagement.gamification.level-up-v1" "$SCHEMA_DIR/engagement/LevelUp.avsc" \
+    '{"eventId":"evt-lu-1","tenantId":"t-1","userId":"u-1","newLevel":2,"previousLevel":1,"totalXp":100,"occurredAt":0}'
+  avro_roundtrip "engagement.gamification.badge-earned-v1" "$SCHEMA_DIR/engagement/BadgeEarned.avsc" \
+    '{"eventId":"evt-be-1","tenantId":"t-1","userId":"u-1","badgeId":"b-1","badgeCode":"STREAK_7","badgeName":null,"occurredAt":0}'
+  avro_roundtrip "platform.notification.notification-send-v1" "$SCHEMA_DIR/platform/NotificationSend.avsc" \
+    '{"userId":"u-1","tenantId":"t-1","notificationType":"AI_CARDS_READY","channels":["FCM"],"title":"새 카드","body":"카드 3개 생성","emailSubject":null,"emailHtmlBody":null,"data":{}}'
+}
+
 print_report() {
   local end_time
   end_time=$(date +%s)
@@ -233,6 +300,10 @@ case "${topic}" in
     ;;
   --scenarios)
     run_scenarios
+    print_report
+    ;;
+  --avro)
+    run_avro
     print_report
     ;;
   --full)

@@ -247,12 +247,15 @@ bash scripts/kafka-e2e-test.sh --full
 
 ## 5. 일괄 실행
 
-| 모드 | 명령어 | 범위 |
-|------|--------|------|
-| 정상 흐름만 | `bash scripts/kafka-e2e-test.sh --all` | S1~S4 (5개 토픽) |
-| 에러 케이스만 | `bash scripts/kafka-e2e-test.sh --error-cases` | E1~E3 |
-| 체인 시나리오 | `bash scripts/kafka-e2e-test.sh --scenarios` | S1~S4 의존성 순서 produce + service-check 안내 (구현 후 확장용) |
-| 전체 | `bash scripts/kafka-e2e-test.sh --full` | S1~S4 + E1~E3 + M1 |
+| 모드 | 명령어 | 범위 | 종류 |
+|------|--------|------|------|
+| 정상 흐름만 | `bash scripts/kafka-e2e-test.sh --all` | S1~S4 (5개 토픽) | transport 스모크(JSON 바이트) |
+| 에러 케이스만 | `bash scripts/kafka-e2e-test.sh --error-cases` | E1~E3 | transport 스모크 |
+| 체인 시나리오 | `bash scripts/kafka-e2e-test.sh --scenarios` | S1~S4 의존성 순서 produce + service-check 안내 | transport 스모크 |
+| **Avro 라운드트립** | `bash scripts/kafka-e2e-test.sh --avro` | 8개 토픽을 shared `.avsc`로 produce→consume + subject 자동 등록 | **Avro 계약 검증(권장)** |
+| 전체 | `bash scripts/kafka-e2e-test.sh --full` | S1~S4 + E1~E3 + M1 | transport 스모크 |
+
+> **transport vs Avro**: `--all/--scenarios/--full`은 JSON 바이트를 `kafka-console-producer`로 흘려 **전송 경로만** 확인(레거시 스모크). 실제 계약(EVENT_CONTRACT_STANDARD = Avro+Registry)은 **`--avro`** 로 검증 — `synapse-schema-registry` 컨테이너의 `kafka-avro-console-producer/consumer` + shared `.avsc` 사용. 사전 조건: `docker compose up -d zookeeper kafka schema-registry kafka-init`.
 
 ---
 
