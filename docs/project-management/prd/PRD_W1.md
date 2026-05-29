@@ -4,7 +4,7 @@
 
 | 항목 | 내용 |
 |------|------|
-| 기간 | 2026-05-12 (월) ~ 2026-05-16 (금) |
+| 기간 | 2026-05-12 (화) ~ 2026-05-15 (금) (4 영업일) |
 | 목표 | DB 스키마, 4-서비스 골격, 기본 CRUD, Spring Modulith 모듈 정의 |
 | 팀 구성 | 팀장 1명 + 팀원 6명 (트랙 A/B/C-1/C-2/D-1/D-2) + Frontend 전체 협업 |
 | GitHub Repositories | [synapse-platform-svc](https://github.com/team-project-final/synapse-platform-svc) · [synapse-engagement-svc](https://github.com/team-project-final/synapse-engagement-svc) · [synapse-knowledge-svc](https://github.com/team-project-final/synapse-knowledge-svc) · [synapse-learning-svc](https://github.com/team-project-final/synapse-learning-svc) · [synapse-frontend](https://github.com/team-project-final/synapse-frontend) · [synapse-shared](https://github.com/team-project-final/synapse-shared) · [synapse-mirror](https://github.com/team-project-final/synapse-mirror) · [synapse-gitops](https://github.com/team-project-final/synapse-gitops) |

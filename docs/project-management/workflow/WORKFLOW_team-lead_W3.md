@@ -1,7 +1,7 @@
 # WORKFLOW: @team-lead — Week 3
 
 > **Task 문서**: [TASK_team-lead.md](../task/TASK_team-lead.md)  
-> **기간**: 2026-05-26 ~ 2026-05-30  
+> **기간**: 2026-05-26 (화) ~ 2026-05-29 (금) — 4영업일 (5/25 부처님오신날 제외)  
 > **PRD**: [PRD_W3.md](../prd/PRD_W3.md)
 
 ---
@@ -39,21 +39,21 @@
 - [ ] 결과 → TASK Constraints 반영
 
 ### 1.6 테스트 데이터 준비
-- [ ] E2E 테스트용 시드 데이터 정의 (사용자, 카드, 노트, 커뮤니티 게시글)
-- [ ] Kafka 토픽 사전 생성 스크립트 작성
-- [ ] 테스트 실행 순서 의존성 정리
+- [x] E2E 테스트용 시드 데이터 정의 (사용자, 카드, 노트, 커뮤니티 게시글) → `src/test/resources/seed/V001~V005`
+- [x] Kafka 토픽 사전 생성 스크립트 작성 → `scripts/create-kafka-topics.sh` (5개 토픽)
+- [x] 테스트 실행 순서 의존성 정리 → `docs/guides/E2E_SCENARIOS_W3.md`
 
 ### 1.7 E2E 테스트 구현 및 조율
-- [ ] Kafka 이벤트 체인 E2E 테스트 작성 (Testcontainers)
-- [ ] 서비스 간 이벤트 발행 → 소비 → 결과 검증 자동화
-- [ ] 코드 리뷰 전 PR 승인 프로세스 적용
-- [ ] 각 서비스 담당자 테스트 결과 취합
+- [x] Kafka 이벤트 체인 E2E 테스트 작성 (~~Testcontainers~~ → 로컬 shell harness `scripts/kafka-e2e-test.sh`로 대체, EKS destroy로 로컬 우선)
+- [x] 서비스 간 이벤트 발행 → 소비 → 결과 검증 자동화 (**전송 경로 한정**: produce→consume + CloudEvent 페이로드 단위 round-trip. consumer 비즈니스 로직은 서비스 구현 도착 시 확장)
+- [x] 코드 리뷰 전 PR 승인 프로세스 적용 → work-order 발행 + 코드 리뷰 승인 기준 (`W3_KAFKA_WORKORDER.md`, TASK Step 7)
+- [ ] 각 서비스 담당자 테스트 결과 취합 — 팀원 Kafka 산출물 PR 0/5로 취합 대상 미도착 (05-27 EOD 기준)
 
 ### 1.8 통합 테스트 실행 및 검증
-- [ ] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행
-- [ ] Kafka 이벤트 전파 지연 시간 측정 (< 3초 기준)
-- [ ] 이벤트 유실 여부 확인 (재시도 로직 검증)
-- [ ] 실패 테스트 원인 분석 및 담당자 배정
+- [~] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry)만 기동, 앱 서비스 Kafka 구현 0건으로 미실행
+- [ ] Kafka 이벤트 전파 지연 시간 측정 (< 3초 기준) — harness 총 29s(라운드트립), 이벤트 단위 측정은 서비스 구현 후
+- [x] 이벤트 유실 여부 확인 — harness `--all` 5/5 + `--full` 13/13 round-trip 무유실 (재시도 로직 검증은 서비스 consumer 도착 후)
+- [x] 실패 테스트 원인 분석 및 담당자 배정 — D-1(stale ZK znode)·D-2(샘플 line-split) 분석·해결 → `E2E_BASELINE_W3.md`
 
 ### 1.9 코드 리뷰 조율
 - [ ] 각 서비스 PR 리뷰 현황 취합

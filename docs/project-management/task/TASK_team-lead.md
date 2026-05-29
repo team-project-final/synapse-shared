@@ -2,7 +2,7 @@
 
 > **담당 서비스**: Gateway / 인프라 / 아키텍처  
 > **GitHub Repository**: [syn](https://github.com/team-project-final/syn) · [synapse-shared](https://github.com/team-project-final/synapse-shared) · [synapse-mirror](https://github.com/team-project-final/synapse-mirror) · [synapse-gitops](https://github.com/team-project-final/synapse-gitops)  
-> **주차**: W1 (2026-05-12 ~ 2026-05-16)  
+> **주차**: W1~W4 (Step 1~12, 2026-05-12 ~ 2026-06-05) — 주차 구분은 본문 섹션 헤더 참조  
 > **관련 문서**: [SCOPE](../scope/SCOPE_team-lead.md) | [PRD_W1](../prd/PRD_W1.md) | [WORKFLOW](../workflow/WORKFLOW_team-lead_W1.md) | [HISTORY](../history/HISTORY_team-lead.md)
 
 ---
@@ -129,7 +129,7 @@
 
 ---
 
-## W2 (2026-05-19 ~ 2026-05-23)
+## W2 (2026-05-19 ~ 2026-05-22, 4영업일)
 
 ---
 

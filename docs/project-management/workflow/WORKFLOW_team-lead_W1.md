@@ -1,7 +1,7 @@
 # WORKFLOW: @team-lead — Week 1
 
 > **Task 문서**: [TASK_team-lead.md](../task/TASK_team-lead.md)  
-> **기간**: 2026-05-12 ~ 2026-05-16  
+> **기간**: 2026-05-12 (화) ~ 2026-05-15 (금) — 4영업일  
 > **기능개발 Workflow**: [README §7](../README.md)
 
 ---

@@ -4,7 +4,7 @@
 
 | 항목 | 내용 |
 |------|------|
-| 기간 | 2026-05-19 (월) ~ 2026-05-23 (금) |
+| 기간 | 2026-05-19 (화) ~ 2026-05-22 (금) (4 영업일) |
 | 목표 | SRS 복습 / AI 카드 골격 / Graph + ES / 커뮤니티 공유 / Schema Registry 등록 |
 | 전주 결과 | W1에서 4-서비스 골격 + 기본 CRUD + 인프라 셋업 완료 |
 | GitHub Repositories | [synapse-platform-svc](https://github.com/team-project-final/synapse-platform-svc) · [synapse-engagement-svc](https://github.com/team-project-final/synapse-engagement-svc) · [synapse-knowledge-svc](https://github.com/team-project-final/synapse-knowledge-svc) · [synapse-learning-svc](https://github.com/team-project-final/synapse-learning-svc) · [synapse-frontend](https://github.com/team-project-final/synapse-frontend) · [synapse-shared](https://github.com/team-project-final/synapse-shared) |

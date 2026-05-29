@@ -1,6 +1,6 @@
 # 핸드오프: synapse-shared
 
-> **최종 갱신**: 2026-05-22 (W3 선행 준비)
+> **최종 갱신**: 2026-05-29 (W3 Day 1~2 실행 — work-order + 로컬 E2E harness)
 > **허브 참조**: → [HANDOFF_HUB.md](./HANDOFF_HUB.md)
 
 ---
@@ -46,19 +46,21 @@
 | schema-check.yml | PR (*.avsc 변경) → 호환성 검증 | ✅ PASS |
 | mirror.yml | push → synapse-mirror 동기화 | ✅ PASS |
 
-## 5. 팀원 체크리스트
+## 5. 팀원 체크리스트 + Kafka 구현 추적
 
-→ [TEAM_CHECKLIST_W3.md](../guides/TEAM_CHECKLIST_W3.md)
+→ [TEAM_CHECKLIST_W3.md](../guides/TEAM_CHECKLIST_W3.md) · [W3_KAFKA_WORKORDER.md](../work-orders/W3_KAFKA_WORKORDER.md)
 
-**서비스별 Kafka 구현 상태**:
+> **work-order 발행**: 05-26 (Day 1), PR 기한 05-27 EOD. **Day 2 추적 결과 Kafka 산출물 PR 0/5** — 열린 PR 2건(platform #33, knowledge #23)은 Kafka 발행/소비 범위 밖.
 
-| 서비스 | 역할 | 구현 상태 |
-|---|---|---|
-| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | 🔴 미착수 |
-| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | 🔴 미착수 |
-| knowledge-svc | Producer (NoteCreated, NoteUpdated) | 🔴 미착수 |
-| learning-card | Producer (ReviewCompleted) | 🔴 미착수 |
-| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | 🔴 미착수 |
+**서비스별 Kafka 구현 상태 (05-27 기준)**:
+
+| 서비스 | 역할 | GH 이슈 | 구현 상태 |
+|---|---|---|---|
+| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | [#30](https://github.com/team-project-final/synapse-platform-svc/issues/30) | 🔴 미착수 (PR #33은 범위 밖) |
+| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | [#9](https://github.com/team-project-final/synapse-engagement-svc/issues/9) | 🔴 미착수 |
+| knowledge-svc | Producer (NoteCreated, NoteUpdated) | [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22) | 🔴 미착수 (PR #23은 그래프 API+청킹, Kafka Producer 미포함) |
+| learning-card | Producer (ReviewCompleted) | [#21](https://github.com/team-project-final/synapse-learning-svc/issues/21) | 🔴 미착수 |
+| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | [#22](https://github.com/team-project-final/synapse-learning-svc/issues/22) | 🔴 미착수 |
 
 ## 6. W3 선행 준비 산출물 (05-22)
 
@@ -75,3 +77,15 @@
 | 팀원 체크리스트 정비 | `docs/guides/TEAM_CHECKLIST_W3.md` (일정/리뷰 기준/참조 링크 추가) |
 | W3 작업 구성 설계 | `docs/superpowers/specs/2026-05-22-w3-work-composition-design.md` |
 | W3 구현 계획 | `docs/superpowers/plans/2026-05-22-w3-work-composition.md` |
+
+## 7. W3 실행 산출물 (05-26~27, Day 1~2)
+
+| 산출물 | 경로 | 비고 |
+|--------|------|------|
+| W3 실행 설계 스펙 | `docs/superpowers/specs/2026-05-26-w3-shared-execution-design.md` | 로컬 E2E 중심 · work-order 추적 |
+| W3 실행 구현 플랜 | `docs/superpowers/plans/2026-05-26-w3-shared-execution.md` | Day1~4 |
+| Kafka cross-repo work-order | `docs/work-orders/W3_KAFKA_WORKORDER.md` | 5개 서비스 할당 + GH 이슈 + PR 추적 |
+| 로컬 E2E harness 베이스라인 | `docs/reports/E2E_BASELINE_W3.md` | `--all` 5/5, `--full` 13/13 PASSED |
+| E2E harness 개선 | `scripts/kafka-e2e-test.sh` | `compact_json`(jq -c) 추가 — CloudEvent 단위 검증 복구 (D-2 해결) |
+
+**인프라 방침**: EKS는 비용관리로 **destroy 상태** → 검증은 **로컬 docker-compose** 기준. 세션 종료 시 `docker compose down -v` 권장(stale ZK znode 재발 방지, D-1).

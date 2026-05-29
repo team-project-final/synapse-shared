@@ -1,7 +1,7 @@
 # WORKFLOW: @team-lead — Week 4
 
 > **Task 문서**: [TASK_team-lead.md](../task/TASK_team-lead.md)  
-> **기간**: 2026-06-02 ~ 2026-06-06  
+> **기간**: 2026-06-01 (월) ~ 2026-06-05 (금) — 4영업일 (6/3 지방선거 제외)  
 > **PRD**: [PRD_W4.md](../prd/PRD_W4.md)
 
 ---
