@@ -6,6 +6,21 @@
 > **우선순위**: P0 — W3 종료 게이트 미통과 직접 차단요인, W4 통합/배포 선결
 > **착수**: W4 Day 1 (2026-06-01 월) · **PR/머지 기한**: 2026-06-02 (화) EOD
 
+## ⏰ 계약 표준 적용 — W4 1~2일차(06-01~06-02) 구성 완료 (각 서비스 이슈 발행됨)
+
+전 서비스 [이벤트 계약 표준(CloudEvent JSON)](../guides/EVENT_CONTRACT_STANDARD.md) 적용 — 05-29 각 레포 이슈 등록:
+
+| 서비스 | 표준 적용 이슈 | 핵심 |
+|--------|--------------|------|
+| platform-svc | [#43](https://github.com/team-project-final/synapse-platform-svc/issues/43) | 수동 Avro→JSON CloudEvent, user-registered 발행 + notification-send 소비, dev→main |
+| engagement-svc | [#13](https://github.com/team-project-final/synapse-engagement-svc/issues/13) | **Consumer 신규**(user-registered/review-completed) + gamification 발행 정렬 |
+| knowledge-svc | [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26) | **Producer 신규**(note-created/updated) — 체인 시작점 |
+| learning-svc | [#32](https://github.com/team-project-final/synapse-learning-svc/issues/32) | learning-card Avro→JSON(`CardReviewed`→`ReviewCompleted`), learning-ai 봉투 정렬 + 알림 발행 |
+
+> 기준: D-002 Option 2(JSON CloudEvent). **이 표준 적용이 아래 모든 구현의 선행.**
+
+---
+
 ## 0. 실측 요약 (05-29, origin 코드 직접 확인)
 
 W3 work-order의 "PR 0/5"는 더 이상 유효하지 않음. 코드 레벨 현황:
