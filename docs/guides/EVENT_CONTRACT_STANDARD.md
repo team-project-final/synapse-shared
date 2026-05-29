@@ -57,7 +57,7 @@ dependencies {
     implementation("io.confluent:kafka-avro-serializer:7.7.0")
 }
 ```
-> 벤더링한 `.avsc`는 **shared 원본과 동일 유지**(임의 수정 금지, 변경은 shared PR로). 향후 §6 라이브러리 발행이 완료되면 `implementation("com.synapse:shared:<ver>")` 의존으로 전환.
+> 벤더링한 `.avsc`는 **shared 원본과 동일 유지**(임의 수정 금지, 변경은 shared PR로). 향후 §6 라이브러리 발행이 완료되면 `implementation("com.synapse:synapse-shared:<ver>")` 의존으로 전환.
 
 ### Python (learning-ai)
 `confluent-kafka[avro]`의 `AvroDeserializer`/`AvroSerializer` + `SchemaRegistryClient`로 **레지스트리에서 스키마를 받아** 직렬화(코드생성 불필요).
@@ -114,11 +114,28 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerialize
 - **스키마 변경**: shared `.avsc` PR → `schema-check.yml`(BACKWARD) 통과 → 각 서비스 재벤더링/재생성.
 - **토픽 생성**: `synapse-shared/scripts/create-kafka-topics.sh` — 신규 토픽(review-due/level-up/badge-earned/notification-send) **추가 완료**. 로컬: `kafka-init`이 자동 생성, 또는 `REPLICATION_FACTOR=1 KAFKA_BROKERS=localhost:9092 bash scripts/create-kafka-topics.sh`.
 
-## 6. 배포 메커니즘 (D-002 §7 선결 — shared/team-lead)
-현재 shared는 **라이브러리로 배포되지 않음**(publish 대상 미설정·소비 가이드 부재). 단기엔 §3 **벤더링**으로 진행하되, 다음을 확정:
-- (a) **Schema Registry를 런타임 단일 출처**로 — shared가 전 스키마를 레지스트리에 등록(BACKWARD), 서비스는 레지스트리에서 소비.
-- (b) shared **Java 라이브러리 발행**(발행 repo 지정) → `com.synapse:shared` 의존으로 전환.
-- svc-template에도 위 설정 배선.
+## 6. 배포 메커니즘 (D-002 §7 — 결정·구현 완료)
+
+**2계층 단일 출처**:
+- **런타임 = Schema Registry** (Confluent). 발행 시 `auto.register.schemas=true`로 등록, 소비 시 메시지 내 schema-id로 fetch. 호환성 `BACKWARD`(compose에 설정). 언어 무관(Java·Python 공통). → 서비스 간 실제 상호운용의 단일 출처.
+- **컴파일 = shared Avro 스키마**. Java 클래스 생성용.
+
+**Java 스키마 소비 — 2가지 (택1)**:
+1. (현행, 즉시) **벤더링**: 필요한 `.avsc`를 복사 + avro 플러그인 codegen (§3).
+2. (권장 전환) **라이브러리 의존** — shared가 **GitHub Packages로 발행**(구현 완료: `build.gradle.kts` publishing + `.github/workflows/publish.yml`, `v*` 태그/수동 트리거). 소비 측:
+   ```kotlin
+   repositories {
+     maven {
+       url = uri("https://maven.pkg.github.com/team-project-final/synapse-shared")
+       credentials { username = githubActor; password = githubToken } // read:packages
+     }
+   }
+   dependencies { implementation("com.synapse:synapse-shared:0.1.0") }  // 생성된 Avro 클래스 포함(검증됨)
+   ```
+**Python(learning-ai)**: 라이브러리 대신 **Schema Registry**에서 직접 소비(§4.2).
+
+> 발행 검증: `./gradlew publishToMavenLocal` → `synapse-shared-0.1.0.jar`에 생성 Avro 클래스 전부 포함 확인(2026-05-29).
+> 선결(잔여): ① org GitHub Packages 활성화 + 최초 태그 발행(v0.1.0) ② svc-template에 위 repositories/dependency 배선 ③ (선택) shared CI에서 스키마 일괄 register.
 
 ## 7. 로컬 검증
 ```bash

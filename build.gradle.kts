@@ -10,7 +10,8 @@ plugins {
 }
 
 group = "com.synapse"
-version = "0.1.0"
+// 발행 버전: 기본 0.1.0, CI에서 태그 기반으로 -PreleaseVersion=x.y.z 오버라이드
+version = (providers.gradleProperty("releaseVersion").orNull ?: "0.1.0")
 
 java {
     toolchain {
@@ -172,5 +173,18 @@ publishing {
         create<MavenPublication>("maven") {
             from(components["java"])
         }
+    }
+    repositories {
+        // GitHub Packages — 소비 측: maven { url = ".../team-project-final/synapse-shared" } + com.synapse:synapse-shared:<ver>
+        maven {
+            name = "GitHubPackages"
+            url = uri("https://maven.pkg.github.com/team-project-final/synapse-shared")
+            credentials {
+                username = System.getenv("GITHUB_ACTOR") ?: (providers.gradleProperty("gpr.user").orNull ?: "")
+                password = System.getenv("GITHUB_TOKEN") ?: (providers.gradleProperty("gpr.token").orNull ?: "")
+            }
+        }
+        // 로컬 검증용(자격증명 불필요): ./gradlew publishMavenPublicationToMavenLocalRepository
+        mavenLocal()
     }
 }

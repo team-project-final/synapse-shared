@@ -93,12 +93,12 @@ PRD의 Registry 요건을 글자 그대로 지켜야 한다면 Option 1. 단 lea
 
 > [NOTIFICATION_TRIGGER_AI_CARDS](./NOTIFICATION_TRIGGER_AI_CARDS.md)의 NotificationSend도 Option 2 채택 시 JSON CloudEvent payload로 단순화(중첩 bytes 불요) → learning-ai 발행이 훨씬 쉬워짐.
 
-## 7. 다음 단계 (비준 후)
-1. 팀 결정: Option 2 vs 1 + (Option 2면) PRD Registry 기준을 JSON Schema 호환으로 재정의 비준.
-2. **배포 메커니즘 확정(근본 원인 해소, 옵션 무관 필수)**: 단일 계약 소스를 실제 소비 가능하게 — (Option 1) Schema Registry를 단일 소스로 + shared 라이브러리 발행 repo·소비 가이드, 또는 (Option 2) shared가 CloudEvent JSON 표준 + JSON Schema를 발행/벤더링 + 소비 가이드. svc-template에도 배선.
-3. shared: CloudEvent 표준 + 이벤트 카탈로그(이름/필드/토픽) 확정 1장.
-4. 각 서비스 work-order에 마이그레이션 항목 반영(§6).
-5. `kafka-e2e-test.sh`를 JSON CloudEvent 검증으로 조정(현재 `"specversion"` 문자열 검사는 JSON에도 유효).
+## 7. 다음 단계
+1. ✅ **결정 완료**: Option 1(Avro + Schema Registry 사수) — §5 상단.
+2. ✅ **배포 메커니즘 구현(근본 원인 해소)**: 런타임=Schema Registry(BACKWARD), 컴파일=shared Avro(벤더링 또는 라이브러리). shared **GitHub Packages 발행 구현**(`build.gradle.kts` + `publish.yml`), `synapse-shared-0.1.0.jar`에 생성 Avro 클래스 포함 검증. → [EVENT_CONTRACT_STANDARD §6](../guides/EVENT_CONTRACT_STANDARD.md).
+3. ✅ shared: 표준 + 이벤트 카탈로그 확정 — [EVENT_CONTRACT_STANDARD §2](../guides/EVENT_CONTRACT_STANDARD.md). 스키마 8+3종 마련(공통메타 포함).
+4. ✅ 각 서비스 work-order/이슈에 마이그레이션 반영 — 이슈 #43/#13/#26/#32.
+5. 잔여: org GitHub Packages 활성화 + 최초 태그 발행(v0.1.0), svc-template 배선, owner 필드 확정(LevelUp/BadgeEarned), `kafka-e2e-test.sh` Avro 검증 강화.
 
 ## 8. 오픈
 - **비준 필요**: Option 선택 + PRD Registry 기준 재정의(Option 2 시).

@@ -1,0 +1,47 @@
+name: Publish shared library (GitHub Packages)
+
+# 이벤트 계약(Avro 스키마) 라이브러리 발행. D-002 §7 배포 메커니즘.
+# 트리거: v* 태그 푸시 또는 수동 실행. 소비 측은 com.synapse:synapse-shared:<ver> 의존으로 전환 가능.
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '발행 버전 (예: 0.1.1)'
+        required: true
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Java 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+          cache: gradle
+
+      - name: Resolve version
+        id: ver
+        run: |
+          RAW="${{ github.event.inputs.version || github.ref_name }}"
+          echo "value=${RAW#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Publish to GitHub Packages
+        run: ./gradlew publishMavenPublicationToGitHubPackagesRepository -PreleaseVersion=${{ steps.ver.outputs.value }} --no-daemon
+        env:
+          GITHUB_ACTOR: ${{ github.actor }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Summary
+        run: |
+          echo "### 발행 완료: com.synapse:synapse-shared:${{ steps.ver.outputs.value }}" >> "$GITHUB_STEP_SUMMARY"
+          echo "소비: repositories { maven { url 'https://maven.pkg.github.com/team-project-final/synapse-shared' } } + implementation(\"com.synapse:synapse-shared:${{ steps.ver.outputs.value }}\")" >> "$GITHUB_STEP_SUMMARY"
