@@ -112,7 +112,7 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerialize
 - **에러 처리**: 역직렬화/검증 실패 → 에러 로그 + skip(크래시 금지). learning-ai는 DLQ.
 - **컨슈머 그룹**: `{서비스명}-svc-group`.
 - **스키마 변경**: shared `.avsc` PR → `schema-check.yml`(BACKWARD) 통과 → 각 서비스 재벤더링/재생성.
-- **토픽 생성**: `synapse-shared/scripts/create-kafka-topics.sh` (신규 토픽 review-due/level-up/badge-earned/notification-send 추가 필요).
+- **토픽 생성**: `synapse-shared/scripts/create-kafka-topics.sh` — 신규 토픽(review-due/level-up/badge-earned/notification-send) **추가 완료**. 로컬: `kafka-init`이 자동 생성, 또는 `REPLICATION_FACTOR=1 KAFKA_BROKERS=localhost:9092 bash scripts/create-kafka-topics.sh`.
 
 ## 6. 배포 메커니즘 (D-002 §7 선결 — shared/team-lead)
 현재 shared는 **라이브러리로 배포되지 않음**(publish 대상 미설정·소비 가이드 부재). 단기엔 §3 **벤더링**으로 진행하되, 다음을 확정:

@@ -16,6 +16,12 @@ TOPICS=(
   "knowledge.note.note-created-v1"
   "knowledge.note.note-updated-v1"
   "learning.card.review-completed-v1"
+  # W4 신규 (이벤트 계약 표준 §2)
+  "learning.card.review-due-v1"
+  "engagement.gamification.level-up-v1"
+  "engagement.gamification.badge-earned-v1"
+  "platform.notification.notification-send-v1"
+  # deprecated (D-001: 카드 등록은 HTTP) — 발행자 없음, 호환 위해 잔존
   "learning.ai.cards-generated-v1"
 )
 
