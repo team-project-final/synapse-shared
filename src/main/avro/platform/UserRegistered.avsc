@@ -4,9 +4,11 @@
   "namespace": "com.synapse.platform",
   "doc": "Emitted when a new user completes registration.",
   "fields": [
+    {"name": "eventId", "type": "string", "default": "", "doc": "Unique event ID (UUID) — idempotency key (common meta, EVENT_CONTRACT_STANDARD §1)"},
     {"name": "userId", "type": "string", "doc": "UUID of the newly registered user"},
     {"name": "email", "type": "string", "doc": "User email address"},
     {"name": "tenantId", "type": "string", "doc": "Tenant the user belongs to"},
-    {"name": "registeredAt", "type": "string", "doc": "ISO-8601 registration timestamp"}
+    {"name": "registeredAt", "type": "string", "doc": "ISO-8601 registration timestamp"},
+    {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 0, "doc": "Event emission time (epoch millis) — common meta"}
   ]
 }

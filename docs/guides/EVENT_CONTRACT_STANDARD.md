@@ -126,9 +126,9 @@ bash scripts/kafka-e2e-test.sh --scenarios   # synapse-shared 레포
 ```
 
 ## 8. 미확정(owner 합의)
-1. `LevelUp`/`BadgeEarned` **도메인 필드 확정**(engagement) — `.avsc` **초안 추가됨**(`src/main/avro/engagement/`, 도메인 필드는 `[제안]` 표기), 확정만 필요.
-2. `NoteCreated.title` 포함 여부(knowledge·learning-ai).
-3. 공통 메타 필드(`eventId`,`occurredAt`)를 **기존** shared `.avsc`(NoteCreated/NoteUpdated/ReviewCompleted/UserRegistered 등)에 추가 — 현재 누락, shared PR. (신규 3종 CardReviewDue/LevelUp/BadgeEarned은 이미 포함.)
-4. Schema Registry 로컬 포트 통일(8086 vs 8081 혼재).
+1. `LevelUp`/`BadgeEarned` **도메인 필드 확정**(engagement) — `.avsc` **초안 추가됨**(`src/main/avro/engagement/`, 도메인 필드는 `[제안]` 표기), 확정만 필요. (owner 결정 항목)
+2. `NoteCreated.title`/`deckId` 채움 정책(knowledge·learning-ai) — 스키마엔 `title`(필수)·`deckId`(nullable) 포함됨. 실제 값 채움 여부는 owner 결정.
+3. ✅ **완료** — 공통 메타(`eventId`,`occurredAt`)를 기존 shared `.avsc`(UserRegistered/NoteCreated/NoteUpdated/ReviewCompleted)에 추가(default 포함, BACKWARD 안전). 신규 3종도 포함. `generateAvroJava` 컴파일 확인.
+4. ✅ **정리** — Schema Registry 포트: **host `8086` → container `8081`**(compose `${SCHEMA_REGISTRY_PORT:-8086}:8081`, compatibility BACKWARD). 서비스는 `SCHEMA_REGISTRY_URL` 기본값 `http://localhost:8086`(컨테이너 내부는 `http://schema-registry:8081`) 사용 — 이슈 yaml에 반영됨.
 
-> **신규 스키마 추가됨(2026-05-29, 초안)**: `learning.CardReviewDue`(learning-card 기존 승격), `engagement.LevelUp`, `engagement.BadgeEarned` — `generateAvroJava` 컴파일 확인. 도메인 필드는 owner 확정 후 PR로 fix.
+> **신규 스키마 추가됨(2026-05-29, 초안)**: `learning.CardReviewDue`(learning-card 기존 승격), `engagement.LevelUp`, `engagement.BadgeEarned`. **기존 4종에 eventId/occurredAt 공통메타 보강 완료** — `generateAvroJava` 전체 컴파일 확인. 도메인 필드(`[제안]`)는 owner 확정 후 PR로 fix.
