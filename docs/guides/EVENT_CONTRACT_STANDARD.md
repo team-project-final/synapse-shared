@@ -1,132 +1,132 @@
-# Synapse 이벤트 계약 표준 (CloudEvent JSON) — 초안
+# Synapse 이벤트 계약 표준 (Avro + Schema Registry) — 초안
 
-> **작성일**: 2026-05-29 · **작성자**: @team-lead · **상태**: 초안(팀 비준 대기)
-> **결정 근거**: [D-002_SCHEMA_FAMILY_DECISION](../designs/D-002_SCHEMA_FAMILY_DECISION.md) Option 2 채택안
-> **⏰ 구성 완료 기한: W4 1~2일차 (2026-06-01 ~ 06-02)** — 이후 통합/E2E·배포 일정이 여기에 의존
+> **작성일**: 2026-05-29 · **갱신**: 2026-05-29(방향 전환) · **작성자**: @team-lead · **상태**: 초안
+> **결정**: [D-002](../designs/D-002_SCHEMA_FAMILY_DECISION.md) **Option 1 채택 — Avro + Confluent Schema Registry 사수** (PRD "모든 producer 토픽 Registry BACKWARD 등록" 준수)
+> **⏰ 구성 완료 기한: W4 1~2일차 (2026-06-01 ~ 06-02)** — 이후 통합/E2E·배포가 여기에 의존
 
 ---
 
 ## 0. 왜 이 표준이 필요한가 (한 문단)
 
-지금 각 서비스가 Kafka 메시지를 **서로 다른 형식**(누구는 Avro, 누구는 JSON, 필드 이름도 제각각)으로 보내고 있어 **A 서비스가 보낸 메시지를 B 서비스가 읽지 못한다**. 이 문서는 **모든 서비스가 똑같이 따르는 단 하나의 메시지 형식**을 정한다. 이대로만 맞추면 서비스끼리 이벤트가 오간다.
+지금 각 서비스가 Kafka 메시지를 **서로 다른 형식**(누구는 Confluent Avro, 누구는 수동 Avro, 누구는 JSON)으로 보내 **서로 못 읽는다**. 이 문서는 **모든 서비스가 똑같이 따르는 단 하나의 형식 = Avro + Schema Registry**를 정한다. 스키마 정의의 단일 출처는 **synapse-shared**다.
 
 핵심 3가지:
-1. **봉투(Envelope)**: 모든 메시지는 아래 CloudEvent JSON 형태로 감싼다.
-2. **카탈로그**: 어떤 토픽에 어떤 이벤트를, 누가 보내고 누가 받는지 표로 고정.
-3. **Kafka 설정**: 직렬화는 **JSON(문자열)**, 컨슈머 그룹·키 규칙 통일.
+1. **스키마 출처**: 모든 이벤트 Avro 스키마(`.avsc`)는 **synapse-shared가 소유**(`src/main/avro/`). 서비스는 이를 가져다 쓴다(§3).
+2. **직렬화**: **Confluent `KafkaAvroSerializer`/`KafkaAvroDeserializer` + Schema Registry**(호환성 `BACKWARD`).
+3. **카탈로그**: 토픽·이벤트·필드·발행/소비를 표로 고정(§2). 토픽당 1개 Avro 레코드(타입드).
 
 ---
 
-## 1. CloudEvent JSON 봉투 (모든 메시지 공통)
+## 1. 메시지 형식 (Avro 레코드)
 
-메시지 value는 **항상 이 JSON 한 덩어리**다. 실제 데이터는 `data` 안에 넣는다.
-
-```json
-{
-  "specversion": "1.0",
-  "id": "9f1c...uuid",                         // 이벤트 고유 ID(UUID) — 중복처리 기준
-  "source": "knowledge-svc",                   // 보낸 서비스 이름
-  "type": "com.synapse.knowledge.NoteCreated", // 이벤트 종류
-  "subject": "note/123",                       // (선택) 대상 식별
-  "time": "2026-06-01T09:00:00Z",              // RFC3339 문자열(UTC)
-  "tenantid": "tenant-uuid",                   // 테넌트 ID
-  "datacontenttype": "application/json",
-  "traceparent": null,                         // (선택) 분산추적
-  "data": {                                    // ▼ 이벤트별 실제 내용(아래 §2)
-    "noteId": "123", "userId": "u1", "tenantId": "tenant-uuid", "deckId": "d1", "title": "..."
-  }
-}
-```
-
-규칙:
-- 필드 이름은 **camelCase**로 통일한다(예: `userId`, `noteId`). Python(learning-ai)은 내부 snake_case ↔ 직렬화 시 camelCase로 매핑.
-- `time`은 문자열(RFC3339, UTC `Z`). (숫자 timestamp 금지 — 기존 platform `long` 방식은 이 표준으로 교체)
-- `data` 안 필드는 §2 카탈로그를 따른다.
+- **토픽당 value = 단일 Avro 레코드**(bare typed record). 별도 `data:bytes` 중첩 봉투는 **금지**(레지스트리가 페이로드를 검증 못 함).
+- 네임스페이스는 **`com.synapse.*`** 로 통일(예: `com.synapse.knowledge.NoteCreated`). 기존 상이 네임스페이스(`com.synapse.event.*`, `com.synapse.learning.event`)·이벤트명(`CardReviewed`)은 본 표준으로 정렬.
+- **공통 메타 필드**(모든 이벤트 레코드 필수): `eventId`(string, UUID — 멱등성 키), `tenantId`(string), `occurredAt`(long, timestamp-millis). + 선택 `traceparent`(["null","string"]).
+- 시간 표현: `*-At` 필드는 `long`(timestamp-millis) 권장.
 
 ---
 
 ## 2. 토픽 & 이벤트 카탈로그 (고정)
 
-| 토픽 | type | Producer | Consumer | `data` 필드 |
-|------|------|----------|----------|-------------|
-| `platform.auth.user-registered-v1` | `...platform.UserRegistered` | platform | engagement | userId, tenantId, email, displayName, registeredAt |
-| `knowledge.note.note-created-v1` | `...knowledge.NoteCreated` | knowledge | learning-ai | noteId, userId, tenantId, deckId, title |
-| `knowledge.note.note-updated-v1` | `...knowledge.NoteUpdated` | knowledge | learning-ai | noteId, userId, tenantId, title, updatedAt |
-| `learning.card.review-completed-v1` | `...learning.ReviewCompleted` | learning-card | engagement | userId, tenantId, cardId, rating(AGAIN\|HARD\|GOOD\|EASY), nextReviewAt, reviewedAt |
-| `learning.card.review-due-v1` | `...learning.CardReviewDue` | learning-card | platform(알림, W4) | userId, tenantId, dueCardCount, dueDate |
-| `engagement.gamification.level-up-v1` | `...engagement.LevelUp` | engagement | platform(알림, W4) | userId, tenantId, newLevel *(필드 owner 확정)* |
-| `engagement.gamification.badge-earned-v1` | `...engagement.BadgeEarned` | engagement | platform(알림, W4) | userId, tenantId, badgeId *(필드 owner 확정)* |
-| `platform.notification.notification-send-v1` | `...platform.NotificationSend` | 다수(learning-ai 등) | platform | userId, tenantId, notificationType, channels[], title, body, emailSubject?, emailHtmlBody? |
+| 토픽 | Avro 레코드 (`com.synapse.*`) | Producer | Consumer | 도메인 필드(공통 메타 외) |
+|------|------|----------|----------|------------|
+| `platform.auth.user-registered-v1` | `platform.UserRegistered` | platform | engagement | userId, email, displayName |
+| `knowledge.note.note-created-v1` | `knowledge.NoteCreated` | knowledge | learning-ai | noteId, userId, deckId, title |
+| `knowledge.note.note-updated-v1` | `knowledge.NoteUpdated` | knowledge | learning-ai | noteId, userId, title |
+| `learning.card.review-completed-v1` | `learning.ReviewCompleted` | learning-card | engagement | userId, cardId, rating(AGAIN\|HARD\|GOOD\|EASY), nextReviewAt |
+| `learning.card.review-due-v1` | `learning.CardReviewDue` | learning-card | platform(알림,W4) | userId, dueCardCount, dueDate |
+| `engagement.gamification.level-up-v1` | `engagement.LevelUp` | engagement | platform(알림,W4) | userId, newLevel *(owner 확정)* |
+| `engagement.gamification.badge-earned-v1` | `engagement.BadgeEarned` | engagement | platform(알림,W4) | userId, badgeId *(owner 확정)* |
+| `platform.notification.notification-send-v1` | `platform.NotificationSend` | 다수(learning-ai 등) | platform | userId, notificationType, channels[], title, body, emailSubject?, emailHtmlBody? |
 
-> ❌ `learning.ai.cards-generated-v1`은 **제외** — 카드 등록은 HTTP로 처리([D-001](../guides/EVENT_FLOW_MATRIX.md)). 노트 본문이 필요한 경우 learning-ai가 `note_client`(HTTP)로 조회.
-> ⚠️ 이벤트명/필드는 본 표준이 단일 출처. 기존 상이 명칭(예: learning-card `CardReviewed` → `ReviewCompleted`)은 본 표로 정렬.
+> ❌ `learning.ai.cards-generated-v1` 제외 — 카드 등록은 HTTP([D-001](./EVENT_FLOW_MATRIX.md)). 노트 본문은 learning-ai가 `note_client`(HTTP)로 조회.
+> ⚠️ 레코드명/필드 단일 출처 = synapse-shared `src/main/avro/`. 변경은 PR + `schema-check`(BACKWARD) 통과 필요.
 
 ---
 
-## 3. Kafka 설정 (복붙용)
+## 3. synapse-shared 스키마 사용법
 
-### 3.1 Java (Spring Boot) — `application.yml`
+**스키마 출처**: synapse-shared `src/main/avro/**/*.avsc` (단일 출처). 가져오는 방법 2가지:
 
+### (현행 권장) .avsc 벤더링 + Avro 플러그인 코드생성 — Java
+shared 라이브러리가 아직 레포에 배포되지 않으므로(아래 §6), **필요한 `.avsc`를 자기 서비스 `src/main/avro/`로 복사**하고 Gradle Avro 플러그인으로 클래스 생성:
+```kotlin
+plugins { id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1" }
+dependencies {
+    implementation("org.apache.avro:avro:1.12.0")
+    implementation("io.confluent:kafka-avro-serializer:7.7.0")
+}
+```
+> 벤더링한 `.avsc`는 **shared 원본과 동일 유지**(임의 수정 금지, 변경은 shared PR로). 향후 §6 라이브러리 발행이 완료되면 `implementation("com.synapse:shared:<ver>")` 의존으로 전환.
+
+### Python (learning-ai)
+`confluent-kafka[avro]`의 `AvroDeserializer`/`AvroSerializer` + `SchemaRegistryClient`로 **레지스트리에서 스키마를 받아** 직렬화(코드생성 불필요).
+
+---
+
+## 4. Kafka 설정 (복붙용)
+
+### 4.1 Java (Spring Boot) `application.yml`
 ```yaml
 spring:
   kafka:
-    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}   # 로컬 compose 내부는 kafka:29092
+    bootstrap-servers: ${KAFKA_BOOTSTRAP_SERVERS:localhost:9092}        # compose 내부: kafka:29092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.apache.kafka.common.serialization.StringSerializer   # JSON 문자열 직접 전송
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       acks: all
+      properties:
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8086}   # compose 내부: http://schema-registry:8081
+        auto.register.schemas: true
     consumer:
-      group-id: <서비스명>-svc-group       # 예: engagement-svc-group
+      group-id: <서비스명>-svc-group
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: io.confluent.kafka.serializers.KafkaAvroDeserializer
       auto-offset-reset: earliest
+      properties:
+        schema.registry.url: ${SCHEMA_REGISTRY_URL:http://localhost:8086}
+        specific.avro.reader: true     # 생성된 SpecificRecord로 역직렬화
 ```
+- 메시지 **key = `tenantId`**(같은 테넌트 순서 보장). subject = `<topic>-value`(기본 TopicNameStrategy), 호환 `BACKWARD`.
 
-- value는 **StringSerializer**로 두고, CloudEvent 객체 ↔ JSON 문자열 변환은 **Jackson `ObjectMapper`** 로 직접 한다(서비스 간 타입 헤더 의존 제거 → 언어 무관 호환).
-- 메시지 **key = `tenantId`**(또는 집계 루트 ID) — 같은 테넌트 이벤트 순서 보장.
+발행/소비 예:
+```java
+kafkaTemplate.send("knowledge.note.note-created-v1", tenantId, noteCreated); // NoteCreated = 생성된 SpecificRecord
 
-발행 예:
-```java
-String json = objectMapper.writeValueAsString(cloudEvent);   // CloudEvent → JSON
-kafkaTemplate.send("knowledge.note.note-created-v1", tenantId, json);
-```
-소비 예:
-```java
 @KafkaListener(topics = "platform.auth.user-registered-v1", groupId = "engagement-svc-group")
-public void on(String json) {
-    CloudEvent ev = objectMapper.readValue(json, CloudEvent.class);
-    // ev.data 처리 (멱등성: ev.id 중복 체크)
-}
+public void on(UserRegistered ev) { /* ev.getEventId() 중복 체크 후 처리 */ }
 ```
 
-### 3.2 Python (FastAPI, learning-ai) — 이미 JSON 사용 중
-
+### 4.2 Python (learning-ai)
 ```python
-# 발행
-await producer.send_and_wait(topic, json.dumps(cloud_event).encode("utf-8"), key=tenant_id.encode())
-# 소비 (기존 consumer.py 유지) — 봉투에서 data 추출 후 처리
+from confluent_kafka.schema_registry import SchemaRegistryClient
+from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerializer
+# SchemaRegistryClient({'url': SCHEMA_REGISTRY_URL}) 로 subject 스키마 fetch
 ```
-- 내부 모델은 snake_case 유지하되, **봉투/`data` 직렬화 시 camelCase**로 매핑(alias).
+- consumer group = `learning-ai-svc-group`.
 
 ---
 
-## 4. 공통 규칙
+## 5. 공통 규칙
+- **멱등성**: `eventId`로 중복 처리 방지(이미 처리한 id는 skip). 예: 동일 reviewId 재수신 시 XP 중복 적립 금지.
+- **에러 처리**: 역직렬화/검증 실패 → 에러 로그 + skip(크래시 금지). learning-ai는 DLQ.
+- **컨슈머 그룹**: `{서비스명}-svc-group`.
+- **스키마 변경**: shared `.avsc` PR → `schema-check.yml`(BACKWARD) 통과 → 각 서비스 재벤더링/재생성.
+- **토픽 생성**: `synapse-shared/scripts/create-kafka-topics.sh` (신규 토픽 review-due/level-up/badge-earned/notification-send 추가 필요).
 
-- **멱등성**: 컨슈머는 `envelope.id`(이벤트 ID)로 중복 처리 방지(이미 처리한 id는 skip). 예: 동일 reviewId 재수신 시 XP 중복 적립 금지.
-- **에러 처리**: 역직렬화/검증 실패 → **에러 로그 + 메시지 skip**(서비스 크래시 금지). learning-ai는 DLQ로 보냄.
-- **컨슈머 그룹**: `{서비스명}-svc-group` 고정.
-- **토픽 생성**: 로컬은 `synapse-shared/scripts/create-kafka-topics.sh`. 신규 토픽(`review-due`, `level-up`, `badge-earned`, `notification-send`)은 이 스크립트에 추가 필요.
+## 6. 배포 메커니즘 (D-002 §7 선결 — shared/team-lead)
+현재 shared는 **라이브러리로 배포되지 않음**(publish 대상 미설정·소비 가이드 부재). 단기엔 §3 **벤더링**으로 진행하되, 다음을 확정:
+- (a) **Schema Registry를 런타임 단일 출처**로 — shared가 전 스키마를 레지스트리에 등록(BACKWARD), 서비스는 레지스트리에서 소비.
+- (b) shared **Java 라이브러리 발행**(발행 repo 지정) → `com.synapse:shared` 의존으로 전환.
+- svc-template에도 위 설정 배선.
 
-## 5. 로컬 검증
-
+## 7. 로컬 검증
 ```bash
-# synapse-shared 레포에서 — 토픽별 발행/소비 라운드트립
-bash scripts/kafka-e2e-test.sh --scenarios
+bash scripts/kafka-e2e-test.sh --scenarios   # synapse-shared 레포
 ```
-- `"specversion"` 문자열 검증은 JSON CloudEvent에도 그대로 유효.
 
-## 6. 미확정(owner 합의 필요)
-
-1. `LevelUp`/`BadgeEarned` `data` 필드 확정(engagement owner).
-2. `NoteCreated` `title` 포함 여부(없으면 learning-ai가 전부 HTTP 조회) — knowledge·learning-ai 합의.
-3. 신규 토픽 4종 파티션/보존 설정.
+## 8. 미확정(owner 합의)
+1. `LevelUp`/`BadgeEarned` 필드 확정(engagement).
+2. `NoteCreated.title` 포함 여부(knowledge·learning-ai).
+3. 공통 메타 필드(`eventId`,`occurredAt`)를 기존 shared `.avsc`에 추가(현재 일부 누락) — shared PR.
+4. Schema Registry 로컬 포트 통일(8086 vs 8081 혼재).

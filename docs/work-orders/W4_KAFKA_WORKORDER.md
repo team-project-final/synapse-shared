@@ -8,16 +8,16 @@
 
 ## ⏰ 계약 표준 적용 — W4 1~2일차(06-01~06-02) 구성 완료 (각 서비스 이슈 발행됨)
 
-전 서비스 [이벤트 계약 표준(CloudEvent JSON)](../guides/EVENT_CONTRACT_STANDARD.md) 적용 — 05-29 각 레포 이슈 등록:
+전 서비스 [이벤트 계약 표준(Avro + Schema Registry)](../guides/EVENT_CONTRACT_STANDARD.md) 적용 — 05-29 각 레포 이슈 등록:
 
 | 서비스 | 표준 적용 이슈 | 핵심 |
 |--------|--------------|------|
-| platform-svc | [#43](https://github.com/team-project-final/synapse-platform-svc/issues/43) | 수동 Avro→JSON CloudEvent, user-registered 발행 + notification-send 소비, dev→main |
-| engagement-svc | [#13](https://github.com/team-project-final/synapse-engagement-svc/issues/13) | **Consumer 신규**(user-registered/review-completed) + gamification 발행 정렬 |
-| knowledge-svc | [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26) | **Producer 신규**(note-created/updated) — 체인 시작점 |
-| learning-svc | [#32](https://github.com/team-project-final/synapse-learning-svc/issues/32) | learning-card Avro→JSON(`CardReviewed`→`ReviewCompleted`), learning-ai 봉투 정렬 + 알림 발행 |
+| platform-svc | [#43](https://github.com/team-project-final/synapse-platform-svc/issues/43) | 수동 Avro→**Confluent Avro+Registry**(`com.synapse.platform`), user-registered 발행 + notification-send 소비, dev→main |
+| engagement-svc | [#13](https://github.com/team-project-final/synapse-engagement-svc/issues/13) | **JSON(StringSerializer)→Confluent Avro**, **Consumer 신규**(user-registered/review-completed) + gamification 발행 정렬 |
+| knowledge-svc | [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26) | **Producer 신규**(note-created/updated, shared Avro) — 체인 시작점 |
+| learning-svc | [#32](https://github.com/team-project-final/synapse-learning-svc/issues/32) | learning-card 정렬(`CardReviewed`→`ReviewCompleted`, `com.synapse.learning`), **learning-ai JSON→Avro** + 알림 발행 |
 
-> 기준: D-002 Option 2(JSON CloudEvent). **이 표준 적용이 아래 모든 구현의 선행.**
+> 기준: D-002 **Option 1(Avro + Schema Registry 사수)**. **이 표준 적용이 아래 모든 구현의 선행.**
 
 ---
 

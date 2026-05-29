@@ -2,7 +2,7 @@
 
 > **작성일**: 2026-05-29
 > **작성자**: @team-lead
-> **상태**: 🔴 분석 완료 · 팀 비준 대기 (전 서비스 영향 — 단독 확정 불가)
+> **상태**: ✅ **결정 — Option 1(Avro + Schema Registry 사수) 채택** (2026-05-29, 팀장). PRD "Registry BACKWARD 등록" 준수. 표준: [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md). 배포 메커니즘(§7)은 선결 과제로 진행.
 > **관련**: [NOTIFICATION_TRIGGER_AI_CARDS](./NOTIFICATION_TRIGGER_AI_CARDS.md) · [EVENT_FLOW_MATRIX](../guides/EVENT_FLOW_MATRIX.md) · [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md)
 
 ---
@@ -61,9 +61,11 @@
 ### Option 3 — 현상 유지 + 엣지별 어댑터
 - **기각**: N×M 변환 유지비, 디버깅 지옥, 마감 내 위험.
 
-## 5. 권고
+## 5. 권고 (분석 시점) → ✅ 최종 결정: Option 1
 
-### 🥇 권고: **Option 2 (JSON CloudEvent)** — 단, 팀 비준 필요
+> **최종 결정(2026-05-29, 팀장): Option 1 (Avro + Schema Registry 사수) 채택.** 아래 분석은 마감 리스크 기준으로 Option 2를 권고했으나, **PRD "모든 producer 토픽 Registry BACKWARD 등록" 준수**를 우선해 Option 1로 확정. 이에 따라 §6 마이그레이션(Option 2용)은 **무효**이며, 실제 적용은 [EVENT_CONTRACT_STANDARD §3·§4](../guides/EVENT_CONTRACT_STANDARD.md)(Avro 사용법) + 각 서비스 이슈(#43/#13/#26/#32)를 따른다. learning-ai의 Python Avro 전환 마찰은 감수하며, 배포 메커니즘(§7)을 선결로 해소.
+
+### 🥈 (참고·분석 시점 권고) Option 2 (JSON CloudEvent)
 
 근거:
 1. **마감(06-15) 현실**: 2주·4레포·다팀. Option 2는 변경 표면이 가장 작다(learning-card·platform만 직렬화기 교체; engagement·learning-ai 거의 유지; greenfield는 신규라 비용 동일).
@@ -76,7 +78,9 @@
 ### 🥈 대안: **Option 1 (Confluent Avro)** — "Registry 사수가 비협상"일 때
 PRD의 Registry 요건을 글자 그대로 지켜야 한다면 Option 1. 단 learning-ai Python Avro + 3레포 개편 비용을 마감 내 감수해야 함.
 
-## 6. 권고안(Option 2) 채택 시 마이그레이션
+## 6. (무효 — Option 1 채택으로 대체) Option 2 채택 시 마이그레이션
+
+> ⚠️ Option 1 확정으로 본 절은 적용 안 함. Avro 마이그레이션은 [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md) + 이슈 참조. (분석 보존용으로만 남김.)
 
 | 서비스 | 변경 | 규모 |
 |--------|------|:----:|
