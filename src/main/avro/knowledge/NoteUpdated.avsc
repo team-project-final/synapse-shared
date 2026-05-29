@@ -10,6 +10,6 @@
     {"name": "tenantId", "type": "string", "doc": "Tenant identifier"},
     {"name": "title", "type": "string", "doc": "Note title"},
     {"name": "updatedAt", "type": "string", "doc": "ISO-8601 update timestamp"},
-    {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 0, "doc": "Event emission time (epoch millis) — common meta"}
+    {"name": "occurredAt", "type": "long", "default": 0, "doc": "Event emission time (epoch millis) — common meta"}
   ]
 }

@@ -10,6 +10,6 @@
     {"name": "newLevel", "type": "int", "default": 0, "doc": "[제안] 도달한 새 레벨"},
     {"name": "previousLevel", "type": "int", "default": 0, "doc": "[제안] 이전 레벨"},
     {"name": "totalXp", "type": "long", "default": 0, "doc": "[제안] 누적 XP"},
-    {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
+    {"name": "occurredAt", "type": "long", "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
   ]
 }

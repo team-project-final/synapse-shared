@@ -9,6 +9,6 @@
     {"name": "userId", "type": "string", "default": "", "doc": "복습 대상 사용자 UUID (파티션 키)"},
     {"name": "dueCardCount", "type": "int", "default": 0, "doc": "오늘 복습할 카드 수"},
     {"name": "dueDate", "type": "string", "default": "", "doc": "기준 날짜 (yyyy-MM-dd, KST)"},
-    {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
+    {"name": "occurredAt", "type": "long", "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
   ]
 }

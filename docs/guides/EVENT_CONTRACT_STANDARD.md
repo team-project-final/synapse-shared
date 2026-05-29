@@ -21,8 +21,8 @@
 
 - **토픽당 value = 단일 Avro 레코드**(bare typed record). 별도 `data:bytes` 중첩 봉투는 **금지**(레지스트리가 페이로드를 검증 못 함).
 - 네임스페이스는 **`com.synapse.*`** 로 통일(예: `com.synapse.knowledge.NoteCreated`). 기존 상이 네임스페이스(`com.synapse.event.*`, `com.synapse.learning.event`)·이벤트명(`CardReviewed`)은 본 표준으로 정렬.
-- **공통 메타 필드**(모든 이벤트 레코드 필수): `eventId`(string, UUID — 멱등성 키), `tenantId`(string), `occurredAt`(long, timestamp-millis). + 선택 `traceparent`(["null","string"]).
-- 시간 표현: `*-At` 필드는 `long`(timestamp-millis) 권장.
+- **공통 메타 필드**(모든 이벤트 레코드 필수): `eventId`(string, UUID — 멱등성 키), `tenantId`(string), `occurredAt`(**평문 `long`, epoch millis**). + 선택 `traceparent`(["null","string"]).
+- 시간 표현: 이벤트 발행시각 `occurredAt`은 **평문 `long`(epoch millis)** — `logicalType: timestamp-millis` **미사용**(콘솔 도구/폴리글랏 호환성; 물리 타입은 동일 `long`이라 wire 호환). 도메인 시각(`createdAt` 등)은 ISO-8601 `string`.
 
 ---
 
@@ -140,8 +140,11 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerialize
 
 ## 7. 로컬 검증
 ```bash
-bash scripts/kafka-e2e-test.sh --scenarios   # synapse-shared 레포
+docker compose up -d zookeeper kafka schema-registry kafka-init   # 사전: Kafka+Registry 기동
+bash scripts/kafka-e2e-test.sh --avro          # 실제 Avro 라운드트립(계약 검증, 권장)
+bash scripts/kafka-e2e-test.sh --scenarios     # transport 스모크
 ```
+> ✅ **라이브 검증(2026-05-29)**: `--avro` **8/8 PASSED** — 8개 토픽 Avro produce→consume 라운드트립 + subject `<topic>-value` 자동 등록(전역 BACKWARD). user-registered는 v1(구)→v2(현) 등록이 수락되어 `occurredAt` logicalType→long 변경의 BACKWARD 호환도 입증.
 
 ## 8. 미확정(owner 합의)
 1. `LevelUp`/`BadgeEarned` **도메인 필드 확정**(engagement) — `.avsc` **초안 추가됨**(`src/main/avro/engagement/`, 도메인 필드는 `[제안]` 표기), 확정만 필요. (owner 결정 항목)

@@ -10,6 +10,6 @@
     {"name": "badgeId", "type": "string", "default": "", "doc": "[제안] 배지 식별자(UUID)"},
     {"name": "badgeCode", "type": "string", "default": "", "doc": "[제안] 배지 코드(예: STREAK_7, FIRST_NOTE)"},
     {"name": "badgeName", "type": ["null", "string"], "default": null, "doc": "[제안] 배지 표시명"},
-    {"name": "occurredAt", "type": {"type": "long", "logicalType": "timestamp-millis"}, "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
+    {"name": "occurredAt", "type": "long", "default": 0, "doc": "이벤트 발행 시각 (epoch millis, 공통 메타)"}
   ]
 }
