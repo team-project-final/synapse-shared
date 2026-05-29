@@ -56,14 +56,14 @@
 - [x] 실패 테스트 원인 분석 및 담당자 배정 — D-1(stale ZK znode)·D-2(샘플 line-split) 분석·해결 → `E2E_BASELINE_W3.md`
 
 ### 1.9 코드 리뷰 조율
-- [ ] 각 서비스 PR 리뷰 현황 취합
-- [ ] 크로스 서비스 영향도 리뷰 (이벤트 스키마 호환성)
-- [ ] PR 승인 및 main 브랜치 머지 조율
+- [x] 각 서비스 PR 리뷰 현황 취합 — cross-repo 실측(05-29): learning main 머지 / platform·engagement dev / knowledge 미구현
+- [x] 크로스 서비스 영향도 리뷰 (이벤트 스키마 호환성) — **스키마 패밀리 분기(D-002) 발견 → Avro 사수 결정 + 이벤트 계약 표준 수립**(`EVENT_CONTRACT_STANDARD.md`). cards-generated HTTP 드리프트 정정(D-001)
+- [ ] PR 승인 및 main 브랜치 머지 조율 — 계약 표준 적용 이슈 발행(#43/#13/#26/#32), 머지는 W4
 
 ### 1.10 결과 정리
-- [ ] E2E 테스트 결과 리포트 작성
-- [ ] 미해결 이슈 목록화 및 우선순위 지정
-- [ ] RULE Reference → TASK 반영
+- [x] E2E 테스트 결과 리포트 작성 → `docs/reports/E2E_REPORT_W3.md` + 종료 게이트 `W3_EXIT_GATE.md`(미통과 1/5)
+- [x] 미해결 이슈 목록화 및 우선순위 지정 → `W4_KAFKA_WORKORDER.md`(knowledge P0·engagement P0·platform P1) + 서비스 이슈 4건
+- [x] RULE Reference → TASK 반영 (Security 2차 Constraints 등)
 
 **Step 7 Status**: [ ] Not Started / [x] In Progress / [ ] Done
 

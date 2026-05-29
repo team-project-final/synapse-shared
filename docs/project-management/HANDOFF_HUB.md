@@ -39,11 +39,13 @@
 
 | 항목 | 상태 |
 |---|---|
-| Avro 스키마 8개 | ✅ BACKWARD 호환 |
-| 토픽 5개 (로컬 Kafka) | ✅ 생성 + E2E round-trip 검증 (`--all` 5/5, `--full` 13/13) |
-| MSK 토픽 (EKS) | ⏳ destroy — 재기동 후 재생성 |
-| 로컬 E2E harness | ✅ CloudEvent 페이로드 단위 검증 신뢰 가능 (D-2 해결) |
-| 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 확정(D-001). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
+| **이벤트 계약 표준** | ✅ 수립 — Avro + Schema Registry (D-002 Option 1). [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md) |
+| Avro 스키마 | ✅ 이벤트 11종(기존 보강 + 신규 CardReviewDue/LevelUp/BadgeEarned/NotificationSend), 공통메타 적용, generateAvroJava 컴파일. BACKWARD |
+| 토픽 (로컬 Kafka) | ✅ 8종 생성(신규 4종 추가: review-due/level-up/badge-earned/notification-send) + round-trip 검증 |
+| MSK 토픽 (EKS) | ⏳ destroy — 재기동 후 재생성(스크립트 반영됨) |
+| 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
+| 라이브러리 발행 | ✅ 구현 — GitHub Packages `com.synapse:synapse-shared`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). 잔여: org Packages 활성화 + v0.1.0 태그 발행 |
+| 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 확정(D-001). 전 서비스 계약 표준 적용 이슈 발행(#43/#13/#26/#32). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
 
 ---
 

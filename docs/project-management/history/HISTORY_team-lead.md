@@ -33,7 +33,7 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | harness(--full 13/13)·Security 2차·스키마 리뷰·E2E 리포트·시나리오 스캐폴딩 완료. 서비스 단위 E2E는 Kafka 부분구현(learning main·platform/engagement dev·knowledge 미구현)으로 차단 |
+| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | harness(--full 13/13, +`--avro`)·Security 2차·스키마 리뷰·E2E/게이트 리포트 완료. **이벤트 계약 표준(Avro/D-002) 수립 + 스키마·토픽·라이브러리 발행 정비 + 서비스 이슈 4건**. 서비스 단위 E2E는 Kafka 부분구현(learning main·platform/engagement dev·knowledge 미구현)으로 차단 |
 | Step 8 | ArgoCD dev/staging 배포 검증 | In Progress | 05-22 | — | 배포 전략·승인·롤백 절차 정의 완료(DEPLOY_REPORT §A~C). 실배포 검증은 EKS destroy로 보류(재기동 후) |
 
 **W3 진행률**: 0/2 Steps 완료 — shared 측 설계·전제·검증(harness/스키마/Security/리포트)은 완료, 그러나 **종료 게이트 미통과(1/5)**. 실행(서비스 E2E·배포)은 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월
@@ -201,9 +201,17 @@
   - **[게이트]** W3 종료 게이트 평가 — **미통과(1/5)**, 차단=서비스 Kafka 미완성(실측 반영) (`docs/reports/W3_EXIT_GATE.md`)
   - **[문서]** 프로젝트 관리 문서 W3 현행화 + W1~W4 날짜·요일 정합성 정정 (커밋 b97e99a)
   - **[cross-repo]** 전체 레포 fetch/pull 최신화 + Kafka 구현 **실측** — "PR 0/5" 폐기. learning-svc main 머지(#26, card 완전·ai consumer), platform·engagement는 **dev 미머지**, **knowledge 미구현**. cards-generated 경로 **HTTP 대체** 발견 → 추적 문서 6종 현행화 + [W4_KAFKA_WORKORDER.md](../../work-orders/W4_KAFKA_WORKORDER.md) 발행
+  - **[D-001]** cards-generated **HTTP 채택 확정** + EVENT_FLOW_MATRIX 정정 + AI카드 알림 트리거 설계(platform 알림 버스 notification-send-v1 재사용 — `NOTIFICATION_TRIGGER_AI_CARDS.md`)
+  - **[D-002]** 스키마 패밀리 분기 발견(5서비스 4방식: Confluent-Avro/수동-Avro/JSON×2, shared 라이브러리 **고아=아무도 미사용**) → **Avro + Schema Registry 사수 결정**(Option 1, `D-002_SCHEMA_FAMILY_DECISION.md`)
+  - **[표준]** 이벤트 계약 표준 수립 — `EVENT_CONTRACT_STANDARD.md` (Avro 봉투·토픽/필드 카탈로그·Kafka 설정 복붙·멱등성·BACKWARD)
+  - **[스키마]** `NotificationSend`(platform 미러) + `CardReviewDue`/`LevelUp`/`BadgeEarned` 초안 + **기존 4종(UserRegistered/NoteCreated/NoteUpdated/ReviewCompleted)에 공통메타(eventId/occurredAt) 보강** — `generateAvroJava` 전체 컴파일 확인
+  - **[토픽]** 신규 4종(review-due/level-up/badge-earned/notification-send) `create-kafka-topics.sh` + `docker-compose kafka-init` 추가
+  - **[배포]** 근본원인 해소 — shared **GitHub Packages 발행 구현**(`build.gradle.kts` publishing + `publish.yml`), `synapse-shared-0.1.0.jar` Avro 클래스 포함 검증, `runbooks/PUBLISH_SHARED_LIBRARY.md`
+  - **[harness]** Avro 라운드트립 모드 `--avro` 추가(8토픽 produce→consume + subject 자동등록)
+  - **[이슈]** 4개 서비스 레포에 계약 표준 적용 이슈 발행/갱신 — platform #43, engagement #13, knowledge #26, learning #32 (Avro/shared 사용/Kafka 설정/로컬 실행/DoD/기한 W4 D1-2)
 - **진행 중**: knowledge Producer/engagement Consumer/platform·engagement dev→main PR 대기 (W4 carryover)
 - **이슈**: W3 종료 게이트 미통과(1/5) — 어떤 체인도 Producer+Consumer가 main 동시 충족 안 됨. knowledge 미구현이 체인 B 차단. cards-generated HTTP 드리프트로 매트릭스 정정 필요
-- **주간 요약**: shared/team-lead W3 책임(토픽·스키마·harness·work-order·검증 설계)은 완료. 서비스 Kafka는 실측 결과 부분 진행(learning main / platform·engagement dev / knowledge 미구현)이나 **E2E service 단위·종료 게이트 미달**. EKS destroy로 dev/staging·Observability 미진행 → 전부 W4 이월. Step 7/8 In Progress 유지
+- **주간 요약**: shared/team-lead W3 책임(토픽·스키마·harness·work-order·검증 설계)은 완료. 추가로 **cross-repo 실측 → D-001(cards HTTP)·D-002(Avro 사수) 결정 → 이벤트 계약 표준 수립 → 스키마/토픽 정비 → shared 라이브러리 발행 구현(근본원인 해소) → 서비스 이슈 4건**까지 W4 롤아웃 선결 완료. 서비스 Kafka는 실측 결과 부분 진행(learning main / platform·engagement dev / knowledge 미구현)이라 **E2E service 단위·종료 게이트 미달**. EKS destroy로 dev/staging·Observability 미진행 → 구현/배포는 W4 이월. Step 7/8 In Progress 유지
 
 ### W4 (2026-06-01 ~ 06-05, 4영업일 — 6/3 지방선거 제외)
 
@@ -239,6 +247,7 @@
 
 | 날짜 | 변경 사항 |
 |------|-----------|
+| 2026-05-29 | 계약 표준화 — D-001(cards HTTP)+D-002(Avro 사수) 결정, EVENT_CONTRACT_STANDARD 수립, 스키마 3종 초안+기존 4종 공통메타 보강, 신규 토픽 4종, GitHub Packages 발행 구현+runbook, harness `--avro`, 서비스 이슈 4건 |
 | 2026-05-29 | cross-repo Kafka 실측 — learning main 머지/platform·engagement dev/knowledge 미구현/cards-generated HTTP 드리프트 → 추적 6종 현행화 + W4_KAFKA_WORKORDER 발행 |
 | 2026-05-29 | W3 Day 4 — 종료 게이트 평가(미통과)·E2E 결과·스키마 호환성·배포 전략/롤백 리포트 4종 + harness `--scenarios` 스캐폴딩 + Security 2차 |
 | 2026-05-29 | W3 Day 1~2 현행화 — work-order 발행 + 로컬 E2E harness 검증(D-1/D-2 해결) + PR 0/5 추적 반영 / W3·W4 날짜·요일 정정 (W3 05-26~29, W4 06-01~05, 토요일 05-30 항목 제거) |

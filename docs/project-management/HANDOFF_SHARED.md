@@ -1,22 +1,29 @@
 # 핸드오프: synapse-shared
 
-> **최종 갱신**: 2026-05-29 (W3 Day 1~2 실행 — work-order + 로컬 E2E harness)
+> **최종 갱신**: 2026-05-29 (W3 종료 Day 4 — 이벤트 계약 표준(Avro) + 라이브러리 발행)
 > **허브 참조**: → [HANDOFF_HUB.md](./HANDOFF_HUB.md)
 
 ---
 
 ## 1. Avro 스키마 현황
 
-| 스키마 | 네임스페이스 | 토픽 | 호환성 |
-|---|---|---|---|
-| CloudEventEnvelope | com.synapse.shared | (래퍼) | ✅ BACKWARD |
-| UserRegistered | com.synapse.platform | platform.auth.user-registered-v1 | ✅ BACKWARD |
-| NoteCreated | com.synapse.knowledge | knowledge.note.note-created-v1 | ✅ BACKWARD |
-| NoteUpdated | com.synapse.knowledge | knowledge.note.note-updated-v1 | ✅ BACKWARD |
-| ReviewCompleted | com.synapse.learning | learning.card.review-completed-v1 | ✅ BACKWARD |
-| CardsGenerated | com.synapse.learning | learning.ai.cards-generated-v1 | ✅ BACKWARD |
-| TenantId | com.synapse.shared | (공통) | ✅ |
-| UserId | com.synapse.shared | (공통) | ✅ |
+> 계약 표준: [EVENT_CONTRACT_STANDARD.md](../guides/EVENT_CONTRACT_STANDARD.md) (D-002 Option 1: Avro + Schema Registry). 공통 메타(eventId/tenantId/occurredAt) 적용. 전체 `generateAvroJava` 컴파일 확인.
+
+| 스키마 | 네임스페이스 | 토픽 | 공통메타 | 비고 |
+|---|---|---|---|---|
+| CloudEventEnvelope | com.synapse.shared | (래퍼) | — | |
+| UserRegistered | com.synapse.platform | platform.auth.user-registered-v1 | ✅ 보강 | |
+| NoteCreated | com.synapse.knowledge | knowledge.note.note-created-v1 | ✅ 보강 | +deckId |
+| NoteUpdated | com.synapse.knowledge | knowledge.note.note-updated-v1 | ✅ 보강 | |
+| ReviewCompleted | com.synapse.learning | learning.card.review-completed-v1 | ✅ 보강 | |
+| **CardReviewDue** | com.synapse.learning | learning.card.review-due-v1 | ✅ | 신규(learning-card 승격) |
+| **LevelUp** | com.synapse.engagement | engagement.gamification.level-up-v1 | ✅ | 신규 DRAFT(필드 owner 확정) |
+| **BadgeEarned** | com.synapse.engagement | engagement.gamification.badge-earned-v1 | ✅ | 신규 DRAFT(필드 owner 확정) |
+| **NotificationSend** | com.synapse.event.platform | platform.notification.notification-send-v1 | (platform 계약) | 신규(platform 미러) |
+| ~~CardsGenerated~~ | com.synapse.learning | ~~cards-generated-v1~~ | — | deprecated(D-001 HTTP) |
+| TenantId / UserId | com.synapse.shared | (공통) | — | |
+
+> 호환성 정책 `BACKWARD`. 신규/보강 필드는 default 포함 → BACKWARD 안전. 발행: GitHub Packages `com.synapse:synapse-shared` (§8).
 
 ## 2. Kafka 토픽 / MSK 상태
 
@@ -99,5 +106,14 @@
 | 스키마 호환성 리뷰 | `docs/reports/SCHEMA_COMPAT_REVIEW_W3.md` | 8종 형식·컴파일·CloudEvent 필드 통과, 레지스트리 실등록 미검증 |
 | 배포 전략·롤백 정의 | `docs/reports/DEPLOY_REPORT_W3.md` | §A~C 정의 완료, 실배포 검증 보류(EKS destroy) |
 | harness 시나리오 스캐폴딩 | `scripts/kafka-e2e-test.sh --scenarios` | S1~S4 의존성 순서 produce + service-check 안내 |
+| **이벤트 계약 표준** | `docs/guides/EVENT_CONTRACT_STANDARD.md` | Avro+Registry, 봉투·카탈로그·Kafka 설정 |
+| **아키텍처 결정** | `EVENT_FLOW_MATRIX.md`(D-001) · `docs/designs/D-002_SCHEMA_FAMILY_DECISION.md` | cards HTTP / Avro 사수 |
+| **알림 트리거 설계** | `docs/designs/NOTIFICATION_TRIGGER_AI_CARDS.md` | platform 알림 버스 재사용 |
+| **신규/보강 Avro 스키마** | `src/main/avro/{learning/CardReviewDue,engagement/LevelUp,engagement/BadgeEarned,platform/NotificationSend}` + 기존 4종 공통메타 | generateAvroJava 컴파일 확인 |
+| **신규 토픽 4종** | `scripts/create-kafka-topics.sh` + `docker-compose.yml` kafka-init | review-due/level-up/badge-earned/notification-send |
+| **라이브러리 발행** | `build.gradle.kts` + `.github/workflows/publish.yml` + `docs/runbooks/PUBLISH_SHARED_LIBRARY.md` | GitHub Packages `com.synapse:synapse-shared` |
+| **harness Avro 모드** | `scripts/kafka-e2e-test.sh --avro` | 8토픽 Avro 라운드트립 |
+| **W4 work-order + 서비스 이슈** | `docs/work-orders/W4_KAFKA_WORKORDER.md` + 이슈 #43/#13/#26/#32 | 계약 표준 적용, 기한 W4 D1-2 |
 
 **인프라 방침**: EKS는 비용관리로 **destroy 상태** → 검증은 **로컬 docker-compose** 기준. 세션 종료 시 `docker compose down -v` 권장(stale ZK znode 재발 방지, D-1).
+**W4 선결(잔여)**: org GitHub Packages 활성화 + `v0.1.0` 태그 발행 / svc-template 배선 / owner 필드 확정(LevelUp·BadgeEarned, NoteCreated title·deckId) / `--avro` 라이브 검증.
