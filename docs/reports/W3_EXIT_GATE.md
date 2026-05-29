@@ -5,7 +5,7 @@
 > **기준**: [PRD_W3.md](../prd/PRD_W3.md) §5 성공 기준 체크리스트
 > **근거**: [E2E_REPORT_W3.md](./E2E_REPORT_W3.md) · [SCHEMA_COMPAT_REVIEW_W3.md](./SCHEMA_COMPAT_REVIEW_W3.md) · [W3_KAFKA_WORKORDER.md](../work-orders/W3_KAFKA_WORKORDER.md)
 
-> **판정 요약**: **게이트 미충족 (1 / 5)**. shared 전제(토픽·스키마·harness·검증설계)는 완료. 서비스 Kafka는 **부분 진행**(05-29 실측): learning-svc main 머지(card 완전·ai consumer), platform·engagement는 dev 미머지, **knowledge 미구현**. 어떤 체인도 Producer+Consumer가 main에 동시 충족되지 않아 발행·소비 E2E 동작을 증명 불가. 추가로 **cards-generated 경로가 HTTP로 대체**되어 이벤트 매트릭스와 불일치. → 재정렬: [W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md).
+> **판정 요약**: **게이트 미충족 (1 / 5)**. shared 전제(토픽·스키마·harness·검증설계)는 완료. 서비스 Kafka는 **부분 진행**(05-29 실측): learning-svc main 머지(card 완전·ai consumer), platform·engagement는 dev 미머지, **knowledge 미구현**. 어떤 체인도 Producer+Consumer가 main에 동시 충족되지 않아 발행·소비 E2E 동작을 증명 불가. 추가로 **cards-generated 경로가 HTTP로 대체**됨 → **D-001 HTTP 확정**(EVENT_FLOW_MATRIX 정정 완료), platform AI카드 알림 트리거 재설계 open. → 재정렬: [W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md).
 
 ---
 
@@ -41,8 +41,8 @@
    ├─ platform·engagement dev 고립(main 미머지) → 통합 불가
    └─→ 어떤 체인도 Producer+Consumer main 동시 충족 X → E2E service 단위 미실행
 
-[아키텍처 드리프트] cards-generated 경로 HTTP 대체
-   └─→ platform 알림·learning-card 소비 트리거 소멸 → 매트릭스 정정 필요
+[아키텍처 드리프트] cards-generated 경로 HTTP 대체 → D-001 HTTP 확정 (매트릭스 정정 완료)
+   └─→ platform AI카드 알림 트리거 소멸 → 재설계 open (platform·learning-ai 합의)
 
 [부차 차단] EKS destroy (비용관리)
    ├─→ §1 레지스트리 BACKWARD 실등록 검증 미실행

@@ -43,7 +43,7 @@
 | 토픽 5개 (로컬 Kafka) | ✅ 생성 + E2E round-trip 검증 (`--all` 5/5, `--full` 13/13) |
 | MSK 토픽 (EKS) | ⏳ destroy — 재기동 후 재생성 |
 | 로컬 E2E harness | ✅ CloudEvent 페이로드 단위 검증 신뢰 가능 (D-2 해결) |
-| 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 대체. → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
+| 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 확정(D-001). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
 
 ---
 

@@ -62,7 +62,7 @@
 | engagement-svc | Consumer (UserRegistered, ReviewCompleted) | [#9](https://github.com/team-project-final/synapse-engagement-svc/issues/9) | dev(미머지) | 🟡 Producer만 — **Consumer 미구현(역할 불일치)** |
 | knowledge-svc | Producer (NoteCreated, NoteUpdated) | [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22) | — | 🔴 미구현 (in-process 이벤트만) |
 
-> **종합**: main 머지 learning-svc뿐. platform/engagement dev 고립. knowledge 미구현. **cards-generated 경로 HTTP 대체** → EVENT_FLOW_MATRIX 정정 필요(W4 work-order §1 결정).
+> **종합**: main 머지 learning-svc뿐. platform/engagement dev 고립. knowledge 미구현. **cards-generated 경로 HTTP 대체 → D-001 HTTP 확정**(EVENT_FLOW_MATRIX 정정 완료), platform AI카드 알림 트리거 재설계 open.
 
 ## 6. W3 선행 준비 산출물 (05-22)
 

@@ -108,24 +108,25 @@ docker exec synapse-postgres psql -U synapse -c \
 
 ### S3: 노트 생성 → AI 카드 자동 생성 → 알림 + 카드 등록
 
-**이벤트 체인 (2단계)**:
+**이벤트 체인 (D-001 반영 — Kafka+HTTP 혼합)**:
 ```
 knowledge-svc (POST /api/v1/notes)
-  → [knowledge.note.note-created-v1]
+  → [knowledge.note.note-created-v1]            ← Kafka (knowledge Producer 미구현, P0)
   → learning-ai (LLM 카드 생성)
-    → [learning.ai.cards-generated-v1]
-    → learning-card (카드 등록)
-    → platform-svc (알림 트리거)
+    → learning-card REST API (카드 등록)          ← HTTP 동기 (card_client.py)
+    → (AI 카드 알림 트리거: 재설계 open, D-001)
 ```
 
-**사전 조건**: S1 완료 (사용자 존재)
+> ⚠️ **D-001**: `cards-generated-v1` Kafka 단계는 HTTP로 대체됨(deprecated). 아래 2단계 수동 테스트는 토픽 스모크용으로만 유효.
+
+**사전 조건**: S1 완료 (사용자 존재) + knowledge note-created Producer 구현
 
 **수동 테스트 — 1단계 (서비스 구현 전)**:
 ```bash
 bash scripts/kafka-e2e-test.sh knowledge.note.note-created-v1 note-created.json
 ```
 
-**수동 테스트 — 2단계 (서비스 구현 전)**:
+**수동 테스트 — 2단계 (cards-generated 토픽 스모크, D-001로 도메인 경로 아님)**:
 ```bash
 bash scripts/kafka-e2e-test.sh learning.ai.cards-generated-v1 cards-generated.json
 ```
@@ -150,12 +151,12 @@ curl http://localhost:8084/api/v1/cards?userId=e2e-user-01
 docker logs synapse-platform-svc 2>&1 | grep "cards-generated"
 ```
 
-**성공 기준**:
+**성공 기준** (D-001 반영):
 - [ ] learning-ai가 note-created 이벤트 수신
 - [ ] AI 카드 3~5개 생성 (LLM 호출 성공)
-- [ ] cards-generated 이벤트 발행
+- [ ] learning-ai → learning-card **REST API** 카드 등록 호출 성공 (HTTP 2xx)
 - [ ] learning-card에서 카드 등록 확인
-- [ ] platform-svc에서 알림 트리거 로그 존재
+- [ ] AI 카드 알림 트리거 — **재설계 후 검증**(D-001 open)
 - [ ] 전체 체인 완료 시간 < 30초
 
 **사용 샘플**: `src/test/resources/e2e-samples/note-created.json`, `cards-generated.json`

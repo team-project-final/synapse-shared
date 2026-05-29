@@ -91,7 +91,7 @@
 | # | 이슈 | 서비스 | 우선순위 | 담당 | W4 이월 |
 |---|------|--------|:--------:|------|:-------:|
 | I-1 | Kafka 미완성 — knowledge 미구현(P0), engagement Consumer 부재(P0), platform/engagement dev 미머지(P1) | knowledge/engagement/platform | **P0** | 각 owner | ✅ (→ W4_KAFKA_WORKORDER) |
-| I-1b | cards-generated 경로 HTTP 대체 → EVENT_FLOW_MATRIX/알림 트리거 정정 필요 | learning-ai/platform | P1 | @team-lead | ✅ |
+| I-1b | cards-generated HTTP 대체 → **D-001 확정**(매트릭스 정정 완료). platform AI카드 알림 트리거 재설계 open | learning-ai/platform | P1 | @team-lead/owner | ✅ (재설계분) |
 | I-2 | 서비스 비즈니스 로직 단위 E2E(S1~S4) 미실행 | 전체 | P0 | @team-lead | ✅ (I-1 해소 후) |
 | I-3 | EKS E2E 미실행 (클러스터 destroy) | 인프라 | P1 | @team-lead/gitops | ✅ |
 | I-4 | Schema Registry BACKWARD 실등록 검증 미실행 | shared | P1 | @team-lead | ✅ (→ SCHEMA_COMPAT_REVIEW_W3) |

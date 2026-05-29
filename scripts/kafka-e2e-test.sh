@@ -187,10 +187,11 @@ run_scenarios() {
   scenario "S3-1" "노트생성→AI카드 (knowledge→learning-ai)" \
     "knowledge.note.note-created-v1" "note-created.json" \
     "learning-ai 로그 note-created 수신 + 카드 3~5개 생성 — §S3"
-  # S3-2: AI카드 → 등록/알림 (Chain B, 2단계: Consumer가 다시 Producer)
-  scenario "S3-2" "AI카드→등록·알림 (learning-ai→learning-card/platform)" \
+  # S3-2: AI카드 → 등록 (Chain B, 2단계). D-001: cards-generated Kafka → HTTP 대체.
+  # 아래 produce는 토픽 스모크용. 실제 등록은 learning-ai→learning-card REST(card_client).
+  scenario "S3-2" "AI카드→등록 [D-001: HTTP] (learning-ai→learning-card REST)" \
     "learning.ai.cards-generated-v1" "cards-generated.json" \
-    "learning-card 카드 등록 + platform-svc 알림 로그 — §S3"
+    "learning-ai가 learning-card REST(card_client)로 카드 등록 — 알림 트리거는 재설계 open(D-001)"
   # S4: 노트 수정 → 재인덱싱 (Chain D) — 노트 선행
   scenario "S4" "노트수정→재인덱싱 (knowledge→learning-ai/opensearch)" \
     "knowledge.note.note-updated-v1" "note-updated.json" \
