@@ -126,7 +126,9 @@ bash scripts/kafka-e2e-test.sh --scenarios   # synapse-shared 레포
 ```
 
 ## 8. 미확정(owner 합의)
-1. `LevelUp`/`BadgeEarned` 필드 확정(engagement).
+1. `LevelUp`/`BadgeEarned` **도메인 필드 확정**(engagement) — `.avsc` **초안 추가됨**(`src/main/avro/engagement/`, 도메인 필드는 `[제안]` 표기), 확정만 필요.
 2. `NoteCreated.title` 포함 여부(knowledge·learning-ai).
-3. 공통 메타 필드(`eventId`,`occurredAt`)를 기존 shared `.avsc`에 추가(현재 일부 누락) — shared PR.
+3. 공통 메타 필드(`eventId`,`occurredAt`)를 **기존** shared `.avsc`(NoteCreated/NoteUpdated/ReviewCompleted/UserRegistered 등)에 추가 — 현재 누락, shared PR. (신규 3종 CardReviewDue/LevelUp/BadgeEarned은 이미 포함.)
 4. Schema Registry 로컬 포트 통일(8086 vs 8081 혼재).
+
+> **신규 스키마 추가됨(2026-05-29, 초안)**: `learning.CardReviewDue`(learning-card 기존 승격), `engagement.LevelUp`, `engagement.BadgeEarned` — `generateAvroJava` 컴파일 확인. 도메인 필드는 owner 확정 후 PR로 fix.
