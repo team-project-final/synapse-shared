@@ -134,6 +134,7 @@ from confluent_kafka.schema_registry.avro import AvroDeserializer, AvroSerialize
    ```
 **Python(learning-ai)**: 라이브러리 대신 **Schema Registry**에서 직접 소비(§4.2).
 
+> 발행 절차(태그/수동/로컬·소비 설정·트러블슈팅): **[runbooks/PUBLISH_SHARED_LIBRARY.md](../runbooks/PUBLISH_SHARED_LIBRARY.md)**.
 > 발행 검증: `./gradlew publishToMavenLocal` → `synapse-shared-0.1.0.jar`에 생성 Avro 클래스 전부 포함 확인(2026-05-29).
 > 선결(잔여): ① org GitHub Packages 활성화 + 최초 태그 발행(v0.1.0) ② svc-template에 위 repositories/dependency 배선 ③ (선택) shared CI에서 스키마 일괄 register.
 
