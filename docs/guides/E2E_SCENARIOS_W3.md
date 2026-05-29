@@ -156,7 +156,7 @@ docker logs synapse-platform-svc 2>&1 | grep "cards-generated"
 - [ ] AI 카드 3~5개 생성 (LLM 호출 성공)
 - [ ] learning-ai → learning-card **REST API** 카드 등록 호출 성공 (HTTP 2xx)
 - [ ] learning-card에서 카드 등록 확인
-- [ ] AI 카드 알림 트리거 — **재설계 후 검증**(D-001 open)
+- [ ] AI 카드 알림 — learning-ai가 `notification-send-v1` 발행 → platform 푸시 ([설계](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md))
 - [ ] 전체 체인 완료 시간 < 30초
 
 **사용 샘플**: `src/test/resources/e2e-samples/note-created.json`, `cards-generated.json`

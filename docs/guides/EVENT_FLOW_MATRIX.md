@@ -30,8 +30,10 @@
 | 3 | knowledge-svc | `knowledge.note.note-updated-v1` | learning-ai, opensearch | NoteUpdated | 노트 수정 API 성공 |
 | 4 | learning-card | `learning.card.review-completed-v1` | engagement-svc | ReviewCompleted | 카드 복습 API 성공 |
 | 5 | ~~learning-ai~~ | ~~`learning.ai.cards-generated-v1`~~ | ~~learning-card, platform-svc~~ | ~~CardsGenerated~~ | **D-001: HTTP로 대체(deprecated)** |
+| 6 | learning-ai (외 다수 가능) | `platform.notification.notification-send-v1` | platform-svc | NotificationSend | **알림 버스** — AI 카드 생성 알림 등 ([설계](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md)) |
 
-> 카드 등록은 learning-ai → learning-card **REST API**(동기). cards-generated 토픽 미사용. AI 카드 알림 트리거는 재설계 대상(D-001).
+> 카드 등록은 learning-ai → learning-card **REST API**(동기). cards-generated 토픽 미사용.
+> AI 카드 생성 알림은 cards-generated 부활 대신 **platform 알림 버스(notification-send-v1)** 재사용 — learning-ai가 HTTP 등록 성공 후 발행, platform 기존 Consumer가 푸시. → [NOTIFICATION_TRIGGER_AI_CARDS.md](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md)
 
 ### 서비스별 역할 요약
 
@@ -64,13 +66,14 @@ platform-svc (회원가입 API)
 knowledge-svc (노트 생성 API)
   → [knowledge.note.note-created-v1]   ← Kafka (knowledge Producer 미구현, P0)
   → learning-ai (LLM 카드 생성)
-    → learning-card REST API (카드 등록)   ← HTTP 동기 (card_client.py, D-001)
-    → (AI 카드 알림 트리거: 재설계 open)
+    → learning-card REST API (카드 등록)            ← HTTP 동기 (card_client.py, D-001)
+    → [platform.notification.notification-send-v1]  ← 등록 2xx 후 알림 버스 발행
+        → platform NotificationKafkaConsumer (기존) → FCM 푸시
 ```
 
-- **검증**: learning-ai 로그 note-created 수신 + learning-card 카드 등록 API 응답
+- **검증**: learning-ai 로그 note-created 수신 + learning-card 등록 API 응답 + notification-send 발행 → platform 푸시 로그
 - **의존성**: 사용자 존재(Chain A 선행) + **knowledge note-created Producer 구현(현재 미구현 — 체인 시작점 차단)**
-- **특이사항**: Kafka(note-created) → HTTP(카드 등록) 혼합. cards-generated Kafka 단계는 D-001로 제거. 알림 트리거 미정.
+- **특이사항**: Kafka(note-created) → HTTP(카드 등록) → Kafka(알림 버스) 혼합. cards-generated 도메인 이벤트는 D-001로 제거하되, 알림은 platform 알림 버스 재사용. → [알림 트리거 설계](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md)
 
 ### Chain C: 카드 복습 → XP 적립
 
