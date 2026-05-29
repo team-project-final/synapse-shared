@@ -1,0 +1,17 @@
+{
+  "type": "record",
+  "name": "NotificationSend",
+  "namespace": "com.synapse.event.platform",
+  "doc": "DRAFT 제안 — platform 알림 버스(platform.notification.notification-send-v1) 페이로드. synapse-platform-svc PlatformAvroEvents.NOTIFICATION_SEND_SCHEMA를 그대로 미러링(필드/타입 동일). learning-ai 등 발행자가 동일 계약으로 알림 요청 발행하기 위한 공유 후보. 봉투는 platform의 CloudEvent 변종(com.synapse.event.shared, time:long, data:bytes 중첩) 사용 — NOTIFICATION_TRIGGER_AI_CARDS.md 및 스키마-패밀리 정합 결정(미정) 참조.",
+  "fields": [
+    {"name": "userId", "type": "string", "default": "", "doc": "알림 수신자 (UUID 문자열)"},
+    {"name": "tenantId", "type": "string", "default": "", "doc": "테넌트 (UUID 문자열)"},
+    {"name": "notificationType", "type": "string", "default": "", "doc": "알림 유형 (예: AI_CARDS_READY, USER_WELCOME)"},
+    {"name": "channels", "type": {"type": "array", "items": "string"}, "default": [], "doc": "발송 채널 (예: FCM, EMAIL)"},
+    {"name": "title", "type": "string", "default": "", "doc": "알림 제목"},
+    {"name": "body", "type": "string", "default": "", "doc": "알림 본문"},
+    {"name": "emailSubject", "type": ["null", "string"], "default": null, "doc": "이메일 제목 (EMAIL 채널 시)"},
+    {"name": "emailHtmlBody", "type": ["null", "string"], "default": null, "doc": "이메일 HTML 본문 (EMAIL 채널 시)"},
+    {"name": "data", "type": {"type": "map", "values": "string"}, "default": {}, "doc": "부가 메타데이터 (예: noteId, cardCount)"}
+  ]
+}
