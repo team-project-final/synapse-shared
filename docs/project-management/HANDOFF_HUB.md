@@ -84,7 +84,8 @@
 
 ## 4. 다음 세션 작업 순서
 
-> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(0.5/5, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략)는 완료, 아래 1~2가 W4 Day 1 최우선 carryover.
+> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(1/5, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
+> **▶ 월요일(06-01) 바로 시작 순서: [W4_PLAN.md](./W4_PLAN.md)** — Day1 병렬 2트랙(A: EKS `terraform apply` / B: v0.1.0 발행 + knowledge Producer 착수 + 필드 확정), 화요일 consumer, 목요일 통합 E2E.
 
 ```
 1. [shared/팀] 🔴 최우선 — Kafka 구현 완성 (05-29 실측 기반 재정렬 → W4_KAFKA_WORKORDER)
