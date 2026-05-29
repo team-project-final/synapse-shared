@@ -207,7 +207,7 @@
   - **[스키마]** `NotificationSend`(platform 미러) + `CardReviewDue`/`LevelUp`/`BadgeEarned` 초안 + **기존 4종(UserRegistered/NoteCreated/NoteUpdated/ReviewCompleted)에 공통메타(eventId/occurredAt) 보강** — `generateAvroJava` 전체 컴파일 확인
   - **[토픽]** 신규 4종(review-due/level-up/badge-earned/notification-send) `create-kafka-topics.sh` + `docker-compose kafka-init` 추가
   - **[배포]** 근본원인 해소 — shared **GitHub Packages 발행 구현**(`build.gradle.kts` publishing + `publish.yml`), `synapse-shared-0.1.0.jar` Avro 클래스 포함 검증, `runbooks/PUBLISH_SHARED_LIBRARY.md`
-  - **[harness]** Avro 라운드트립 모드 `--avro` 추가(8토픽 produce→consume + subject 자동등록)
+  - **[harness]** Avro 라운드트립 모드 `--avro` 추가 → **로컬 스택 기동 후 라이브 검증 8/8 PASSED**(8토픽 produce→consume + subject `<topic>-value` 자동등록, 전역 BACKWARD). 검증 중 `occurredAt` logicalType를 평문 long으로 정정(콘솔 도구 직렬화 한계, wire/BACKWARD 호환 — 레지스트리 v1→v2 수락으로 입증)
   - **[이슈]** 4개 서비스 레포에 계약 표준 적용 이슈 발행/갱신 — platform #43, engagement #13, knowledge #26, learning #32 (Avro/shared 사용/Kafka 설정/로컬 실행/DoD/기한 W4 D1-2)
 - **진행 중**: knowledge Producer/engagement Consumer/platform·engagement dev→main PR 대기 (W4 carryover)
 - **이슈**: W3 종료 게이트 미통과(1/5) — 어떤 체인도 Producer+Consumer가 main 동시 충족 안 됨. knowledge 미구현이 체인 B 차단. cards-generated HTTP 드리프트로 매트릭스 정정 필요

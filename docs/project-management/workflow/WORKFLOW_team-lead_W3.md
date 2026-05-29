@@ -50,7 +50,7 @@
 - [ ] 각 서비스 담당자 테스트 결과 취합 — 팀원 Kafka 산출물 PR 0/5로 취합 대상 미도착 (05-27 EOD 기준)
 
 ### 1.8 통합 테스트 실행 및 검증
-- [~] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry)만 기동, 앱 서비스 Kafka 구현 0건으로 미실행
+- [x] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry/kafka-init) 기동 + **`--avro` 라이브 8/8 PASSED**(8토픽 Avro 라운드트립 + subject 자동등록, 전역 BACKWARD). 앱 서비스 비즈니스 로직 E2E는 구현 도착 후(W4)
 - [ ] Kafka 이벤트 전파 지연 시간 측정 (< 3초 기준) — harness 총 29s(라운드트립), 이벤트 단위 측정은 서비스 구현 후
 - [x] 이벤트 유실 여부 확인 — harness `--all` 5/5 + `--full` 13/13 round-trip 무유실 (재시도 로직 검증은 서비스 consumer 도착 후)
 - [x] 실패 테스트 원인 분석 및 담당자 배정 — D-1(stale ZK znode)·D-2(샘플 line-split) 분석·해결 → `E2E_BASELINE_W3.md`
