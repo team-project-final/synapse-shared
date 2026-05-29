@@ -50,17 +50,19 @@
 
 → [TEAM_CHECKLIST_W3.md](../guides/TEAM_CHECKLIST_W3.md) · [W3_KAFKA_WORKORDER.md](../work-orders/W3_KAFKA_WORKORDER.md)
 
-> **work-order 발행**: 05-26 (Day 1), PR 기한 05-27 EOD. **Day 2 추적 결과 Kafka 산출물 PR 0/5** — 열린 PR 2건(platform #33, knowledge #23)은 Kafka 발행/소비 범위 밖.
+> **work-order**: 05-26 발행 → **05-29 cross-repo 실측으로 재정렬** ([W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md)). "Day 2 PR 0/5" 스냅샷 폐기.
 
-**서비스별 Kafka 구현 상태 (05-27 기준)**:
+**서비스별 Kafka 구현 상태 (2026-05-29 origin 코드 실측)**:
 
-| 서비스 | 역할 | GH 이슈 | 구현 상태 |
-|---|---|---|---|
-| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | [#30](https://github.com/team-project-final/synapse-platform-svc/issues/30) | 🔴 미착수 (PR #33은 범위 밖) |
-| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | [#9](https://github.com/team-project-final/synapse-engagement-svc/issues/9) | 🔴 미착수 |
-| knowledge-svc | Producer (NoteCreated, NoteUpdated) | [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22) | 🔴 미착수 (PR #23은 그래프 API+청킹, Kafka Producer 미포함) |
-| learning-card | Producer (ReviewCompleted) | [#21](https://github.com/team-project-final/synapse-learning-svc/issues/21) | 🔴 미착수 |
-| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | [#22](https://github.com/team-project-final/synapse-learning-svc/issues/22) | 🔴 미착수 |
+| 서비스 | 역할 | GH 이슈 | 위치 | 구현 상태 |
+|---|---|---|---|---|
+| learning-card | Producer (ReviewCompleted, ReviewDue) | [#21](https://github.com/team-project-final/synapse-learning-svc/issues/21) | main(#26) | 🟢 완료 |
+| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | [#22](https://github.com/team-project-final/synapse-learning-svc/issues/22) | main(#26) | 🟡 Consumer만 — 카드등록 HTTP, CardsGenerated 미발행 |
+| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | [#30](https://github.com/team-project-final/synapse-platform-svc/issues/30) | dev(미머지) | 🟡 Producer+audit/noti Consumer 구현, open PR 없음 |
+| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | [#9](https://github.com/team-project-final/synapse-engagement-svc/issues/9) | dev(미머지) | 🟡 Producer만 — **Consumer 미구현(역할 불일치)** |
+| knowledge-svc | Producer (NoteCreated, NoteUpdated) | [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22) | — | 🔴 미구현 (in-process 이벤트만) |
+
+> **종합**: main 머지 learning-svc뿐. platform/engagement dev 고립. knowledge 미구현. **cards-generated 경로 HTTP 대체** → EVENT_FLOW_MATRIX 정정 필요(W4 work-order §1 결정).
 
 ## 6. W3 선행 준비 산출물 (05-22)
 
@@ -92,7 +94,7 @@
 
 | 산출물 | 경로 | 비고 |
 |--------|------|------|
-| W3 종료 게이트 평가 | `docs/reports/W3_EXIT_GATE.md` | **미통과 0.5/5** — 단일 차단=서비스 Kafka PR 0/5 |
+| W3 종료 게이트 평가 | `docs/reports/W3_EXIT_GATE.md` | **미통과 1/5** — 차단=서비스 Kafka 미완성(knowledge 미구현·platform/engagement dev) |
 | E2E 결과 리포트 | `docs/reports/E2E_REPORT_W3.md` | 전송 경로 5/5·13/13, service 단위 미실행 |
 | 스키마 호환성 리뷰 | `docs/reports/SCHEMA_COMPAT_REVIEW_W3.md` | 8종 형식·컴파일·CloudEvent 필드 통과, 레지스트리 실등록 미검증 |
 | 배포 전략·롤백 정의 | `docs/reports/DEPLOY_REPORT_W3.md` | §A~C 정의 완료, 실배포 검증 보류(EKS destroy) |

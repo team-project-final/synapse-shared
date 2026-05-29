@@ -33,10 +33,10 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | harness(--full 13/13)·Security 2차·스키마 리뷰·E2E 리포트·시나리오 스캐폴딩 완료. 서비스 단위 E2E는 팀원 Kafka PR 0/5로 차단 |
+| Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | harness(--full 13/13)·Security 2차·스키마 리뷰·E2E 리포트·시나리오 스캐폴딩 완료. 서비스 단위 E2E는 Kafka 부분구현(learning main·platform/engagement dev·knowledge 미구현)으로 차단 |
 | Step 8 | ArgoCD dev/staging 배포 검증 | In Progress | 05-22 | — | 배포 전략·승인·롤백 절차 정의 완료(DEPLOY_REPORT §A~C). 실배포 검증은 EKS destroy로 보류(재기동 후) |
 
-**W3 진행률**: 0/2 Steps 완료 — shared 측 설계·전제·검증(harness/스키마/Security/리포트)은 완료, 그러나 **종료 게이트 미통과(0.5/5)**. 실행(서비스 E2E·배포)은 PR 0/5 + EKS destroy로 W4 이월
+**W3 진행률**: 0/2 Steps 완료 — shared 측 설계·전제·검증(harness/스키마/Security/리포트)은 완료, 그러나 **종료 게이트 미통과(1/5)**. 실행(서비스 E2E·배포)은 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월
 
 **05-22 달성 사항:**
 - platform-svc / learning-ai 앱 코드 수정 완료 → **dev 5/5 Healthy 달성**
@@ -195,14 +195,15 @@
 - **완료**:
   - **[Step 7]** Security 2차 검토 완료 — E2E 시크릿 분리/테스트데이터 마스킹(`@test.synapse.dev` 합성)/네트워크 격리(`synapse-net`) → TASK Constraints 반영
   - **[Step 7]** 크로스서비스 스키마 호환성 리뷰 — Avro 8종 형식(jq) + `generateAvroJava` 컴파일(9 클래스) + CloudEvent 8필드 통과 (`docs/reports/SCHEMA_COMPAT_REVIEW_W3.md`)
-  - **[Step 7]** E2E 결과 리포트 작성 — 전송 경로 5/5·13/13, 서비스 단위 미실행(PR 0/5) (`docs/reports/E2E_REPORT_W3.md`)
+  - **[Step 7]** E2E 결과 리포트 작성 — 전송 경로 5/5·13/13, 서비스 단위 미실행(체인 양끝 미충족) (`docs/reports/E2E_REPORT_W3.md`)
   - **[Step 7]** E2E harness 체인 시나리오 스캐폴딩 — `--scenarios` 모드(S1~S4 의존성 순서 produce + service-check 안내) `scripts/kafka-e2e-test.sh`
   - **[Step 8]** 배포 전략·승인 플로우·롤백 절차 정의 (`docs/reports/DEPLOY_REPORT_W3.md` §A~C) — 실행 검증은 EKS destroy로 보류
-  - **[게이트]** W3 종료 게이트 평가 — **미통과(0.5/5)**, 단일 차단=서비스 Kafka PR 0/5 (`docs/reports/W3_EXIT_GATE.md`)
+  - **[게이트]** W3 종료 게이트 평가 — **미통과(1/5)**, 차단=서비스 Kafka 미완성(실측 반영) (`docs/reports/W3_EXIT_GATE.md`)
   - **[문서]** 프로젝트 관리 문서 W3 현행화 + W1~W4 날짜·요일 정합성 정정 (커밋 b97e99a)
-- **진행 중**: 서비스 Kafka PR 5/5 대기 (work-order 기한 초과)
-- **이슈**: W3 종료 게이트 미통과 — 기능 기준(§2~5)은 서비스 PR 0/5로 검증 불가. W4 Day 1 우선 해소 대상
-- **주간 요약**: shared/team-lead 측 W3 책임(토픽·스키마·harness·work-order·검증 설계)은 완료. 단, 팀원 Kafka 구현 PR 0/5로 **E2E service 단위 검증과 W3 종료 게이트는 미달**. EKS는 비용관리 destroy로 dev/staging·Observability 미진행 → W4 이월. Step 7/8 모두 In Progress 유지(설계·전제 완료, 실행 차단)
+  - **[cross-repo]** 전체 레포 fetch/pull 최신화 + Kafka 구현 **실측** — "PR 0/5" 폐기. learning-svc main 머지(#26, card 완전·ai consumer), platform·engagement는 **dev 미머지**, **knowledge 미구현**. cards-generated 경로 **HTTP 대체** 발견 → 추적 문서 6종 현행화 + [W4_KAFKA_WORKORDER.md](../../work-orders/W4_KAFKA_WORKORDER.md) 발행
+- **진행 중**: knowledge Producer/engagement Consumer/platform·engagement dev→main PR 대기 (W4 carryover)
+- **이슈**: W3 종료 게이트 미통과(1/5) — 어떤 체인도 Producer+Consumer가 main 동시 충족 안 됨. knowledge 미구현이 체인 B 차단. cards-generated HTTP 드리프트로 매트릭스 정정 필요
+- **주간 요약**: shared/team-lead W3 책임(토픽·스키마·harness·work-order·검증 설계)은 완료. 서비스 Kafka는 실측 결과 부분 진행(learning main / platform·engagement dev / knowledge 미구현)이나 **E2E service 단위·종료 게이트 미달**. EKS destroy로 dev/staging·Observability 미진행 → 전부 W4 이월. Step 7/8 In Progress 유지
 
 ### W4 (2026-06-01 ~ 06-05, 4영업일 — 6/3 지방선거 제외)
 
@@ -238,7 +239,8 @@
 
 | 날짜 | 변경 사항 |
 |------|-----------|
-| 2026-05-29 | W3 Day 4 — 종료 게이트 평가(미통과 0.5/5)·E2E 결과·스키마 호환성·배포 전략/롤백 리포트 4종 + harness `--scenarios` 스캐폴딩 + Security 2차 |
+| 2026-05-29 | cross-repo Kafka 실측 — learning main 머지/platform·engagement dev/knowledge 미구현/cards-generated HTTP 드리프트 → 추적 6종 현행화 + W4_KAFKA_WORKORDER 발행 |
+| 2026-05-29 | W3 Day 4 — 종료 게이트 평가(미통과)·E2E 결과·스키마 호환성·배포 전략/롤백 리포트 4종 + harness `--scenarios` 스캐폴딩 + Security 2차 |
 | 2026-05-29 | W3 Day 1~2 현행화 — work-order 발행 + 로컬 E2E harness 검증(D-1/D-2 해결) + PR 0/5 추적 반영 / W3·W4 날짜·요일 정정 (W3 05-26~29, W4 06-01~05, 토요일 05-30 항목 제거) |
 | 2026-05-19 | W2 Step 4-5 완료 + gitops EKS provider swap + PRD 검수 + 문서 갱신 |
 | 2026-05-11 | W2/W3/W4 대시보드 및 로그 템플릿 추가 |

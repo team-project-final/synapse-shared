@@ -5,7 +5,7 @@
 > **작성자**: @team-lead
 > **참조**: [E2E_SCENARIOS_W3.md](../guides/E2E_SCENARIOS_W3.md) | [EVENT_FLOW_MATRIX.md](../guides/EVENT_FLOW_MATRIX.md) | [E2E_BASELINE_W3.md](./E2E_BASELINE_W3.md)
 
-> **요약**: 로컬 harness의 **전송 경로(produce→consume + CloudEvent 페이로드 단위 round-trip)는 검증 완료**(`--all` 5/5, `--full` 13/13). 그러나 5개 서비스 Kafka Producer/Consumer **PR 0/5 미착수**로 **서비스 비즈니스 로직 단위 E2E(S1~S4 Consumer 처리)는 미실행**. EKS는 destroy 상태로 EKS E2E도 미실행.
+> **요약**: 로컬 harness의 **전송 경로(produce→consume + CloudEvent 페이로드 단위 round-trip)는 검증 완료**(`--all` 5/5, `--full` 13/13). 서비스 Kafka 구현은 **부분 진행**(05-29 실측: learning-svc main 머지, platform·engagement dev 미머지, knowledge 미구현 — §3 참조)이며, 한 체인의 Producer+Consumer가 main에 동시 충족된 경우가 없어 **서비스 단위 E2E(S1~S4)는 미실행**. EKS destroy로 EKS E2E도 미실행.
 
 ---
 
@@ -55,18 +55,23 @@
 
 ---
 
-## 3. 서비스별 Kafka 구현 최종 상태 (W3 종료 시점)
+## 3. 서비스별 Kafka 구현 최종 상태 (2026-05-29 origin 코드 실측 — 수정)
 
-| 서비스 | 역할 | 구현 | PR | 머지 | 로컬 E2E | EKS E2E |
-|--------|------|:----:|:--:|:----:|:--------:|:-------:|
-| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | 🔴 | 🔴 | 🔴 | transport만 | — |
-| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | 🔴 | 🔴 | 🔴 | transport만 | — |
-| knowledge-svc | Producer (NoteCreated, NoteUpdated) | 🔴 | 🔴* | 🔴 | transport만 | — |
-| learning-card | Producer (ReviewCompleted) | 🔴 | 🔴 | 🔴 | transport만 | — |
-| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | 🔴 | 🔴 | 🔴 | transport만 | — |
+> ⚠️ 초안의 "전 서비스 🔴/PR 0/5"는 05-29 cross-repo 실측으로 정정. 상세·재정렬 → [W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md).
 
-> 결과: ✅ 완료 / ❌ 실패 / ⏳ 진행중 / 🔴 미착수
-> *knowledge-svc PR #23 열림 = 그래프 API + 청킹(in-process `@TransactionalEventListener`), **Kafka Producer 미포함**. platform PR #33 = W2/MSA test env, Kafka 파일 0건. → work-order 산출물 기준 **PR 0/5**.
+| 서비스 | 역할 | 구현 | 위치 | 머지 | 로컬 E2E | EKS E2E |
+|--------|------|:----:|:----:|:----:|:--------:|:-------:|
+| learning-card | Producer (ReviewCompleted, ReviewDue) | ✅ | main(#26) | ✅ | transport만 | — |
+| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | 🟡 | main(#26) | ✅ | transport만 | — |
+| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | 🟡 | dev | ❌ | transport만 | — |
+| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | 🟡 | dev | ❌ | transport만 | — |
+| knowledge-svc | Producer (NoteCreated, NoteUpdated) | 🔴 | — | ❌ | transport만 | — |
+
+> 결과: ✅ 완료 / 🟡 부분 / 🔴 미구현
+> - learning-card: Publisher 2종 main 머지 완료. learning-ai: Consumer(NoteCreated) ✅, 카드등록 **HTTP**라 CardsGenerated **미발행**.
+> - platform: Producer(UserRegistered, Outbox)+audit/noti Consumer **dev 구현·main 미머지**(open PR 없음), CardsGenerated 소비 ❌.
+> - engagement: **Consumer 미구현**(@KafkaListener 0건), Producer만 dev. knowledge: **Kafka 전무**(in-process 이벤트).
+> - **service 단위 E2E는 여전히 미실행**: 발행/소비가 한 체인에서 모두 머지·기동돼야 가능. 현재 어떤 체인도 양끝(Producer+Consumer)이 main에 동시 충족되지 않음.
 
 ---
 
@@ -85,7 +90,8 @@
 
 | # | 이슈 | 서비스 | 우선순위 | 담당 | W4 이월 |
 |---|------|--------|:--------:|------|:-------:|
-| I-1 | Kafka Producer/Consumer 구현 PR 0/5 | 전체 5개 | **P0** | 각 owner | ✅ |
+| I-1 | Kafka 미완성 — knowledge 미구현(P0), engagement Consumer 부재(P0), platform/engagement dev 미머지(P1) | knowledge/engagement/platform | **P0** | 각 owner | ✅ (→ W4_KAFKA_WORKORDER) |
+| I-1b | cards-generated 경로 HTTP 대체 → EVENT_FLOW_MATRIX/알림 트리거 정정 필요 | learning-ai/platform | P1 | @team-lead | ✅ |
 | I-2 | 서비스 비즈니스 로직 단위 E2E(S1~S4) 미실행 | 전체 | P0 | @team-lead | ✅ (I-1 해소 후) |
 | I-3 | EKS E2E 미실행 (클러스터 destroy) | 인프라 | P1 | @team-lead/gitops | ✅ |
 | I-4 | Schema Registry BACKWARD 실등록 검증 미실행 | shared | P1 | @team-lead | ✅ (→ SCHEMA_COMPAT_REVIEW_W3) |

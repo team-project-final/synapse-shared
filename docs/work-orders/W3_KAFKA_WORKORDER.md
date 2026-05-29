@@ -35,16 +35,17 @@ W3 목표는 모든 producer 토픽 발행 + consumer 처리(PRD_W3 FR-*-201 계
 - E2E 시나리오: [E2E_SCENARIOS_W3.md](../guides/E2E_SCENARIOS_W3.md)
 - E2E 검증 가이드: [KAFKA_E2E_TEST.md](../guides/KAFKA_E2E_TEST.md)
 
-## 추적 (Day 2~3 갱신)
+## 추적 — 최종 (2026-05-29 실측, origin 코드 직접 확인)
 
-> **Day 2 조회 (2026-05-27 오전, `gh pr list`)**: Kafka Producer/Consumer work-order 산출물 PR **0/5**. 열린 PR 2건은 work-order 범위(Kafka 발행/소비) 밖. 기한은 오늘 EOD — 미도착 시 EOD 후 ❌ 표기.
+> ⚠️ **Day 2 "PR 0/5" 스냅샷 폐기.** 05-29 cross-repo `git fetch` 후 origin 브랜치 코드 직접 확인 결과 아래로 갱신. W4 carryover·재정렬은 → **[W4_KAFKA_WORKORDER.md](./W4_KAFKA_WORKORDER.md)**.
 
-| 서비스 | PR 생성 | 리뷰 | 머지 | 비고 |
-|--------|:------:|:----:|:----:|------|
-| platform-svc | ⏳ | — | — | PR [#33](https://github.com/team-project-final/synapse-platform-svc/pull/33) 열림 — W2 완료/MSA 테스트 env, **Kafka 파일 0건 → work-order 아님** |
-| knowledge-svc | ⏳ | — | — | PR [#23](https://github.com/team-project-final/synapse-knowledge-svc/pull/23) 열림 — 그래프 조회 API + 청킹(in-process `@TransactionalEventListener`) + `note-created-v1.avsc` 스키마 기반작업. **Kafka NoteCreated/Updated Producer 미포함** (스키마는 선행 토대로 관련) |
-| learning-card | ⏳ | — | — | 열린 PR 없음 |
-| learning-ai | ⏳ | — | — | 열린 PR 없음 |
-| engagement-svc | ⏳ | — | — | 열린 PR 없음 |
+| 서비스 | 구현 위치 | 머지 | 역할 충족 | 비고 |
+|--------|----------|:----:|:--------:|------|
+| learning-card | **main (#26)** | ✅ | ✅ | CardReviewed + ReviewDue Publisher + 테스트 |
+| learning-ai | **main (#26)** | ✅ | 🟡 | Consumer(NoteCreated) ✅. 카드 등록은 **HTTP(card_client)** → CardsGenerated 미발행 |
+| platform-svc | dev | ❌ 미머지 | 🟡 | Producer(UserRegistered, Outbox) + audit/notification Consumer. open PR 없음. CardsGenerated 소비 ❌ |
+| engagement-svc | dev | ❌ 미머지 | 🟡 | GamificationKafkaProducer만. **Consumer(@KafkaListener) 0건** — 할당 역할 미이행 |
+| knowledge-svc | — | ❌ | 🔴 | **Kafka 전무**. in-process `@TransactionalEventListener`만. NoteCreated/Updated Producer 필요 |
 
-> 상태: ⏳ 대기 / 🔄 진행 / ✅ 완료 / ❌ 미착수(기한 초과)
+> **종합**: main 머지 = learning-svc(#26)뿐(card 완전·ai 부분). platform/engagement는 dev 고립(PR 미생성). knowledge 미구현. **cards-generated 경로 HTTP 대체** → 아키텍처 정정 필요(W4 work-order §1).
+> 상태: ✅ 완료 / 🟡 부분 / ❌ 미충족 / 🔴 미구현
