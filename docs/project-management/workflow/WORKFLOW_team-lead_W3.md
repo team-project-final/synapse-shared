@@ -71,59 +71,64 @@
 
 ## Step 8: ArgoCD dev/staging 배포 검증
 
+> **블로커 = `EKS destroy`(클러스터 없음), Kafka 무관.** 설계·정책·매니페스트(1.2~1.6, 1.10 일부)는 완료(`docs/reports/DEPLOY_REPORT_W3.md` §A~C). 실행·실검증(1.7~1.9)은 `terraform apply`(재기동) 후 가능. 서비스 배포·헬스OK는 Kafka 기능 구현과 독립(W2에 dev 5/5 Healthy 달성).
+
 ### 1.1 TASK 시작
-- [ ] Step Goal / Done When / Scope / Input 확인
-- [ ] PRD_W3 해당 요구사항 확인 (배포 검증)
-- [ ] Duration 산정 확인
+- [x] Step Goal / Done When / Scope / Input 확인
+- [x] PRD_W3 해당 요구사항 확인 (배포 검증)
+- [x] Duration 산정 확인 (1일)
 
-### 1.2 요구사항 분석
-- [ ] dev 환경 autoSync 설정 요건 분석
-- [ ] staging 환경 수동 승인 배포 플로우 분석
-- [ ] 배포 후 헬스체크 기준 정의
-- [ ] Instructions 초안 → TASK 문서 반영
+### 1.2 요구사항 분석 → DEPLOY_REPORT §A
+- [x] dev 환경 autoSync 설정 요건 분석
+- [x] staging 환경 수동 승인 배포 플로우 분석
+- [x] 배포 후 헬스체크 기준 정의
+- [x] Instructions 초안 → TASK 문서 반영
 
-### 1.3 Security 1차 검토
-- [ ] ArgoCD RBAC 설정 확인 (dev: 자동, staging: 승인 필요)
-- [ ] 배포 시 시크릿 주입 방식 확인 (Sealed Secrets / External Secrets)
-- [ ] 환경별 접근 권한 분리 확인
-- [ ] 결과 → TASK Constraints 반영
+### 1.3 Security 1차 검토 → DEPLOY_REPORT §C
+- [~] ArgoCD RBAC 설정 확인 (dev: 자동, staging: 승인 필요) — 정책 정의됨, 실제 RBAC 구성·확인은 재기동 후
+- [x] 배포 시 시크릿 주입 방식 확인 — ExternalSecret + ClusterSecretStore(ESO IRSA), dev 5/5 SecretSynced
+- [x] 환경별 접근 권한 분리 확인 — 네임스페이스 분리(synapse-dev / synapse-staging)
+- [x] 결과 → TASK Constraints 반영
 
-### 1.4 배포 전략 설계
-- [ ] dev 환경 ArgoCD autoSync 정책 설정
-- [ ] staging 환경 수동 승인 워크플로우 설계
-- [ ] 롤백 절차 정의 (자동/수동)
-- [ ] Duration(final) 갱신
+### 1.4 배포 전략 설계 → DEPLOY_REPORT §A·§B
+- [x] dev 환경 ArgoCD autoSync 정책 설정 (automated, prune/selfHeal)
+- [x] staging 환경 수동 승인 워크플로우 설계 (manual sync)
+- [x] 롤백 절차 정의 (자동/수동) — §B 5단계, 목표 <3분
+- [x] Duration(final) 갱신
 
-### 1.5 Security 2차 검토
-- [ ] 환경별 환경변수/시크릿 분리 확인
-- [ ] staging 배포 승인 권한자 지정
-- [ ] 배포 이력 추적 (audit trail) 확인
-- [ ] 결과 → TASK Constraints 반영
+### 1.5 Security 2차 검토 → DEPLOY_REPORT §C
+- [x] 환경별 환경변수/시크릿 분리 확인
+- [~] staging 배포 승인 권한자 지정 — @team-lead 지정, ArgoCD RBAC 명문화는 재기동 후(W4)
+- [x] 배포 이력 추적 (audit trail) 확인 — ArgoCD app history + gitops 커밋 이력
+- [x] 결과 → TASK Constraints 반영
 
-### 1.6 배포 설정 구현
-- [ ] ArgoCD Application 매니페스트 갱신 (dev autoSync: true)
-- [ ] staging Application 매니페스트 갱신 (syncPolicy: manual)
-- [ ] 환경별 values.yaml 분리 확인
+### 1.6 배포 설정 구현 (gitops, 05-21 구성)
+- [x] ArgoCD Application 매니페스트 갱신 (dev autoSync: true)
+- [x] staging Application 매니페스트 갱신 (syncPolicy: manual) — staging overlay + ApplicationSet (gitops PR #34)
+- [x] 환경별 values.yaml 분리 확인 — dev/staging overlay 분리
 
-### 1.7 배포 실행
+### 1.7 배포 실행 — ⛔ EKS destroy로 대기 (재기동 후)
 - [ ] dev 환경: main push → autoSync 자동 배포 확인
 - [ ] staging 환경: 수동 Sync 버튼 → 배포 실행
 - [ ] ECR 이미지 태그 일치 확인
 
-### 1.8 배포 후 검증
+### 1.8 배포 후 검증 — ⛔ EKS destroy로 대기 (재기동 후)
 - [ ] dev 환경 전체 서비스 Health OK 확인
 - [ ] staging 환경 전체 서비스 Health OK 확인
-- [ ] Kafka 연결 상태 확인 (각 서비스 consumer group lag = 0)
+- [ ] Kafka 연결 상태 확인 (consumer group lag = 0) — consumer 배포 필요(W4 Kafka 구현 후)
 - [ ] RDS/Redis/OpenSearch 연결 상태 확인
 
-### 1.9 배포 이슈 대응
+### 1.9 배포 이슈 대응 — ⛔ EKS destroy로 대기 (절차는 §B 정의됨)
 - [ ] 배포 실패 시 롤백 절차 실행 및 검증
 - [ ] 환경별 로그 수집 및 이슈 분석
 - [ ] 배포 성공 기준 충족 여부 최종 확인
 
 ### 1.10 결과 정리
-- [ ] 배포 검증 결과 리포트 작성
-- [ ] staging 배포 승인 프로세스 문서화
-- [ ] RULE Reference → TASK 반영
+- [x] 배포 검증 결과 리포트 작성 → `docs/reports/DEPLOY_REPORT_W3.md` (실행 검증 체크리스트는 재기동 후 채움)
+- [x] staging 배포 승인 프로세스 문서화 → DEPLOY_REPORT §A·§C
+- [x] RULE Reference → TASK 반영
+
+> 표기: [x] 완료 / [~] 부분(정의 완료·실검증 재기동 후) / [ ] EKS 재기동 대기
+> **Step 8 진행률**: 설계·정책·매니페스트 완료(1.1~1.6, 1.10). 실행·실검증(1.7~1.9)만 EKS 재기동(`terraform apply`) 대기 — **Kafka 완료와 무관**.
 
 **Step 8 Status**: [ ] Not Started / [x] In Progress / [ ] Done
