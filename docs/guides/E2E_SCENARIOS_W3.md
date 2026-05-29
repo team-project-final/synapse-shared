@@ -250,6 +250,7 @@ bash scripts/kafka-e2e-test.sh --full
 |------|--------|------|
 | 정상 흐름만 | `bash scripts/kafka-e2e-test.sh --all` | S1~S4 (5개 토픽) |
 | 에러 케이스만 | `bash scripts/kafka-e2e-test.sh --error-cases` | E1~E3 |
+| 체인 시나리오 | `bash scripts/kafka-e2e-test.sh --scenarios` | S1~S4 의존성 순서 produce + service-check 안내 (구현 후 확장용) |
 | 전체 | `bash scripts/kafka-e2e-test.sh --full` | S1~S4 + E1~E3 + M1 |
 
 ---

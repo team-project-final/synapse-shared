@@ -88,4 +88,14 @@
 | 로컬 E2E harness 베이스라인 | `docs/reports/E2E_BASELINE_W3.md` | `--all` 5/5, `--full` 13/13 PASSED |
 | E2E harness 개선 | `scripts/kafka-e2e-test.sh` | `compact_json`(jq -c) 추가 — CloudEvent 단위 검증 복구 (D-2 해결) |
 
+### W3 Day 4 (05-29) 종료 산출물
+
+| 산출물 | 경로 | 비고 |
+|--------|------|------|
+| W3 종료 게이트 평가 | `docs/reports/W3_EXIT_GATE.md` | **미통과 0.5/5** — 단일 차단=서비스 Kafka PR 0/5 |
+| E2E 결과 리포트 | `docs/reports/E2E_REPORT_W3.md` | 전송 경로 5/5·13/13, service 단위 미실행 |
+| 스키마 호환성 리뷰 | `docs/reports/SCHEMA_COMPAT_REVIEW_W3.md` | 8종 형식·컴파일·CloudEvent 필드 통과, 레지스트리 실등록 미검증 |
+| 배포 전략·롤백 정의 | `docs/reports/DEPLOY_REPORT_W3.md` | §A~C 정의 완료, 실배포 검증 보류(EKS destroy) |
+| harness 시나리오 스캐폴딩 | `scripts/kafka-e2e-test.sh --scenarios` | S1~S4 의존성 순서 produce + service-check 안내 |
+
 **인프라 방침**: EKS는 비용관리로 **destroy 상태** → 검증은 **로컬 docker-compose** 기준. 세션 종료 시 `docker compose down -v` 권장(stale ZK znode 재발 방지, D-1).

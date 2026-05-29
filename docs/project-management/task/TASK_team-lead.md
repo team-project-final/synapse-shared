@@ -314,6 +314,10 @@
   - PII: UserRegistered 스키마의 `email` 필드가 유일한 PII — Consumer(engagement-svc) 로그 출력 시 마스킹 권장
   - Kafka ACL/IAM: MSK 인증 방식에 따라 ACL(SASL 비사용) 또는 IAM Policy(SASL_SSL) 적용 — Day 1 gitops 세션에서 확인
   - 서비스 간 추적: CloudEvent `traceparent` 필드 기반 분산 추적
+- **Security 2차 검토 (E2E 환경, 05-29 점검 완료)**:
+  - 시크릿 분리: E2E는 로컬 docker-compose `.env.example` 기반 throwaway 스택 — 운영 시크릿 미사용. 테스트 리소스(`src/test/resources`)에 실 시크릿/키 0건 확인
+  - 테스트 데이터 마스킹: E2E 샘플 email 전부 `@test.synapse.dev` 합성값(실 PII 아님). 운영 Consumer 로그의 email 마스킹은 서비스 구현 시 적용 권장(미구현)
+  - 네트워크 격리: 로컬은 단일 bridge `synapse-net`, 외부 노출은 매핑 포트 한정. EKS는 private endpoint + 네임스페이스 분리(synapse-dev / synapse-staging)로 환경 격리
 - **Duration**: 2일
 - **RULE Reference**: wiki 03_아키텍처_정의서 §이벤트 설계, wiki 09_Git_규칙_정의서 §코드 리뷰
 - **Assignee**: @team-lead

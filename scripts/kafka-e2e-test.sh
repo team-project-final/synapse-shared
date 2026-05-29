@@ -5,6 +5,7 @@
 #   bash scripts/kafka-e2e-test.sh <topic> <sample-file>
 #   bash scripts/kafka-e2e-test.sh --all
 #   bash scripts/kafka-e2e-test.sh --error-cases
+#   bash scripts/kafka-e2e-test.sh --scenarios
 #   bash scripts/kafka-e2e-test.sh --full
 set -euo pipefail
 
@@ -50,6 +51,7 @@ Examples:
   bash scripts/kafka-e2e-test.sh platform.auth.user-registered-v1 user-registered.json
   bash scripts/kafka-e2e-test.sh --all
   bash scripts/kafka-e2e-test.sh --error-cases
+  bash scripts/kafka-e2e-test.sh --scenarios
   bash scripts/kafka-e2e-test.sh --full
 USAGE
 }
@@ -151,6 +153,50 @@ run_error_cases() {
   produce_and_consume "learning.ai.cards-generated-v1" "multi-tenant/cards-generated-tenant2.json"
 }
 
+# --- Service-chain scenario scaffold (E2E_SCENARIOS_W3 S1~S4) -----------------
+# Produces chain events in DEPENDENCY ORDER so each chain's transport path is
+# exercised today (services not yet implemented). Per scenario it prints the
+# service-level check (DB/log/HTTP) to run once the owning service lands.
+# This is a scaffold: transport is verified now; service checks are guidance,
+# not executed (avoids false PASS before Consumer code exists).
+scenario() {
+  local id="$1" desc="$2" topic="$3" sample="$4" check="$5"
+  echo "########## ${id}: ${desc} ##########"
+  produce_and_consume "$topic" "$sample"
+  echo "[SERVICE-CHECK] ${id} (서비스 구현 후 수행):"
+  echo "    ${check}"
+  echo ""
+}
+
+run_scenarios() {
+  echo ""
+  echo "========================================="
+  echo "  Service-Chain Scenarios (S1~S4, dependency order)"
+  echo "  transport=produce/consume 검증(now) · service=구현 후 수동 확인"
+  echo "========================================="
+  echo ""
+  # S1: 회원가입 → 프로필 (Chain A) — 선행 없음
+  scenario "S1" "회원가입→프로필 (platform→engagement)" \
+    "platform.auth.user-registered-v1" "user-registered.json" \
+    "engagement DB user_profiles 레코드 생성 확인 — E2E_SCENARIOS_W3 §S1"
+  # S2: 복습 → XP (Chain C) — 사용자 선행
+  scenario "S2" "복습→XP (learning-card→engagement)" \
+    "learning.card.review-completed-v1" "review-completed.json" \
+    "engagement xp_points 증가 + 동일 reviewId 멱등성 — §S2"
+  # S3-1: 노트 → AI카드 (Chain B, 1단계)
+  scenario "S3-1" "노트생성→AI카드 (knowledge→learning-ai)" \
+    "knowledge.note.note-created-v1" "note-created.json" \
+    "learning-ai 로그 note-created 수신 + 카드 3~5개 생성 — §S3"
+  # S3-2: AI카드 → 등록/알림 (Chain B, 2단계: Consumer가 다시 Producer)
+  scenario "S3-2" "AI카드→등록·알림 (learning-ai→learning-card/platform)" \
+    "learning.ai.cards-generated-v1" "cards-generated.json" \
+    "learning-card 카드 등록 + platform-svc 알림 로그 — §S3"
+  # S4: 노트 수정 → 재인덱싱 (Chain D) — 노트 선행
+  scenario "S4" "노트수정→재인덱싱 (knowledge→learning-ai/opensearch)" \
+    "knowledge.note.note-updated-v1" "note-updated.json" \
+    "opensearch notes 인덱스 갱신 + learning-ai note-updated 로그 — §S4"
+}
+
 print_report() {
   local end_time
   end_time=$(date +%s)
@@ -182,6 +228,10 @@ case "${topic}" in
     ;;
   --error-cases)
     run_error_cases
+    print_report
+    ;;
+  --scenarios)
+    run_scenarios
     print_report
     ;;
   --full)

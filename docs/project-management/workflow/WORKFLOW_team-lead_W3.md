@@ -33,10 +33,10 @@
 - [ ] Duration(final) 갱신
 
 ### 1.5 Security 2차 검토
-- [ ] E2E 테스트 환경 시크릿 분리 확인
-- [ ] 테스트 데이터 민감정보 마스킹 확인
-- [ ] 테스트 환경 네트워크 격리 확인
-- [ ] 결과 → TASK Constraints 반영
+- [x] E2E 테스트 환경 시크릿 분리 확인 → 로컬 throwaway 스택, 테스트 리소스 실 시크릿 0건
+- [x] 테스트 데이터 민감정보 마스킹 확인 → 샘플 email 전부 `@test.synapse.dev` 합성값 (운영 Consumer 로그 마스킹은 구현 시 권장)
+- [x] 테스트 환경 네트워크 격리 확인 → 로컬 `synapse-net` bridge, EKS private endpoint + 네임스페이스 분리
+- [x] 결과 → TASK Constraints 반영 (Step 7 "Security 2차 검토", 05-29)
 
 ### 1.6 테스트 데이터 준비
 - [x] E2E 테스트용 시드 데이터 정의 (사용자, 카드, 노트, 커뮤니티 게시글) → `src/test/resources/seed/V001~V005`

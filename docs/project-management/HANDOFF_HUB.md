@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-05-29 (W3 Day 1~2 실행 세션)
-> **현재 주차**: W3 (마지막 영업일)
+> **최종 갱신**: 2026-05-29 (W3 종료 세션 — 게이트 평가 + W4 인수인계)
+> **현재 주차**: W3 종료 → W4 전환
 > **갱신자**: @VelkaressiaBlutkrone
 
 ---
@@ -80,6 +80,8 @@
 
 ## 4. 다음 세션 작업 순서
 
+> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(0.5/5, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략)는 완료, 아래 1~2가 W4 Day 1 최우선 carryover.
+
 ```
 1. [shared/팀] 🔴 최우선 — 5개 서비스 Kafka Producer/Consumer 구현 PR 도착 유도
      → 현황: work-order 발행(05-26) + GH 이슈 연결, PR 0/5 (기한 05-27 EOD 초과)
@@ -104,6 +106,6 @@
 |---|---|---|---|
 | W1 (5/12-16) | ArgoCD bootstrap + CI | ✅ 완료 | 5/16 |
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
-| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔄 진행 중 | — (harness 검증 완료 · 서비스 Kafka PR 0/5 차단) |
+| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 0.5/5 (W3_EXIT_GATE) — shared 전제 완료, 서비스 Kafka PR 0/5 + EKS destroy로 W4 이월 |
 | W4 (6/01-05) | Prod + approval + rollback | ⏳ 계획 | — |
 | W5 (6/08-12) | Runbooks + DR + 비용 최적화 | ⏳ 계획 | — |
