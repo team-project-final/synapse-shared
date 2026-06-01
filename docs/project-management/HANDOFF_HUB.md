@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-05-29 (W3 종료 세션 — 게이트 평가 + W4 인수인계)
-> **현재 주차**: W3 종료 → W4 전환
+> **최종 갱신**: 2026-06-01 (W4 Day 1 — gitops `terraform apply` 완료, 인프라 재기동)
+> **현재 주차**: W4 Day 1 (06-01)
 > **갱신자**: @VelkaressiaBlutkrone
 
 ---
@@ -10,30 +10,30 @@
 
 ### 환경별 서비스 상태
 
-> ⚠️ **EKS 클러스터는 비용관리로 destroy 상태** (05-26~). W3 검증은 **로컬 docker-compose** 기준. dev/staging EKS 상태는 인프라 재기동(`terraform apply`) 후 재확인 필요.
+> ✅ **EKS 클러스터 재기동 완료** (06-01 gitops `terraform apply`). 후속 대기: `aws eks update-kubeconfig` + SG 수동(D-026) + MSK 토픽 재생성 + `verify-argocd-deploy.sh` → dev 5/5 재확인. W3 검증 기준이던 로컬 docker-compose는 계속 유효. (절차: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md))
 
 | 서비스 | 로컬 compose | dev (EKS) | staging | prod |
 |---|---|---|---|---|
-| platform-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| engagement-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| knowledge-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| learning-card | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| learning-ai | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
+| platform-svc | ✅ Healthy | 🔄 검증 대기 | 🔄 staging Sync 대기 | ⏳ W4 |
+| engagement-svc | ✅ Healthy | 🔄 검증 대기 | 🔄 staging Sync 대기 | ⏳ W4 |
+| knowledge-svc | ✅ Healthy | 🔄 검증 대기 | 🔄 staging Sync 대기 | ⏳ W4 |
+| learning-card | ✅ Healthy | 🔄 검증 대기 | 🔄 staging Sync 대기 | ⏳ W4 |
+| learning-ai | ✅ Healthy | 🔄 검증 대기 | 🔄 staging Sync 대기 | ⏳ W4 |
 
-> 상태 enum: ✅ Healthy / ⚠️ Degraded / 🔴 Down / ⏳ destroy(재기동 필요) or Not Started
-> dev/staging EKS는 05-22 시점 5/5 Healthy 달성 후 비용관리 destroy. 재기동 시 마지막 검증 상태 복원 예상.
+> 상태 enum: ✅ Healthy / 🔄 검증 대기(apply 후) / ⚠️ Degraded / 🔴 Down / ⏳ destroy(재기동 필요) or Not Started
+> dev/staging EKS는 05-22 시점 5/5 Healthy 달성 후 비용관리 destroy → **06-01 `terraform apply` 재기동**. kubeconfig 갱신 + `verify-argocd-deploy.sh synapse-dev`로 5/5 재확인 후 ✅로 갱신.
 
 ### 인프라 상태
 
 | 컴포넌트 | 상태 | 비고 |
 |---|---|---|
-| EKS | ⏳ destroy | 비용관리로 종료, 재기동은 `terraform apply` (SG/OIDC 수동 단계 D-026 동반) |
-| RDS PostgreSQL 16 | ⏳ destroy | apply 후 SG 수동 추가 필요 (D-026) |
-| MSK Kafka | ⏳ destroy | (로컬 Kafka로 대체 검증) apply 후 토픽 재생성 + 브로커 주소 ConfigMap 갱신 필요 |
-| Redis | ⏳ destroy | apply 후 SG 수동 추가 필요 |
-| OpenSearch | ⏳ destroy | apply 후 SG 수동 추가 필요 |
-| ArgoCD | ⏳ destroy | HA 모드, dev auto-sync + staging manual (재기동 시 복원) |
-| 로컬 docker-compose | ✅ | 13 서비스 Healthy — W3 검증 기준 환경 |
+| EKS | ✅ 재기동 | `terraform apply` 완료(06-01). 후속: SG/OIDC 수동(D-026) + `update-kubeconfig` |
+| RDS PostgreSQL 16 | 🔄 검증 대기 | apply 완료. SG 수동 추가(D-026) 확인 필요 |
+| MSK Kafka | 🔄 토픽 재생성 대기 | apply 완료. `create-kafka-topics.sh`로 9토픽 재생성 + 브로커 주소 ConfigMap 갱신 |
+| Redis | 🔄 검증 대기 | apply 완료. SG 수동 추가(D-026) 확인 필요 |
+| OpenSearch | 🔄 검증 대기 | apply 완료. SG 수동 추가(D-026) 확인 필요 |
+| ArgoCD | 🔄 검증 대기 | HA 모드, dev auto-sync + staging manual. sync 상태 확인 필요 |
+| 로컬 docker-compose | ✅ | 13 서비스 Healthy — W3 검증 기준 환경(계속 유효) |
 
 ### Kafka / 스키마 상태
 
@@ -42,7 +42,7 @@
 | **이벤트 계약 표준** | ✅ 수립 — Avro + Schema Registry (D-002 Option 1). [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md) |
 | Avro 스키마 | ✅ 이벤트 11종(기존 보강 + 신규 CardReviewDue/LevelUp/BadgeEarned/NotificationSend), 공통메타 적용, generateAvroJava 컴파일. BACKWARD |
 | 토픽 (로컬 Kafka) | ✅ 8종 생성(신규 4종 추가: review-due/level-up/badge-earned/notification-send) + round-trip 검증 |
-| MSK 토픽 (EKS) | ⏳ destroy — 재기동 후 재생성(스크립트 반영됨) |
+| MSK 토픽 (EKS) | 🔄 apply 완료 — `create-kafka-topics.sh`로 9토픽(8 active + cards-generated 잔존) 재생성 대기 |
 | 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
 | 라이브러리 발행 | ✅ 구현 — GitHub Packages `com.synapse:synapse-shared`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). 잔여: org Packages 활성화 + v0.1.0 태그 발행 |
 | 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 확정(D-001). 전 서비스 계약 표준 적용 이슈 발행(#43/#13/#26/#32). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |

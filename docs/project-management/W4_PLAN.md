@@ -24,11 +24,11 @@
 
 ## 1. 🌅 월요일(06-01) 아침 — 가장 먼저 (병렬 2트랙)
 
-### Track A — 인프라 재기동 (team-lead / gitops) ※ Kafka와 무관, 즉시 시작
-- [ ] `terraform apply` (EKS 재기동) — runbook `docs/guides/MSK_TOPIC_SETUP.md` / gitops 부트스트랩 12단계
-- [ ] `aws eks update-kubeconfig` + SG 수동 추가(D-026) + MSK 토픽 재생성(`scripts/create-kafka-topics.sh` — 신규 4종 포함됨)
-- [ ] `verify-argocd-deploy.sh synapse-dev` → dev 5/5 Healthy 재확인
-- → 완료 시 **Step 8 실행(1.7~1.9)·staging·Observability 잠금 해제**
+### Track A — 인프라 재기동 (team-lead / gitops) ※ Kafka와 무관, 즉시 시작 — **상세: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)**
+- [x] `terraform apply` (EKS 재기동) — ✅ **06-01 완료 (gitops)**
+- [ ] `aws eks update-kubeconfig` + SG 수동 추가(D-026) + MSK 토픽 재생성(`scripts/create-kafka-topics.sh` — 9토픽, 신규 4종 포함) — 진행 대기
+- [ ] `verify-argocd-deploy.sh synapse-dev` → dev 5/5 Healthy 재확인 — 진행 대기
+- → apply 완료로 **Step 8 실행(1.7~1.9)·staging·Observability·Schema Registry 실검증 잠금 해제됨** ✅
 
 ### Track B — 계약 적용 착수 (team-lead + 각 owner)
 - [ ] **(team-lead)** shared **v0.1.0 발행** — org GitHub Packages 활성화 + `git tag v0.1.0 && git push` (runbook `PUBLISH_SHARED_LIBRARY.md`). → 서비스가 `com.synapse:synapse-shared` 의존 가능

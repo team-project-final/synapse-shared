@@ -50,13 +50,19 @@ Expected:
 
 ## 생성되는 토픽 목록
 
+> 단일 출처: [EVENT_CONTRACT_STANDARD §2](./EVENT_CONTRACT_STANDARD.md). `create-kafka-topics.sh`는 **9개 엔트리 = 8 active + cards-generated(잔존)** 를 생성한다.
+
 | 토픽 | 도메인 | 설명 |
 |------|--------|------|
 | `platform.auth.user-registered-v1` | Platform | 회원가입 이벤트 |
 | `knowledge.note.note-created-v1` | Knowledge | 노트 생성 이벤트 |
 | `knowledge.note.note-updated-v1` | Knowledge | 노트 수정 이벤트 |
 | `learning.card.review-completed-v1` | Learning | 카드 복습 완료 이벤트 |
-| `learning.ai.cards-generated-v1` | Learning | AI 카드 생성 완료 이벤트 |
+| `learning.card.review-due-v1` | Learning | 복습 예정 알림 이벤트 (W4 신규) |
+| `engagement.gamification.level-up-v1` | Engagement | 레벨업 이벤트 (W4 신규) |
+| `engagement.gamification.badge-earned-v1` | Engagement | 배지 획득 이벤트 (W4 신규) |
+| `platform.notification.notification-send-v1` | Platform | 알림 발송 이벤트 (W4 신규) |
+| ~~`learning.ai.cards-generated-v1`~~ | Learning | **deprecated (D-001: 카드 등록 HTTP)** — 발행자 없음, 호환 위해 잔존 |
 
 ## 롤백 (토픽 삭제)
 
@@ -67,9 +73,18 @@ kafka-topics.sh --bootstrap-server "$KAFKA_BROKERS" \
   --delete --topic platform.auth.user-registered-v1
 ```
 
-전체 삭제:
+전체 삭제 (생성 스크립트와 동일 9종):
 ```bash
-for topic in platform.auth.user-registered-v1 knowledge.note.note-created-v1 knowledge.note.note-updated-v1 learning.card.review-completed-v1 learning.ai.cards-generated-v1; do
+for topic in \
+  platform.auth.user-registered-v1 \
+  knowledge.note.note-created-v1 \
+  knowledge.note.note-updated-v1 \
+  learning.card.review-completed-v1 \
+  learning.card.review-due-v1 \
+  engagement.gamification.level-up-v1 \
+  engagement.gamification.badge-earned-v1 \
+  platform.notification.notification-send-v1 \
+  learning.ai.cards-generated-v1; do
   kafka-topics.sh --bootstrap-server "$KAFKA_BROKERS" --delete --topic "$topic"
 done
 ```
@@ -130,7 +145,9 @@ producer = KafkaProducer(
 
 ### Kafka ACL 설정 (SASL 비사용 시)
 
-서비스별 최소 권한 ACL:
+> ⚠️ **아래 ACL 예시는 W2 원본 5토픽 기준** — W4 신규 4종(review-due/level-up/badge-earned/notification-send) 및 D-001(cards-generated HTTP, platform consume 소멸)을 미반영. 실제 권한은 [EVENT_CONTRACT_STANDARD §2](./EVENT_CONTRACT_STANDARD.md)의 producer/consumer를 따를 것. **MSK IAM 인증 사용 시 ACL 대신 IAM Policy로 제어 → 이 섹션 불필요**(권장).
+
+서비스별 최소 권한 ACL (참고용, 갱신 필요):
 
 ```bash
 BROKER="$KAFKA_BROKERS"
