@@ -109,7 +109,7 @@
 
 | 산출물 | 경로 | 비고 |
 |--------|------|------|
-| W3 종료 게이트 평가 | `docs/reports/W3_EXIT_GATE.md` | **미통과 1/5** — 차단=서비스 Kafka 미완성(knowledge 미구현·platform/engagement dev) |
+| W3 종료 게이트 평가 | `docs/reports/W3_EXIT_GATE.md` | **미통과 (충족 0/5)** — 차단=서비스 Kafka 미완성(knowledge 미구현·platform/engagement dev) |
 | E2E 결과 리포트 | `docs/reports/E2E_REPORT_W3.md` | 전송 경로 5/5·13/13, service 단위 미실행 |
 | 스키마 호환성 리뷰 | `docs/reports/SCHEMA_COMPAT_REVIEW_W3.md` | 8종 형식·컴파일·CloudEvent 필드 통과, 레지스트리 실등록 미검증 |
 | 배포 전략·롤백 정의 | `docs/reports/DEPLOY_REPORT_W3.md` | §A~C 정의 완료, 실배포 검증 보류(EKS destroy) |

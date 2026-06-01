@@ -61,7 +61,7 @@
 - [ ] PR 승인 및 main 브랜치 머지 조율 — 계약 표준 적용 이슈 발행(#43/#13/#26/#32), 머지는 W4
 
 ### 1.10 결과 정리
-- [x] E2E 테스트 결과 리포트 작성 → `docs/reports/E2E_REPORT_W3.md` + 종료 게이트 `W3_EXIT_GATE.md`(미통과 1/5)
+- [x] E2E 테스트 결과 리포트 작성 → `docs/reports/E2E_REPORT_W3.md` + 종료 게이트 `W3_EXIT_GATE.md`(미통과 충족 0/5)
 - [x] 미해결 이슈 목록화 및 우선순위 지정 → `W4_KAFKA_WORKORDER.md`(knowledge P0·engagement P0·platform P1) + 서비스 이슈 4건
 - [x] RULE Reference → TASK 반영 (Security 2차 Constraints 등)
 
