@@ -96,3 +96,7 @@
 - [ ] HISTORY 완료 기록
 
 **Step 11 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+
+---
+
+> **Step 12 (발표 자료 + 시연 리허설)**: TASK_team-lead에 정의되어 있으나 **실행은 W5**(6/12 리허설·6/15 발표, [PRD_W5](../prd/PRD_W5.md)). W4 범위는 Step 9~11이며, Step 12는 W5 워크플로우에서 추적한다.

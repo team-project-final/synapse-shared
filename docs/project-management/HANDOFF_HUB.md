@@ -84,7 +84,7 @@
 
 ## 4. 다음 세션 작업 순서
 
-> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(1/5, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
+> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(충족 0/5 · 부분 2 · 미확인 3, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
 > **▶ 월요일(06-01) 바로 시작 순서: [W4_PLAN.md](./W4_PLAN.md)** — Day1 병렬 2트랙(A: EKS `terraform apply` / B: v0.1.0 발행 + knowledge Producer 착수 + 필드 확정), 화요일 consumer, 목요일 통합 E2E.
 
 ```
@@ -112,6 +112,6 @@
 |---|---|---|---|
 | W1 (5/12-16) | ArgoCD bootstrap + CI | ✅ 완료 | 5/16 |
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
-| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 0.5/5 — shared 전제 완료. 서비스 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월 |
-| W4 (6/01-05) | Prod + approval + rollback | ⏳ 계획 | — |
-| W5 (6/08-12) | Runbooks + DR + 비용 최적화 | ⏳ 계획 | — |
+| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 0/5 (부분 2·미확인 3) — shared 전제 완료. 서비스 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월 |
+| W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | ⏳ 계획 | — |
+| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | ⏳ 계획 | — |

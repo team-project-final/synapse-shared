@@ -5,7 +5,7 @@
 > **기준**: [PRD_W3.md](../prd/PRD_W3.md) §5 성공 기준 체크리스트
 > **근거**: [E2E_REPORT_W3.md](./E2E_REPORT_W3.md) · [SCHEMA_COMPAT_REVIEW_W3.md](./SCHEMA_COMPAT_REVIEW_W3.md) · [W3_KAFKA_WORKORDER.md](../work-orders/W3_KAFKA_WORKORDER.md)
 
-> **판정 요약**: **게이트 미충족 (1 / 5)**. shared 전제(토픽·스키마·harness·검증설계)는 완료. 서비스 Kafka는 **부분 진행**(05-29 실측): learning-svc main 머지(card 완전·ai consumer), platform·engagement는 dev 미머지, **knowledge 미구현**. 어떤 체인도 Producer+Consumer가 main에 동시 충족되지 않아 발행·소비 E2E 동작을 증명 불가. 추가로 **cards-generated 경로가 HTTP로 대체**됨 → **D-001 HTTP 확정**(EVENT_FLOW_MATRIX 정정). AI카드 알림은 platform 알림 버스 재사용으로 설계 완료(NOTIFICATION_TRIGGER_AI_CARDS), 구현 W4. → 재정렬: [W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md).
+> **판정 요약**: **게이트 미충족 — 충족 0/5 (부분 2 · 미확인 3)**. shared 전제(토픽·스키마·harness·검증설계)는 완료. 서비스 Kafka는 **부분 진행**(05-29 실측): learning-svc main 머지(card 완전·ai consumer), platform·engagement는 dev 미머지, **knowledge 미구현**. 어떤 체인도 Producer+Consumer가 main에 동시 충족되지 않아 발행·소비 E2E 동작을 증명 불가. 추가로 **cards-generated 경로가 HTTP로 대체**됨 → **D-001 HTTP 확정**(EVENT_FLOW_MATRIX 정정). AI카드 알림은 platform 알림 버스 재사용으로 설계 완료(NOTIFICATION_TRIGGER_AI_CARDS), 구현 W4. → 재정렬: [W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md).
 
 ---
 
@@ -20,6 +20,7 @@
 | 5 | AI 카드 자동 생성(note.created→LLM→Card) + 시맨틱 캐시 | learning-ai | ⚪ **미확인** | learning-svc(ai) 레포 범위. Consumer 구현 PR 0 |
 
 > 판정 enum: ✅ 충족 / 🟡 조건부 / 🔴 미충족(증거상 미달) / ⚪ 미확인(타 레포·본 세션 범위 밖)
+> **점수 정의**: `충족 = ✅ 개수 / 5`. 🟡(조건부·부분)·⚪(미확인)은 분자에서 제외. → 현재 ✅ 0건 → **충족 0/5**(🟡 2건: #1 조건부·#2 부분 / ⚪ 3건: #3·#4·#5). 모든 문서는 이 표기로 통일("1/5"·"0.5/5" 표기 폐기).
 
 ## 2. shared/team-lead 선행 항목 (게이트 전제) — 완료
 

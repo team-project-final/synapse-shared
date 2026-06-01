@@ -29,3 +29,9 @@ hs_err_pid*
 
 # Gradle wrapper jar must be committed for CI
 !gradle/wrapper/gradle-wrapper.jar
+
+# === Local / test artifacts ===
+# create-kafka-topics.sh writes a timestamped run log
+kafka-topics-*.log
+# Playwright MCP scratch dir
+.playwright-mcp/

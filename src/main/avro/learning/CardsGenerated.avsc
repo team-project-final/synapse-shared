@@ -2,7 +2,7 @@
   "type": "record",
   "name": "CardsGenerated",
   "namespace": "com.synapse.learning",
-  "doc": "Emitted when AI generates flashcards from a note.",
+  "doc": "DEPRECATED (D-001): 카드 등록은 HTTP로 대체됨 — 발행자 없음, 신규 사용 금지. 토픽 learning.ai.cards-generated-v1은 호환 위해 잔존(harness --avro 대상 제외). 공통메타(eventId/occurredAt) 미적용(이력 보존용). 참조: docs/guides/EVENT_CONTRACT_STANDARD.md §2, EVENT_FLOW_MATRIX D-001.",
   "fields": [
     {"name": "noteId", "type": "string", "doc": "Source note UUID"},
     {"name": "userId", "type": "string", "doc": "UUID of the requesting user"},

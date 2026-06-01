@@ -27,15 +27,23 @@
 
 ## 2. Kafka 토픽 / MSK 상태
 
-| 토픽 | MSK 생성 | 파티션 | 복제 | 프로듀서 | 컨슈머 |
-|---|---|---|---|---|---|
-| platform.auth.user-registered-v1 | ✅ | 3 | 2 | platform-svc | engagement, learning-card |
-| knowledge.note.note-created-v1 | ✅ | 3 | 2 | knowledge-svc | learning-ai |
-| knowledge.note.note-updated-v1 | ✅ | 3 | 2 | knowledge-svc | learning-ai, opensearch |
-| learning.card.review-completed-v1 | ✅ | 3 | 2 | learning-card | engagement-svc |
-| learning.ai.cards-generated-v1 | ✅ | 3 | 2 | learning-ai | learning-card |
+> **단일 출처**: 토픽·Producer·Consumer 카탈로그는 [EVENT_CONTRACT_STANDARD §2](../guides/EVENT_CONTRACT_STANDARD.md)가 권위. 아래는 그 미러 — 변경 시 카탈로그를 먼저 갱신.
+> 파티션 3 / 복제 MSK 2·로컬 1, 호환성 BACKWARD. **EKS destroy 중** → MSK 토픽은 재기동 후 `create-kafka-topics.sh`로 재생성, 검증은 로컬 docker-compose(`kafka-init` 자동생성) 기준.
 
-**MSK 브로커**: PR #42 반영 완료 (endpoint 변경 시 gitops ConfigMap 갱신 필요)
+| 토픽 (8 active) | Avro 레코드 | Producer | Consumer |
+|---|---|---|---|
+| platform.auth.user-registered-v1 | platform.UserRegistered | platform | engagement |
+| knowledge.note.note-created-v1 | knowledge.NoteCreated | knowledge | learning-ai |
+| knowledge.note.note-updated-v1 | knowledge.NoteUpdated | knowledge | learning-ai |
+| learning.card.review-completed-v1 | learning.ReviewCompleted | learning-card | engagement |
+| learning.card.review-due-v1 | learning.CardReviewDue | learning-card | platform(알림, W4) |
+| engagement.gamification.level-up-v1 | engagement.LevelUp | engagement | platform(알림, W4) |
+| engagement.gamification.badge-earned-v1 | engagement.BadgeEarned | engagement | platform(알림, W4) |
+| platform.notification.notification-send-v1 | platform.NotificationSend | 다수(learning-ai 등) | platform |
+
+> 🚫 **deprecated**: `learning.ai.cards-generated-v1` — 카드 등록은 HTTP([D-001](../guides/EVENT_FLOW_MATRIX.md)), 발행자 없음. `create-kafka-topics.sh`에 호환 위해 **잔존**(9번째 엔트리)하나 harness `--avro`(8/8) 대상 제외. 스키마 `CardsGenerated.avsc`도 deprecated(§1). → **물리 산출물 = 토픽 9개(8 active + 1 잔존) / .avsc 12개(11 active + 1 잔존)**.
+
+**MSK 브로커**: PR #42 반영 (endpoint 변경 시 gitops ConfigMap 갱신). EKS destroy 중 — 재기동 후 재확인.
 
 ## 3. Docker Compose 현황
 

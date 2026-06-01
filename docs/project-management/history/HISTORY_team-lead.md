@@ -36,7 +36,7 @@
 | Step 7 | Kafka E2E 검증 + 코드 리뷰 조율 | In Progress | 05-22 | — | harness(--full 13/13, +`--avro`)·Security 2차·스키마 리뷰·E2E/게이트 리포트 완료. **이벤트 계약 표준(Avro/D-002) 수립 + 스키마·토픽·라이브러리 발행 정비 + 서비스 이슈 4건**. 서비스 단위 E2E는 Kafka 부분구현(learning main·platform/engagement dev·knowledge 미구현)으로 차단 |
 | Step 8 | ArgoCD dev/staging 배포 검증 | In Progress | 05-22 | — | 배포 전략·승인·롤백 절차 정의 완료(DEPLOY_REPORT §A~C). 실배포 검증은 EKS destroy로 보류(재기동 후) |
 
-**W3 진행률**: 0/2 Steps 완료 — shared 측 설계·전제·검증(harness/스키마/Security/리포트)은 완료, 그러나 **종료 게이트 미통과(1/5)**. 실행(서비스 E2E·배포)은 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월
+**W3 진행률**: 0/2 Steps 완료 — shared 측 설계·전제·검증(harness/스키마/Security/리포트)은 완료, 그러나 **종료 게이트 미통과(충족 0/5)**. 실행(서비스 E2E·배포)은 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월
 
 **05-22 달성 사항:**
 - platform-svc / learning-ai 앱 코드 수정 완료 → **dev 5/5 Healthy 달성**
@@ -57,9 +57,9 @@
 | Step 9 | E2E 테스트 시나리오 정의/조율 | Not Started | — | — | |
 | Step 10 | SLA 성능 검증 | Not Started | — | — | |
 | Step 11 | Staging 최종 배포 + 모니터링 | Not Started | — | — | |
-| Step 12 | 발표 자료 + 시연 리허설 | Not Started | — | — | |
+| Step 12 | 발표 자료 + 시연 리허설 | Not Started | — | — | **실행은 W5**(6/12 리허설·6/15 발표, [PRD_W5](../prd/PRD_W5.md)) — W4는 준비 착수만 |
 
-**W4 진행률**: 0/4 Steps 완료
+**W4 진행률**: 0/3 Steps 완료 (Step 9~11 = W4 실작업. Step 12 실행은 W5로 이월)
 
 ---
 
@@ -198,7 +198,7 @@
   - **[Step 7]** E2E 결과 리포트 작성 — 전송 경로 5/5·13/13, 서비스 단위 미실행(체인 양끝 미충족) (`docs/reports/E2E_REPORT_W3.md`)
   - **[Step 7]** E2E harness 체인 시나리오 스캐폴딩 — `--scenarios` 모드(S1~S4 의존성 순서 produce + service-check 안내) `scripts/kafka-e2e-test.sh`
   - **[Step 8]** 배포 전략·승인 플로우·롤백 절차 정의 (`docs/reports/DEPLOY_REPORT_W3.md` §A~C) — 실행 검증은 EKS destroy로 보류
-  - **[게이트]** W3 종료 게이트 평가 — **미통과(1/5)**, 차단=서비스 Kafka 미완성(실측 반영) (`docs/reports/W3_EXIT_GATE.md`)
+  - **[게이트]** W3 종료 게이트 평가 — **미통과(충족 0/5)**, 차단=서비스 Kafka 미완성(실측 반영) (`docs/reports/W3_EXIT_GATE.md`)
   - **[문서]** 프로젝트 관리 문서 W3 현행화 + W1~W4 날짜·요일 정합성 정정 (커밋 b97e99a)
   - **[cross-repo]** 전체 레포 fetch/pull 최신화 + Kafka 구현 **실측** — "PR 0/5" 폐기. learning-svc main 머지(#26, card 완전·ai consumer), platform·engagement는 **dev 미머지**, **knowledge 미구현**. cards-generated 경로 **HTTP 대체** 발견 → 추적 문서 6종 현행화 + [W4_KAFKA_WORKORDER.md](../../work-orders/W4_KAFKA_WORKORDER.md) 발행
   - **[D-001]** cards-generated **HTTP 채택 확정** + EVENT_FLOW_MATRIX 정정 + AI카드 알림 트리거 설계(platform 알림 버스 notification-send-v1 재사용 — `NOTIFICATION_TRIGGER_AI_CARDS.md`)
@@ -210,7 +210,7 @@
   - **[harness]** Avro 라운드트립 모드 `--avro` 추가 → **로컬 스택 기동 후 라이브 검증 8/8 PASSED**(8토픽 produce→consume + subject `<topic>-value` 자동등록, 전역 BACKWARD). 검증 중 `occurredAt` logicalType를 평문 long으로 정정(콘솔 도구 직렬화 한계, wire/BACKWARD 호환 — 레지스트리 v1→v2 수락으로 입증)
   - **[이슈]** 4개 서비스 레포에 계약 표준 적용 이슈 발행/갱신 — platform #43, engagement #13, knowledge #26, learning #32 (Avro/shared 사용/Kafka 설정/로컬 실행/DoD/기한 W4 D1-2)
 - **진행 중**: knowledge Producer/engagement Consumer/platform·engagement dev→main PR 대기 (W4 carryover)
-- **이슈**: W3 종료 게이트 미통과(1/5) — 어떤 체인도 Producer+Consumer가 main 동시 충족 안 됨. knowledge 미구현이 체인 B 차단. cards-generated HTTP 드리프트로 매트릭스 정정 필요
+- **이슈**: W3 종료 게이트 미통과(충족 0/5) — 어떤 체인도 Producer+Consumer가 main 동시 충족 안 됨. knowledge 미구현이 체인 B 차단. cards-generated HTTP 드리프트로 매트릭스 정정 필요
 - **주간 요약**: shared/team-lead W3 책임(토픽·스키마·harness·work-order·검증 설계)은 완료. 추가로 **cross-repo 실측 → D-001(cards HTTP)·D-002(Avro 사수) 결정 → 이벤트 계약 표준 수립 → 스키마/토픽 정비 → shared 라이브러리 발행 구현(근본원인 해소) → 서비스 이슈 4건**까지 W4 롤아웃 선결 완료. 서비스 Kafka는 실측 결과 부분 진행(learning main / platform·engagement dev / knowledge 미구현)이라 **E2E service 단위·종료 게이트 미달**. EKS destroy로 dev/staging·Observability 미진행 → 구현/배포는 W4 이월. Step 7/8 In Progress 유지
 
 ### W4 (2026-06-01 ~ 06-05, 4영업일 — 6/3 지방선거 제외)
