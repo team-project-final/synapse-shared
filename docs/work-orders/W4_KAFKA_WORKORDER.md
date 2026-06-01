@@ -114,6 +114,8 @@ engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스
 
 → [TEAM_CHECKLIST_W3.md](../guides/TEAM_CHECKLIST_W3.md) "코드 리뷰 승인 기준" 준수 (CloudEvent 8필드, Consumer Group `{svc}-group`, 멱등성, application.yml Kafka 설정, 역직렬화 실패 시 로그+스킵).
 
+> **`dev→main` 머지 책임 = 각 서비스 owner** (team-lead 직접 머지 아님). 순서: **Kafka 작업 완료(계약·consumer·스키마 정합) → 코드리뷰 승인 → owner가 `dev→main` PR 머지**. team-lead는 이슈 코멘트로 독촉·리뷰 조율만. main 미머지 = 미배포 = 통합 E2E 불가이므로 Kafka 완료 직후 머지가 임계.
+
 ## 4. 검증 / 추적
 
 - 로컬 검증: `bash scripts/kafka-e2e-test.sh --scenarios` (S1~S4 의존성 순서) — 서비스 구현 후 service-check까지 확장.
