@@ -1,7 +1,7 @@
 # W4 Day 1 — `terraform apply` 후 실행 체크리스트
 
 > **작성**: 2026-06-01 (W4 Day 1) · **owner**: @team-lead (일부 gitops 협업)
-> **전제**: gitops `terraform apply` **완료**(EKS 재기동) → 아래가 잠금 해제됨
+> **전제**: 배포 검증 window에 `terraform apply`로 **EKS 재기동한 직후** 실행 (EKS는 on-demand — 06-01 apply 후 비용관리 재 destroy 상태). §4 계약 BACKWARD 실검증은 **로컬 `--avro`로 EKS 없이도 가능**.
 > **근거**: [MSK_TOPIC_SETUP](../guides/MSK_TOPIC_SETUP.md) · [DEPLOY_REPORT_W3](../reports/DEPLOY_REPORT_W3.md) §A~C · [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md) · [W4_PLAN](../project-management/W4_PLAN.md) Track A
 > **목표(한 줄)**: EKS 접속 복구 → MSK 9토픽 재생성 → dev 5/5 재확인 → Schema Registry BACKWARD **실검증** → Step 8 staging/롤백 → W3 게이트 §1 재평가
 

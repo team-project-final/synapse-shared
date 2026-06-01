@@ -24,11 +24,10 @@
 
 ## 1. 🌅 월요일(06-01) 아침 — 가장 먼저 (병렬 2트랙)
 
-### Track A — 인프라 재기동 (team-lead / gitops) ※ Kafka와 무관, 즉시 시작 — **상세: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)**
-- [x] `terraform apply` (EKS 재기동) — ✅ **06-01 완료 (gitops)**
-- [ ] `aws eks update-kubeconfig` + SG 수동 추가(D-026) + MSK 토픽 재생성(`scripts/create-kafka-topics.sh` — 9토픽, 신규 4종 포함) — 진행 대기
-- [ ] `verify-argocd-deploy.sh synapse-dev` → dev 5/5 Healthy 재확인 — 진행 대기
-- → apply 완료로 **Step 8 실행(1.7~1.9)·staging·Observability·Schema Registry 실검증 잠금 해제됨** ✅
+### Track A — 인프라 (on-demand, team-lead / gitops) ※ **Kafka·E2E 임계경로와 무관** — 상세: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)
+- [x] `terraform apply` 멱등 검증(06-01) — apply↔destroy 가능 확인. **현재 비용관리 destroy 상태**
+- [ ] **배포 검증 window**(Step 8/11 착수 시 재기동): `terraform apply` → `update-kubeconfig` + SG 수동(D-026) + MSK 9토픽 재생성(`scripts/create-kafka-topics.sh`) → `verify-argocd-deploy.sh synapse-dev` 5/5
+- → Step 8(1.7~1.9)·staging·Observability·**EKS 레지스트리** 실검증은 이 window에서. **계약 BACKWARD 실검증은 로컬 `--avro`(8/8)로 이미 가능 — EKS 불필요**
 
 ### Track B — 계약 적용 착수 (team-lead + 각 owner)
 - [ ] **(team-lead)** shared **v0.1.0 발행** — org GitHub Packages 활성화 + `git tag v0.1.0 && git push` (runbook `PUBLISH_SHARED_LIBRARY.md`). → 서비스가 `com.synapse:synapse-shared` 의존 가능

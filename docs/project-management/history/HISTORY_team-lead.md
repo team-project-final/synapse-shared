@@ -217,13 +217,13 @@
 
 #### 2026-06-01 (월) Day 1
 - **완료**:
-  - **[인프라/gitops]** `terraform apply` — **EKS 재기동 완료** → Step 8 실행(1.7~1.9)·staging·Observability·Schema Registry 실검증 **잠금 해제**
+  - **[인프라/gitops]** `terraform apply` 검증 후 비용관리 **재 destroy** — apply↔destroy 멱등 확인. **EKS는 on-demand**(배포 검증 window에만 재기동). 서비스 Kafka·통합 E2E 임계경로는 **로컬 compose로 진행, EKS 무관**(W4_PLAN §0)
   - **[문서]** W3 문서 정합성 정정 6건 — C1 게이트점수 통일(`충족 0/5`) / C2 HANDOFF_SHARED §2 토픽표 8 active 미러 / C3 Step12 W5 정렬 / C4 마일스톤 PRD 일치 / V3 `CardsGenerated.avsc` deprecated 마커 + MSK_TOPIC_SETUP 토픽목록 5→9 현행화 (커밋 `be47eda`)
   - **[배포]** shared **v0.1.0 annotated 태그 로컬 생성**(→`be47eda`) — push는 org GitHub Packages 활성화 후
   - **[운영]** W4 Day1 post-apply 실행 체크리스트 작성 → `docs/runbooks/W4_DAY1_POST_APPLY.md`
-- **진행 중**: kubeconfig 갱신 + SG 수동(D-026) + MSK 9토픽 재생성 + `verify-argocd-deploy.sh synapse-dev`(dev 5/5 재확인) → Step 8 staging Sync·롤백 + Schema Registry BACKWARD 실등록 검증
-- **이슈**: org GitHub Packages 미활성 → v0.1.0 push 보류. owner 필드 확정 2건(LevelUp/BadgeEarned) 데일리 대기
-- **다음**: dev 5/5 재확인 후 Step 8 staging 배포 검증 + W3 게이트 §1(레지스트리 BACKWARD) 재평가 → Day2 consumer(platform notification/audit) 조율
+- **진행 중**: (로컬, EKS 무관) 서비스 Kafka consumer/통합 E2E·계약 `--avro` 검증. (EKS window 시) kubeconfig+SG(D-026)+MSK 9토픽+verify 5/5 → Step 8 staging/롤백
+- **이슈**: EKS 비용관리 destroy 반복 → **배포 검증(Step 8/11)·Observability는 재기동 window 필요**(임계경로 아님). org Packages 미활성 → v0.1.0 push 보류. owner 필드 2건 데일리
+- **다음**: 로컬 우선 — Day2 consumer(platform notification/audit) 조율 + 게이트 §1은 로컬 `--avro`로 충족 가능. 배포 검증은 서비스 준비 후 EKS window 일괄
 
 #### 2026-06-02 (화) Day 2
 - **완료**:
