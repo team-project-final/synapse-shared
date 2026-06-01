@@ -47,7 +47,7 @@
 - [x] Kafka 이벤트 체인 E2E 테스트 작성 (~~Testcontainers~~ → 로컬 shell harness `scripts/kafka-e2e-test.sh`로 대체, EKS destroy로 로컬 우선)
 - [x] 서비스 간 이벤트 발행 → 소비 → 결과 검증 자동화 (**전송 경로 한정**: produce→consume + CloudEvent 페이로드 단위 round-trip. consumer 비즈니스 로직은 서비스 구현 도착 시 확장)
 - [x] 코드 리뷰 전 PR 승인 프로세스 적용 → work-order 발행 + 코드 리뷰 승인 기준 (`W3_KAFKA_WORKORDER.md`, TASK Step 7)
-- [ ] 각 서비스 담당자 테스트 결과 취합 — 팀원 Kafka 산출물 PR 0/5로 취합 대상 미도착 (05-27 EOD 기준)
+- [~] 각 서비스 담당자 테스트 결과 취합 — **06-01 재측정**: platform/learning dev에 Avro 전환·알림 발행 진행 / engagement·knowledge 미진전(knowledge P0 Producer 검색에 밀림). 취합은 dev 기준, 완전 취합은 main 머지 후
 
 ### 1.8 통합 테스트 실행 및 검증
 - [x] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry/kafka-init) 기동 + **`--avro` 라이브 8/8 PASSED**(8토픽 Avro 라운드트립 + subject 자동등록, 전역 BACKWARD). 앱 서비스 비즈니스 로직 E2E는 구현 도착 후(W4)
@@ -58,7 +58,7 @@
 ### 1.9 코드 리뷰 조율
 - [x] 각 서비스 PR 리뷰 현황 취합 — cross-repo 실측(05-29): learning main 머지 / platform·engagement dev / knowledge 미구현
 - [x] 크로스 서비스 영향도 리뷰 (이벤트 스키마 호환성) — **스키마 패밀리 분기(D-002) 발견 → Avro 사수 결정 + 이벤트 계약 표준 수립**(`EVENT_CONTRACT_STANDARD.md`). cards-generated HTTP 드리프트 정정(D-001)
-- [ ] PR 승인 및 main 브랜치 머지 조율 — 계약 표준 적용 이슈 발행(#43/#13/#26/#32), 머지는 W4
+- [~] PR 승인 및 main 브랜치 머지 조율 — 계약 표준 이슈(#43/#13/#26 OPEN·#32 CLOSED). **06-01 재측정: 작업이 전부 dev 고립, 열린 PR 0건** → platform(#44)·learning(#35) **dev→main PR 유도**가 즉시 조율 대상
 
 ### 1.10 결과 정리
 - [x] E2E 테스트 결과 리포트 작성 → `docs/reports/E2E_REPORT_W3.md` + 종료 게이트 `W3_EXIT_GATE.md`(미통과 충족 0/5)

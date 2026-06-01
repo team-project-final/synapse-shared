@@ -47,7 +47,7 @@
 | MSK 토픽 (EKS) | ⏳ destroy — 재기동 window에 `create-kafka-topics.sh` 9토픽(8 active + cards-generated 잔존) 재생성 |
 | 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
 | 라이브러리 발행 | ✅ 구현 — GitHub Packages `com.synapse:synapse-shared`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). 잔여: org Packages 활성화 + v0.1.0 태그 발행 |
-| 서비스 Kafka Producer/Consumer | 🟡 부분 (05-29 실측): learning-card ✅main / learning-ai 🟡Consumer만main / platform·engagement 🟡dev미머지 / knowledge 🔴미구현. cards-generated HTTP 확정(D-001). 전 서비스 계약 표준 적용 이슈 발행(#43/#13/#26/#32). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
+| 서비스 Kafka Producer/Consumer | 🟡 dev 진행 (**06-01 재측정**): learning ✅dev(Avro 소비전환+알림발행 #35, #32 CLOSED) / platform ✅dev(Avro 전환 #44) / **engagement 🔴 정체**(05-29 후 dev 커밋 0, Consumer 미구현) / **knowledge 🔴 P0 Producer 미착수**(검색 작업 중, #26 OPEN). ⚠️ 전부 **dev 고립·열린 PR 0건 → dev→main 머지 필요**. cards-generated HTTP(D-001). → [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) |
 
 ---
 
