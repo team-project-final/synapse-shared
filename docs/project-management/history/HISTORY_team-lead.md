@@ -221,6 +221,7 @@
   - **[문서]** W3 문서 정합성 정정 6건 — C1 게이트점수 통일(`충족 0/5`) / C2 HANDOFF_SHARED §2 토픽표 8 active 미러 / C3 Step12 W5 정렬 / C4 마일스톤 PRD 일치 / V3 `CardsGenerated.avsc` deprecated 마커 + MSK_TOPIC_SETUP 토픽목록 5→9 현행화 (커밋 `be47eda`)
   - **[배포]** shared **v0.1.0 annotated 태그 로컬 생성**(→`be47eda`) — push는 org GitHub Packages 활성화 후
   - **[운영]** W4 Day1 post-apply 실행 체크리스트 작성 → `docs/runbooks/W4_DAY1_POST_APPLY.md`
+  - **[Step 7]** W3 미체크 항목 진행(A→C→B): **(A/7-1.3)** Kafka 인증 모델(MSK IAM)+권한 매트릭스 확정(`KAFKA_AUTH_MATRIX.md`) / **(C/7-1.7,1.9)** 서비스 Kafka 06-01 재측정(learning·platform dev 진전 / engagement 정체 / knowledge P0 미착수 / 전부 dev 고립·PR 0) / **(B/7-1.8)** 로컬 EndToEndLatency 측정 — avg 1.3ms·p99 3~4ms·p99.9 ~40ms → 전파 NFR(<3초) 입증
 - **진행 중**: (로컬, EKS 무관) 서비스 Kafka consumer/통합 E2E·계약 `--avro` 검증. (EKS window 시) kubeconfig+SG(D-026)+MSK 9토픽+verify 5/5 → Step 8 staging/롤백
 - **이슈**: EKS 비용관리 destroy 반복 → **배포 검증(Step 8/11)·Observability는 재기동 window 필요**(임계경로 아님). org Packages 미활성 → v0.1.0 push 보류. owner 필드 2건 데일리
 - **다음**: 로컬 우선 — Day2 consumer(platform notification/audit) 조율 + 게이트 §1은 로컬 `--avro`로 충족 가능. 배포 검증은 서비스 준비 후 EKS window 일괄
