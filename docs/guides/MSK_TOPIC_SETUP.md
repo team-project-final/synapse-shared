@@ -9,9 +9,13 @@
 
 ## 환경별 브로커 주소
 
-| 환경 | Bootstrap Servers |
+> ⚠️ **브로커 주소는 재apply(클러스터 재생성)마다 변경**(`fark5c`→`v2grm6` 06-01 확인). **하드코딩 금지 — 매 window마다 fetch**:
+> `aws kafka get-bootstrap-brokers --cluster-arn $(aws kafka list-clusters-v2 --region ap-northeast-2 --query 'ClusterInfoList[0].ClusterArn' --output text) --region ap-northeast-2 --query BootstrapBrokerStringTls --output text`
+> 변경 시 **gitops ConfigMap `KAFKA_BROKERS` 갱신** 필요.
+
+| 환경 | Bootstrap Servers (TLS, 9094) — *재apply마다 변경, 위 명령으로 확인* |
 |------|------------------|
-| dev | `b-1.synapsedevkafka.fark5c.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.fark5c.c2.kafka.ap-northeast-2.amazonaws.com:9094` |
+| dev (06-01 현재) | `b-1.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094` |
 | staging | TBD (인프라 프로비저닝 후 업데이트) |
 | prod | TBD (인프라 프로비저닝 후 업데이트) |
 
@@ -27,7 +31,7 @@ aws ssm start-session --target <bastion-instance-id> --region ap-northeast-2
 
 **Dev 환경 (replication-factor=3, min.insync.replicas=2):**
 ```bash
-KAFKA_BROKERS="b-1.synapsedevkafka.fark5c.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.fark5c.c2.kafka.ap-northeast-2.amazonaws.com:9094" \
+KAFKA_BROKERS="b-1.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094" \
   bash scripts/create-kafka-topics.sh
 ```
 

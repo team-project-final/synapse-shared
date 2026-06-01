@@ -7,6 +7,21 @@
 
 ---
 
+## 06-01 재apply 라이브 실측 (AWS API — 클러스터 네트워크 불필요, team-lead 확인 완료)
+
+| 대상 | 상태 |
+|------|------|
+| EKS `synapse-dev` | ✅ **ACTIVE** (v1.30), 노드그룹 `synapse-dev-nodes` ACTIVE desired=4, health 정상 |
+| MSK `synapse-dev-kafka` | ✅ **ACTIVE** (PROVISIONED) |
+| EKS API 엔드포인트 | ⚠️ **`endpointPublicAccess=false` (프라이빗 전용)** → kubectl/argocd/MSK 작업은 **VPC 내부(bastion SSM)에서만**. 외부 머신 kubeconfig는 타임아웃(설계상 정상) |
+| MSK 브로커 주소 | ⚠️ **변경됨** `…fark5c…` → `…v2grm6…` → **gitops ConfigMap `KAFKA_BROKERS` 갱신 필요**. TLS: `b-1/b-2.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094` |
+| MSK 인증 | ⚠️ **SASL/IAM 미활성** (`BootstrapBrokerStringSaslIam=null`) → [KAFKA_AUTH_MATRIX](../guides/KAFKA_AUTH_MATRIX.md)의 IAM 모델과 불일치. **결정 필요**: (A) MSK에 IAM 활성화(terraform) / (B) TLS-only로 인증 모델 수정 |
+
+> **선결 2건(이 window 시작 전)**: ① 신규 브로커 주소 ConfigMap 반영 ② MSK IAM 활성화 여부 결정.
+> 인프라는 ACTIVE이므로 아래 §1~§6은 **bastion 내부**에서 실행 가능.
+
+---
+
 ## 임계 경로
 
 ```

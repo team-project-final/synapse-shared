@@ -17,6 +17,11 @@
 
 > 로컬은 인증 없음 → `kafka-e2e-test.sh`/서비스가 그대로 동작. dev부터 IAM 적용.
 
+> ⚠️ **06-01 재apply 실측 — IAM 미활성**: `aws kafka get-bootstrap-brokers`에서 `BootstrapBrokerStringSaslIam=null`, TLS(9094)만 제공. 즉 **현재 MSK는 IAM 인증이 켜져 있지 않음**. 본 매트릭스의 IAM 모델을 쓰려면 **선결 결정 필요**:
+> - **(A, 권장)** MSK 클러스터 구성에 **SASL/IAM 활성화**(terraform `client_authentication.sasl.iam=true`) → IAM Policy/IRSA 매트릭스 적용.
+> - **(B)** TLS-only 유지 → 서비스 간 토픽 인가는 **SG/네트워크 경계**로만(세분 인가 없음). 이 경우 §3 IAM Policy는 미사용.
+> → gitops와 결정 후 §1 표·§5 적용단계 갱신.
+
 ---
 
 ## 2. 서비스별 권한 매트릭스 (단일 출처 = EVENT_CONTRACT_STANDARD §2)
