@@ -18,8 +18,26 @@
 | MSK 인증 | ⚠️ **SASL/IAM 미활성** (`BootstrapBrokerStringSaslIam=null`) → [KAFKA_AUTH_MATRIX](../guides/KAFKA_AUTH_MATRIX.md)의 IAM 모델과 불일치. **결정 필요**: (A) MSK에 IAM 활성화(terraform) / (B) TLS-only로 인증 모델 수정 |
 | bastion 역할 권한 | ⚠️ `synapse-dev-bastion-role`에 **`kafka:ListClustersV2`/`GetBootstrapBrokers` 없음** → bastion 자체 브로커 fetch 불가(AccessDenied). 임시: team-lead가 fetch해 BROKER 직접 전달 / durable: terraform로 역할에 kafka read 추가 |
 
-> **선결 2건(이 window 시작 전)**: ① 신규 브로커 주소 ConfigMap 반영 ② MSK IAM 활성화 여부 결정.
-> 인프라는 ACTIVE이므로 아래 §1~§6은 **bastion 내부**에서 실행 가능.
+### ⛔ bastion 검증 선결 (gitops/infra) — 06-01 실측, **이게 없으면 §1~§6 실행 불가**
+
+bastion(`synapse-dev-bastion`)에서 직접 시도한 결과 **모든 경로가 막힘**:
+
+| 경로 | 막힌 이유 | gitops/infra 선결 |
+|------|----------|------------------|
+| **kubectl** (Step 3·파드 토픽) | 클러스터 authMode=**CONFIG_MAP**, bastion 역할이 **aws-auth 미매핑** → 401 Unauthorized | `aws-auth` ConfigMap `mapRoles`에 bastion 역할 추가 (또는 authMode를 API_AND_CONFIG_MAP로 전환 후 access-entry) |
+| **kafka CLI** | bastion에 Java·Kafka **미설치** | Java+Kafka 설치(NAT 필요) 또는 aws-auth 매핑 후 **EKS kafka 파드** |
+| **브로커 fetch** | 역할에 `kafka:ListClustersV2`/`GetBootstrapBrokers` 없음 | (우회됨: team-lead가 BROKER 직접 전달) |
+
+**aws-auth 매핑 예시** (gitops/terraform — cluster-creator 권한 필요):
+```yaml
+# kube-system/aws-auth ConfigMap data.mapRoles 에 추가
+- rolearn: arn:aws:iam::963773969059:role/synapse-dev-bastion-role
+  username: bastion
+  groups: [system:masters]    # 또는 read 전용 그룹
+```
+
+> **다른 선결 2건**: ① 신규 브로커 주소 ConfigMap 반영 ② MSK IAM 활성화 여부 결정([KAFKA_AUTH_MATRIX](../guides/KAFKA_AUTH_MATRIX.md)).
+> 인프라는 ACTIVE이나 **bastion 접근이 gitops에 막혀** §1~§6 미실행. → **gitops 선결 후** 또는 서비스 배포 준비 시점에 재개. 한편 **MSK 토픽은 terraform 선언 관리**로 전환하면 이 수동 단계 자체가 제거됨(권장).
 
 ---
 

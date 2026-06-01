@@ -4,7 +4,7 @@
 
 1. **AWS 인증**: `aws sts get-caller-identity`로 확인
 2. **네트워크 접근**: VPN 또는 SSM Bastion을 통해 MSK 보안그룹 내부 접근 필요
-3. **Kafka CLI**: `kafka-topics.sh` 사용 가능 (MSK Bastion에 설치됨)
+3. **Kafka CLI**: ⚠️ **bastion에 기본 미설치**(06-01 실측 — Java·Kafka 둘 다 없음). 별도 준비 필요: (a) Java+Kafka tarball 다운로드(NAT 필요) 또는 (b) **EKS 내부 kafka 파드**(aws-auth 매핑 선결, 권장)
 4. **브로커 주소**: 환경별 bootstrap server 확인
 
 ## 환경별 브로커 주소
