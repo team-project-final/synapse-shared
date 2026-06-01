@@ -20,7 +20,7 @@
 - [x] Instructions 초안 → TASK 문서 반영 (05-22 선행 준비)
 
 ### 1.3 Security 1차 검토
-- [ ] Kafka 토픽 ACL 설정 확인 (서비스별 발행/소비 권한) — Day 1 gitops 세션에서 확인
+- [~] Kafka 토픽 ACL/권한 확인 — **인증 모델(MSK IAM, ACL 미사용) + 서비스별 produce/consume 권한 매트릭스 확정** → `docs/guides/KAFKA_AUTH_MATRIX.md`. IAM Policy/IRSA 실적용·검증만 EKS window
 - [x] 이벤트 페이로드 민감정보 포함 여부 점검 → UserRegistered.email만 PII (EVENT_FLOW_MATRIX.md §4)
 - [x] 서비스 간 인증 토큰 전파 방식 확인 → CloudEvent traceparent 기반 (TASK Constraints 반영)
 - [x] 결과 → TASK Constraints 반영 (05-22 선행 준비)
