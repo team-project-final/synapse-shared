@@ -244,6 +244,67 @@ bash scripts/verify-argocd-deploy.sh synapse-dev
 
 ---
 
+## Bastion 검증 실행 (SSM) — 2~4단계 (재apply window)
+
+> EKS 엔드포인트가 **프라이빗 전용**이라 kubectl/argocd/MSK는 **VPC 내부 bastion에서만**. bastion = `i-0702b02eee5ed19d6`(`synapse-dev-bastion`, SSM Online). MSK는 **TLS(9094)·SASL/IAM 미활성** → `--command-config`(SSL) 필수.
+
+### 0. 접속 + 스크립트 확보
+```bash
+aws ssm start-session --target i-0702b02eee5ed19d6 --region ap-northeast-2
+# bastion 내부:
+git clone https://github.com/team-project-final/synapse-shared.git && cd synapse-shared   # 토큰 필요. 불가 시 Step2는 인라인(아래)
+```
+
+### Step 2 — MSK 9토픽 생성 (TLS)
+```bash
+# 브로커 주소는 재apply마다 변경 → 항상 fetch
+BROKER=$(aws kafka get-bootstrap-brokers --region ap-northeast-2 \
+  --cluster-arn $(aws kafka list-clusters-v2 --region ap-northeast-2 --query 'ClusterInfoList[0].ClusterArn' --output text) \
+  --query BootstrapBrokerStringTls --output text)
+printf 'security.protocol=SSL\n' > /tmp/client.properties      # MSK = TLS 암호화, 클라이언트 인증 없음
+
+# (A) 스크립트 — TLS 지원 추가됨(COMMAND_CONFIG)
+COMMAND_CONFIG=/tmp/client.properties KAFKA_BROKERS="$BROKER" REPLICATION_FACTOR=3 MIN_INSYNC_REPLICAS=2 \
+  bash scripts/create-kafka-topics.sh
+# (B) clone 불가 시 인라인
+for t in platform.auth.user-registered-v1 knowledge.note.note-created-v1 knowledge.note.note-updated-v1 \
+  learning.card.review-completed-v1 learning.card.review-due-v1 engagement.gamification.level-up-v1 \
+  engagement.gamification.badge-earned-v1 platform.notification.notification-send-v1 learning.ai.cards-generated-v1; do
+  kafka-topics.sh --bootstrap-server "$BROKER" --command-config /tmp/client.properties \
+    --create --if-not-exists --topic "$t" --partitions 3 --replication-factor 3 \
+    --config min.insync.replicas=2 --config retention.ms=604800000
+done
+kafka-topics.sh --bootstrap-server "$BROKER" --command-config /tmp/client.properties --list   # 9토픽 확인
+```
+
+### Step 3 — dev 배포 검증 (bastion은 private endpoint 접근 가능)
+```bash
+aws eks update-kubeconfig --name synapse-dev --region ap-northeast-2
+kubectl get nodes && kubectl get pods -n synapse-dev
+bash scripts/verify-argocd-deploy.sh synapse-dev      # 5/5 (Sync/Health/ExternalSecret)
+```
+> 선결: bastion에 `kubectl`+`argocd` CLI. argocd 사용 시 `argocd login <argocd-server> --sso`(또는 admin) 먼저.
+
+### Step 4 — Schema Registry BACKWARD 실등록 (REST, **docker-exec harness 아님**)
+> 로컬 `kafka-e2e-test.sh --avro`는 docker-compose 전용 → 클러스터엔 부적합. dev Schema Registry **REST API**로 검증:
+```bash
+kubectl get svc -A | grep -i schema-registry                       # 배포 위치 확인
+kubectl -n <ns> port-forward svc/<schema-registry> 8081:8081 &
+curl -s localhost:8081/config        # {"compatibilityLevel":"BACKWARD"} 기대
+curl -s localhost:8081/subjects      # 등록된 <topic>-value 목록
+# 호환성 체크(예: LevelUp)
+curl -s -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" \
+  --data "$(jq -Rs '{schema:.}' src/main/avro/engagement/LevelUp.avsc)" \
+  localhost:8081/compatibility/subjects/engagement.gamification.level-up-v1-value/versions/latest
+# → {"is_compatible":true} 기대. 게이트 §1(레지스트리 BACKWARD) 해소 근거
+```
+> ⚠️ dev에 Schema Registry **미배포면** 이 단계는 SR 배포(gitops) 후. (W3 게이트 §1 "URL 미설정"이 이 맥락.)
+
+### 종료
+결과(토픽 9 / verify 5/5 / SR BACKWARD)를 team-lead에 전달 → 게이트 §1·HANDOFF 갱신. 서비스 미머지 상태면 검증 후 **EKS destroy**(비용).
+
+---
+
 ## 트러블슈팅
 
 | 증상 | 원인 | 해결 |
