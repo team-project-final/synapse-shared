@@ -256,11 +256,18 @@ git clone https://github.com/team-project-final/synapse-shared.git && cd synapse
 ```
 
 ### Step 2 — MSK 9토픽 생성 (TLS)
+
+> ⚠️ **bastion 역할 권한 갭**: `synapse-dev-bastion-role`에 `kafka:ListClustersV2`(및 `GetBootstrapBrokers`)가 **없음**(06-01 확인) → bastion에서 직접 fetch 시 `AccessDeniedException`. 아래 우선순위로 BROKER 확보:
+> 1. **(권장)** 권한 있는 머신(team-lead 로컬)에서 fetch한 값을 **직접 지정** ↓
+> 2. (durable) 인프라가 bastion 역할에 `kafka:DescribeCluster*`·`GetBootstrapBrokers`·`ListClustersV2` 추가(terraform) 후 fetch
+
 ```bash
-# 브로커 주소는 재apply마다 변경 → 항상 fetch
-BROKER=$(aws kafka get-bootstrap-brokers --region ap-northeast-2 \
-  --cluster-arn $(aws kafka list-clusters-v2 --region ap-northeast-2 --query 'ClusterInfoList[0].ClusterArn' --output text) \
-  --query BootstrapBrokerStringTls --output text)
+# 1) BROKER 직접 지정 — 재apply마다 team-lead가 fetch해 전달(아래는 06-01 v2grm6 값)
+BROKER="b-1.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094"
+#    (권한 있으면 ARN 명시 fetch도 가능)
+#    aws kafka get-bootstrap-brokers --region ap-northeast-2 \
+#      --cluster-arn arn:aws:kafka:ap-northeast-2:963773969059:cluster/synapse-dev-kafka/a82f880a-d195-4223-ae1b-c7aee86ce5d8-2 \
+#      --query BootstrapBrokerStringTls --output text
 printf 'security.protocol=SSL\n' > /tmp/client.properties      # MSK = TLS 암호화, 클라이언트 인증 없음
 
 # (A) 스크립트 — TLS 지원 추가됨(COMMAND_CONFIG)
