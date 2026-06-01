@@ -1,6 +1,6 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-01 (W4 Day 1 — EKS `terraform apply` 후 비용관리 **재 destroy**. on-demand 운영)
+> **최종 갱신**: 2026-06-01 (W4 Day 1 — EKS apply→검증보류→**destroy**. 서비스 dev→main 머지 우선, EKS는 배포 준비 시 재apply)
 > **현재 주차**: W4 Day 1 (06-01)
 > **갱신자**: @VelkaressiaBlutkrone
 
@@ -10,7 +10,7 @@
 
 ### 환경별 서비스 상태
 
-> 🔄 **EKS는 on-demand** — **현재 ACTIVE (06-01 재apply, 배포 검증 window 중)**. 상태는 apply↔destroy로 변동 → 확인은 `aws eks describe-cluster --name synapse-dev`. **엔드포인트 프라이빗 전용 → kubectl/argocd/MSK 검증은 bastion 내부에서만**.
+> ⏳ **EKS는 on-demand** — **현재 destroy** (06-01 apply→검증보류→destroy). 상태는 apply↔destroy로 변동 → **확인은 `aws eks describe-cluster --name synapse-dev`**(STATUS/존재 여부). 재apply 시 엔드포인트 프라이빗 전용 + bastion aws-auth 선결([W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)).
 > **임계경로(서비스 Kafka·통합 E2E·계약)는 EKS 무관** → **로컬 docker-compose**로 진행([W4_PLAN](./W4_PLAN.md) §0 "[배포] Kafka 무관, 병렬 가능"). EKS는 **배포 검증(Step 8/11)·Observability window**에만 재기동 → 검증 → 다시 destroy.
 > 재기동 시 절차: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md).
 
@@ -29,12 +29,12 @@
 
 | 컴포넌트 | 상태 | 비고 |
 |---|---|---|
-| EKS | ✅ ACTIVE (on-demand) | 06-01 재apply. v1.30, 노드그룹 desired=4 ACTIVE. **프라이빗 엔드포인트**(bastion 전용) |
-| RDS PostgreSQL 16 | 🔄 재apply | SG 수동 추가(D-026) 확인 대기 |
-| MSK Kafka | ✅ ACTIVE | 브로커 **v2grm6**(재apply마다 변경 → ConfigMap 갱신). `create-kafka-topics.sh` 9토픽 재생성 대기 |
-| Redis | 🔄 재apply | SG 수동 추가(D-026) 확인 대기 |
-| OpenSearch | 🔄 재apply | SG 수동 추가(D-026) 확인 대기 |
-| ArgoCD | 🔄 재apply | HA, dev auto-sync + staging manual. bastion에서 sync 확인 대기 |
+| EKS | ⏳ destroy (on-demand) | 06-01 destroy. 재apply 시 v1.30, 프라이빗 엔드포인트, SG/aws-auth 선결 |
+| RDS PostgreSQL 16 | ⏳ destroy | 재apply 후 SG 수동(D-026) |
+| MSK Kafka | ⏳ destroy | 재apply마다 브로커 주소 변경(`get-bootstrap-brokers`) + 토픽 재생성. 로컬 Kafka로 대체 검증 |
+| Redis | ⏳ destroy | 재apply 후 SG 수동(D-026) |
+| OpenSearch | ⏳ destroy | 재apply 후 SG 수동(D-026) |
+| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual (재apply 시 복원) |
 | 로컬 docker-compose | ✅ | 13 서비스 Healthy — **W4 임계경로 검증 환경**(EKS 무관) |
 
 ### Kafka / 스키마 상태
