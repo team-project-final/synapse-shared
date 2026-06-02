@@ -47,18 +47,18 @@
 | MSK 토픽 (EKS) | ⏳ destroy — 재기동 window에 `create-kafka-topics.sh` 9토픽(8 active + cards-generated 잔존) 재생성 |
 | 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
 | 라이브러리 발행 | ✅ **발행 완료(06-02)** — GitHub Packages `com.synapse:synapse-shared:0.1.0`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). `v0.1.0` 태그 push → publish.yml run 26792658024 성공. 잔여: 각 서비스 소비측 의존 배선(read:packages 토큰) |
-| 서비스 Kafka Producer/Consumer | 🟡 dev: **platform** 🟢(Avro+Outbox·notification/audit Consumer·멱등성) · **learning** 🟢(Avro 소비+알림발행, #32 CLOSED) — 둘 다 **dev 고립·PR 0건 → main 머지 필요** / **engagement** 🟡(**06-02 갱신**: Producer Avro 전환 ✅ + **스키마 비호환 해소 ✅**(shared `LevelUp`/`BadgeEarned` 벤더링, 구 GamificationLevelUp 제거, #13 CLOSED) — **Consumer 0건 🔴 + dev→main 미머지** → 신규 [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15)) / **knowledge** 🟡(**06-02 갱신**: NoteCreated/Updated **Kafka Producer 구현 ✅**(#32) — Confluent Avro + shared 스키마 바이트동일(title/deckId) + AFTER_COMMIT 브리지 + 테스트. **dev→main 미머지**가 잔여, 머지 시 [knowledge#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26) 클로즈). cards-generated HTTP(D-001). → [W4_KAFKA_WORKORDER §0.5](../work-orders/W4_KAFKA_WORKORDER.md) |
+| 서비스 Kafka Producer/Consumer | 🟢 **구현 전원 완료(06-02), 잔여=dev→main 머지** · **platform** 🟢(Avro+Outbox·notification/audit Consumer·멱등성) · **learning** 🟢(Avro 소비+알림발행, #32 CLOSED) · **engagement** 🟢(Producer Avro·스키마 정합 #13 CLOSED + **Consumer 구현 ✅**(#17: @KafkaListener ×2·group·멱등성·ErrorHandlingDeserializer) → [#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15) 머지 잔여 · 소소: 벤더링 ReviewCompleted eventId 재동기 권고) · **knowledge** 🟢(NoteCreated/Updated **Producer ✅**(#32) Confluent Avro·스키마 바이트동일·AFTER_COMMIT 브리지·테스트 → [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26) 머지 잔여). **전원 dev→main 미머지** = 통합 E2E 차단. cards-generated HTTP(D-001). → [W4_KAFKA_WORKORDER §0.5](../work-orders/W4_KAFKA_WORKORDER.md) |
 
 ---
 
 ## 2. 교차 의존관계 맵
 
 ```
-[블로커-최우선] 서비스 Kafka (06-02 실측): 구현은 거의 완료, 임계경로=머지+Consumer 1건
-    ├─ knowledge NoteCreated/Updated Producer ✅구현(#32) — dev→main 머지만 잔여
-    ├─ engagement Consumer 🔴미구현(#15) + dev→main / 스키마·Producer ✅(#13)
-    ├─ platform ✅구현 — dev→main PR 잔여
-    └─ learning ✅구현 — dev→main PR 잔여
+[블로커-최우선] 서비스 Kafka (06-02 실측): **구현 전원 완료, 임계경로=dev→main 머지뿐**
+    ├─ knowledge Producer ✅(#32) — dev→main 잔여(#26)
+    ├─ engagement Consumer ✅(#17: @KafkaListener·group·멱등성) + Producer/스키마 ✅(#13) — dev→main 잔여(#15)
+    ├─ platform ✅구현 — dev→main 잔여
+    └─ learning ✅구현 — dev→main 잔여
     └─→ (전원 main 머지 후) shared E2E consumer 비즈니스 로직 검증 가능
         └─→ W3 종료 게이트 충족 (PRD_W3 §5) → staging 프로모션 테스트
 
@@ -91,10 +91,10 @@
 > **▶ 월요일(06-01) 바로 시작 순서: [W4_PLAN.md](./W4_PLAN.md)** — Day1 병렬 2트랙(A: EKS `terraform apply` / B: v0.1.0 발행 + knowledge Producer 착수 + 필드 확정), 화요일 consumer, 목요일 통합 E2E.
 
 ```
-1. [shared/팀] 🔴 최우선 — Kafka 마무리 (06-02 실측: 구현 거의 완료, 임계=머지+Consumer 1건)
-     → **engagement Consumer 신규([#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15), P0)** · **전원 dev→main 머지**(knowledge#26·engagement·platform·learning — owner 직접)
-     → ✅ 완료분: knowledge Producer(#32)·engagement 스키마/Producer(#13)·platform·learning 구현 / cards-generated HTTP(D-001 확정)
-     → 완료 기준: Consumer 구현 → 승인 기준 통과 → main 머지 → service E2E
+1. [shared/팀] 🔴 최우선 — Kafka 마무리 (06-02 실측: **구현 전원 완료, 잔여=머지뿐**)
+     → **전원 dev→main 머지**(engagement#15·knowledge#26·platform·learning — owner 직접) → service E2E
+     → ✅ 완료분: platform·learning·knowledge Producer(#32)·**engagement Consumer(#17)+스키마/Producer(#13)** / cards-generated HTTP(D-001)
+     → 소소: engagement 벤더링 ReviewCompleted eventId 재동기(#15 코멘트) — 비차단
 2. [shared] 서비스 PR 도착 시 E2E consumer 시나리오 확장 검증
      → ✅ 선행 완료: 로컬 harness 전송 경로 + CloudEvent 단위 round-trip (--all 5/5, --full 13/13)
      → 잔여: E2E_SCENARIOS_W3.md 시나리오로 consumer 비즈니스 로직까지 검증
