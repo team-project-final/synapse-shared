@@ -1,5 +1,10 @@
 # MSK 토픽 생성 가이드
 
+> ⚠️ **2026-06-02 갱신 — MSK 토픽은 terraform 선언 관리로 전환됨.**
+> dev MSK 9토픽은 **gitops `infra/aws/dev/kafka-topics/`**(terraform `kafka_topic`)가 권위. **partitions 3 / RF 2(dev 2브로커) / min.insync.replicas 2 / retention.ms 604800000(168h)**.
+> 본 문서의 **수동 `create-kafka-topics.sh`(bastion) 절차는 (a) 로컬 docker-compose 토픽 생성, (b) terraform provider 접속 실패 시 폴백**으로만 사용. 정상 경로는 `terraform apply`다.
+> 인증은 **TLS-only(B) 확정** — SASL/IAM·Kafka ACL은 **미적용(W5+ 백로그)**, 아래 해당 섹션은 참조용. 근거: [KAFKA_AUTH_MATRIX](./KAFKA_AUTH_MATRIX.md) · gitops spec `2026-06-02-w4-remaining-msk-terraform-tls`.
+
 ## 사전 조건
 
 1. **AWS 인증**: `aws sts get-caller-identity`로 확인
@@ -29,9 +34,11 @@ aws ssm start-session --target <bastion-instance-id> --region ap-northeast-2
 
 ### Step 2: 스크립트 실행
 
-**Dev 환경 (replication-factor=3, min.insync.replicas=2):**
+**Dev 환경 (replication-factor=2 — dev MSK 2브로커, min.insync.replicas=2)** — *폴백 전용, 정상 경로는 terraform*:
 ```bash
-KAFKA_BROKERS="b-1.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-2.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094" \
+# ⚠️ dev MSK는 2브로커 → RF=2 명시 필수(스크립트 기본값 3은 InvalidReplicationFactorException).
+# 브로커 주소는 재apply마다 변경 → fetch한 실제 값으로 교체.
+KAFKA_BROKERS="<BootstrapBrokerStringTls — 매 window fetch>" REPLICATION_FACTOR=2 MIN_INSYNC_REPLICAS=2 \
   bash scripts/create-kafka-topics.sh
 ```
 
@@ -49,7 +56,7 @@ kafka-topics.sh --bootstrap-server "$KAFKA_BROKERS" --describe --topic platform.
 
 Expected:
 - Partitions: 3
-- ReplicationFactor: 3 (dev/staging/prod) or 1 (local)
+- ReplicationFactor: **2 (dev MSK 2브로커)** or 1 (local) — terraform `var.replication_factor`(dev=2). prod은 브로커 수에 맞춤.
 - Configs: retention.ms=604800000, cleanup.policy=delete, min.insync.replicas=2
 
 ## 생성되는 토픽 목록
@@ -119,9 +126,11 @@ spring:
 
 > MSK Serverless/Provisioned는 기본적으로 TLS를 제공합니다. PLAINTEXT(9092)는 비활성화 권장.
 
-### SASL/IAM 인증 (선택)
+### SASL/IAM 인증 (~~선택~~ — **미적용, W5+ 백로그**)
 
-MSK가 IAM 인증을 사용하는 경우:
+> ⛔ **TLS-only(B) 확정으로 미사용.** 아래는 향후 A(SASL/IAM) 전환 시 참조용. 현재 dev/staging/prod MSK는 `security.protocol: SSL`만 사용([KAFKA_AUTH_MATRIX §4](./KAFKA_AUTH_MATRIX.md)).
+
+MSK가 IAM 인증을 사용하는 경우(A안):
 
 ```yaml
 spring:
@@ -270,15 +279,15 @@ BROKER="b-1.synapsedevkafka.v2grm6.c2.kafka.ap-northeast-2.amazonaws.com:9094,b-
 #      --query BootstrapBrokerStringTls --output text
 printf 'security.protocol=SSL\n' > /tmp/client.properties      # MSK = TLS 암호화, 클라이언트 인증 없음
 
-# (A) 스크립트 — TLS 지원 추가됨(COMMAND_CONFIG)
-COMMAND_CONFIG=/tmp/client.properties KAFKA_BROKERS="$BROKER" REPLICATION_FACTOR=3 MIN_INSYNC_REPLICAS=2 \
+# (A) 스크립트 — TLS 지원 추가됨(COMMAND_CONFIG). dev MSK 2브로커 → RF=2.
+COMMAND_CONFIG=/tmp/client.properties KAFKA_BROKERS="$BROKER" REPLICATION_FACTOR=2 MIN_INSYNC_REPLICAS=2 \
   bash scripts/create-kafka-topics.sh
 # (B) clone 불가 시 인라인
 for t in platform.auth.user-registered-v1 knowledge.note.note-created-v1 knowledge.note.note-updated-v1 \
   learning.card.review-completed-v1 learning.card.review-due-v1 engagement.gamification.level-up-v1 \
   engagement.gamification.badge-earned-v1 platform.notification.notification-send-v1 learning.ai.cards-generated-v1; do
   kafka-topics.sh --bootstrap-server "$BROKER" --command-config /tmp/client.properties \
-    --create --if-not-exists --topic "$t" --partitions 3 --replication-factor 3 \
+    --create --if-not-exists --topic "$t" --partitions 3 --replication-factor 2 \
     --config min.insync.replicas=2 --config retention.ms=604800000
 done
 kafka-topics.sh --bootstrap-server "$BROKER" --command-config /tmp/client.properties --list   # 9토픽 확인
