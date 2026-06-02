@@ -53,10 +53,12 @@ shared 라이브러리가 아직 레포에 배포되지 않으므로(아래 §6)
 ```kotlin
 plugins { id("com.github.davidmc24.gradle.plugin.avro") version "1.9.1" }
 dependencies {
-    implementation("org.apache.avro:avro:1.12.0")
-    implementation("io.confluent:kafka-avro-serializer:7.7.0")
+    implementation("org.apache.avro:avro:1.11.3")            // 정본 = shared build·발행 lib(v0.1.0)와 동일
+    implementation("io.confluent:kafka-avro-serializer:7.5.0")
 }
 ```
+> **버전 정본(2026-06-02 결정)**: **Avro `1.11.3` / Confluent `kafka-avro-serializer 7.5.0` / avro 플러그인 `1.9.1`** — synapse-shared `build.gradle.kts`(발행된 `com.synapse:synapse-shared:0.1.0`)가 단일 출처. engagement·knowledge 서비스도 동일 사용. (Avro 1.12.0은 Confluent 7.x serializer가 기대하는 1.11.x와 어긋나고 발행 lib의 생성 클래스와 런타임 불일치 위험 → 채택 안 함.)
+> **참고**: docker-compose의 Schema Registry/Kafka **서버 이미지 `7.7.0`은 클라이언트 lib 버전과 독립** — 7.5.0 client ↔ 7.7.0 registry는 호환(`--avro` 8/8로 입증)이라 서버 이미지는 그대로 둔다.
 > 벤더링한 `.avsc`는 **shared 원본과 동일 유지**(임의 수정 금지, 변경은 shared PR로). 향후 §6 라이브러리 발행이 완료되면 `implementation("com.synapse:synapse-shared:<ver>")` 의존으로 전환.
 
 ### Python (learning-ai)
