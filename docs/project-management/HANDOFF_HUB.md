@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-01 (W4 Day 1 — EKS apply→검증보류→**destroy**. 서비스 dev→main 머지 우선, EKS는 배포 준비 시 재apply)
-> **현재 주차**: W4 Day 1 (06-01)
+> **최종 갱신**: 2026-06-02 (W4 Day 2 — v0.1.0 발행·게이트 §1 ✅·E2E/SLA 시나리오 정의·MSK terraform/TLS 정합. gitops EKS window 하드닝 #87~89 완료, #91 잔여)
+> **현재 주차**: W4 Day 2 (06-02)
 > **갱신자**: @VelkaressiaBlutkrone
 
 ---
@@ -10,7 +10,7 @@
 
 ### 환경별 서비스 상태
 
-> ⏳ **EKS는 on-demand** — **현재 destroy** (06-01 apply→검증보류→destroy). 상태는 apply↔destroy로 변동 → **확인은 `aws eks describe-cluster --name synapse-dev`**(STATUS/존재 여부). 재apply 시 엔드포인트 프라이빗 전용 + bastion aws-auth 선결([W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)).
+> ⏳ **EKS는 on-demand** — **현재 destroy** (06-01 apply→검증보류→destroy). 상태는 apply↔destroy로 변동 → **확인은 `aws eks describe-cluster --name synapse-dev`**(STATUS/존재 여부). **재apply 선결(bastion aws-auth·SG·브로커·토픽)은 06-02 gitops 하드닝(#87~89)으로 terraform 자동화** → 잔여는 **ArgoCD 부트스트랩([gitops #91](https://github.com/team-project-final/synapse-gitops/issues/91))**([W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)).
 > **임계경로(서비스 Kafka·통합 E2E·계약)는 EKS 무관** → **로컬 docker-compose**로 진행([W4_PLAN](./W4_PLAN.md) §0 "[배포] Kafka 무관, 병렬 가능"). EKS는 **배포 검증(Step 8/11)·Observability window**에만 재기동 → 검증 → 다시 destroy.
 > 재기동 시 절차: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md).
 
@@ -29,12 +29,12 @@
 
 | 컴포넌트 | 상태 | 비고 |
 |---|---|---|
-| EKS | ⏳ destroy (on-demand) | 06-01 destroy. 재apply 시 v1.30, 프라이빗 엔드포인트, SG/aws-auth 선결 |
-| RDS PostgreSQL 16 | ⏳ destroy | 재apply 후 SG 수동(D-026) |
-| MSK Kafka | ⏳ destroy | 재apply마다 브로커 주소 변경(`get-bootstrap-brokers`) + 토픽 재생성. 로컬 Kafka로 대체 검증 |
-| Redis | ⏳ destroy | 재apply 후 SG 수동(D-026) |
-| OpenSearch | ⏳ destroy | 재apply 후 SG 수동(D-026) |
-| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual (재apply 시 복원) |
+| EKS | ⏳ destroy (on-demand) | 06-01 destroy. 재apply 시 v1.30, 프라이빗 엔드포인트. **bastion aws-auth 코드화 완료(gitops #87)** → kubectl 401 해소 |
+| RDS PostgreSQL 16 | ⏳ destroy | **D-026 SG terraform 코드화 완료(gitops #89)** — 재apply 시 자동(수동 불요) |
+| MSK Kafka | ⏳ destroy | **토픽 terraform 관리(gitops kafka-topics/, RF=2)** + **브로커 주소 ConfigMap 자동화(#88)** → 재apply 시 자동. 로컬 Kafka로 대체 검증 |
+| Redis | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
+| OpenSearch | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
+| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual. 재apply 시 **부트스트랩 필요([gitops #91](https://github.com/team-project-final/synapse-gitops/issues/91), P0)** → verify 5/5 |
 | 로컬 docker-compose | ✅ | 13 서비스 Healthy — **W4 임계경로 검증 환경**(EKS 무관) |
 
 ### Kafka / 스키마 상태
@@ -79,8 +79,8 @@
 
 | 레포 | 스포크 문서 | 최종 갱신 | 정합성 |
 |---|---|---|---|
-| synapse-gitops | `docs/superpowers/HANDOFF_W3.md` | 2026-05-22 | ⚠️ W3 미반영 (gitops 세션 미진행) |
-| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-05-29 | ✅ 동기 |
+| synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89) 완료, #91 잔여 |
+| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-02 | ✅ 동기 |
 
 ---
 
@@ -97,12 +97,12 @@
 2. [shared] 서비스 PR 도착 시 E2E consumer 시나리오 확장 검증
      → ✅ 선행 완료: 로컬 harness 전송 경로 + CloudEvent 단위 round-trip (--all 5/5, --full 13/13)
      → 잔여: E2E_SCENARIOS_W3.md 시나리오로 consumer 비즈니스 로직까지 검증
-3. [gitops] terraform apply + 세션 기동 (runbook 12단계) — EKS destroy 상태
-     → docs/runbooks/w2-session-bootstrap-runbook.md, MSK 토픽 재생성
-4. [gitops] platform-svc staging 프로필 해결 → staging 5/5 (재기동 후)
-     → 완료 기준: argocd app sync synapse-platform-svc-staging → Healthy
-5. [gitops] Observability 스택 설치 (kube-prometheus-stack) + ServiceMonitor 5개 + Grafana
-6. [gitops] terraform state 정리 (SG/OIDC 코드 반영)
+3. [gitops] terraform apply (EKS destroy 상태) → **ArgoCD 부트스트랩([#91](https://github.com/team-project-final/synapse-gitops/issues/91), P0)** → `verify-argocd-deploy.sh synapse-dev` 5/5
+     → ✅ 선결 자동화 완료(06-02): 토픽 terraform·브로커 ConfigMap(#88)·D-026 SG(#89)·bastion aws-auth(#87). 수동 단계 제거
+4. [platform owner] platform-svc `application-staging.yml`(Spring 프로필) → staging 5/5
+     → gitops overlay(`apps/platform-svc/overlays/staging`)는 이미 존재 — 서비스 프로필만 잔여
+5. [gitops] Observability 설치 — 매니페스트 작성됨(`infra/monitoring/`) → window apply + 서비스별 `/metrics` 노출(서비스 owner)
+6. [gitops] terraform state 정리 — D-026 SG ✅(#89 완료) / OIDC 코드 반영 잔여
      → 완료 기준: terraform plan → no unexpected drift
 ```
 
@@ -115,5 +115,5 @@
 | W1 (5/12-16) | ArgoCD bootstrap + CI | ✅ 완료 | 5/16 |
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
 | W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 **1/5** (부분 1·미확인 3) — §1 레지스트리 BACKWARD 06-02 실검증 ✅. shared 전제 완료. 서비스 Kafka 부분구현(learning·platform dev완성 / engagement·knowledge 🔴) + EKS destroy로 W4 이월 |
-| W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | ⏳ 계획 | — |
+| W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | 🔄 진행(Day2) | — · team-lead: 발행·게이트§1·시나리오·인프라정합 완료 / 서비스 consumer 머지 대기 |
 | W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | ⏳ 계획 | — |

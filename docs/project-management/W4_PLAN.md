@@ -26,19 +26,23 @@
 
 ### Track A — 인프라 (on-demand, team-lead / gitops) ※ **Kafka·E2E 임계경로와 무관** — 상세: [W4_DAY1_POST_APPLY](../runbooks/W4_DAY1_POST_APPLY.md)
 - [x] `terraform apply` 멱등 검증(06-01) — apply↔destroy 가능 확인. **현재 비용관리 destroy 상태**
-- [ ] **배포 검증 window**(Step 8/11 착수 시 재기동): `terraform apply` → `update-kubeconfig` + SG 수동(D-026) + MSK 9토픽 재생성(`scripts/create-kafka-topics.sh`) → `verify-argocd-deploy.sh synapse-dev` 5/5
-- → Step 8(1.7~1.9)·staging·Observability·**EKS 레지스트리** 실검증은 이 window에서. **계약 BACKWARD 실검증은 로컬 `--avro`(8/8)로 이미 가능 — EKS 불필요**
+- [x] **EKS window 진입 하드닝 완료(06-02, gitops)** — bastion aws-auth/kafka read([#87](https://github.com/team-project-final/synapse-gitops/issues/87)) · 브로커 ConfigMap 자동화([#88](https://github.com/team-project-final/synapse-gitops/issues/88)) · D-026 SG terraform 코드화([#89](https://github.com/team-project-final/synapse-gitops/issues/89)) · MSK 9토픽 terraform화. → **수동 SG/토픽 생성 제거, kubectl 401 해소**(PR #90)
+- [ ] **배포 검증 window**(Step 8/11): `terraform apply` → **ArgoCD 부트스트랩([gitops #91](https://github.com/team-project-final/synapse-gitops/issues/91))** → `verify-argocd-deploy.sh synapse-dev` 5/5. (토픽=terraform 자동, 브로커=ConfigMap 자동, SG=코드화 → 수동단계 없음)
+- → Step 8(1.7~1.9)·staging·Observability·**EKS 레지스트리** 실검증은 이 window에서. **계약 BACKWARD 실검증은 로컬 `--avro`(8/8)로 06-02 완료 — EKS 불필요(게이트 §1 ✅)**
 
 ### Track B — 계약 적용 착수 (team-lead + 각 owner)
 - [x] **(team-lead)** shared **v0.1.0 발행 완료(06-02)** — `v0.1.0` 태그 push → publish.yml run 26792658024 성공. `com.synapse:synapse-shared:0.1.0` GitHub Packages 등록. → 서비스가 `com.synapse:synapse-shared` 의존 가능(소비측 read:packages 토큰 배선만 잔여)
 - [ ] **(데일리 10:00 합의)** D-002(Avro 사수) 공유 + **2개 필드 확정**: `LevelUp`/`BadgeEarned` 도메인 필드(engagement), `NoteCreated.title`/`deckId` 채움(knowledge·learning-ai) → shared PR로 fix
 - [ ] **(knowledge owner, P0 최우선)** note-created/updated **Producer 신규 구현** (이슈 [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26)) — **체인 시작점, 이게 늦으면 W4 소비 전체 지연**
 - [ ] **(platform/engagement/learning owner)** 계약 표준 적용 + dev→main PR (이슈 [#43](https://github.com/team-project-final/synapse-platform-svc/issues/43)/[#13](https://github.com/team-project-final/synapse-engagement-svc/issues/13)/[#32](https://github.com/team-project-final/synapse-learning-svc/issues/32))
-- [ ] **(team-lead)** 로컬 `docker compose up` + `kafka-e2e-test.sh --avro`로 표준 재확인(8/8) → 팀에 "계약 OK" 신호
+- [x] **(team-lead, 06-02)** 로컬 `docker compose up` + `kafka-e2e-test.sh --avro` 8/8 + BACKWARD 라이브 강제 프로브 → "계약 OK" + 게이트 §1 ✅
 
 ---
 
 ## 2. 화(06-02) Day 2 — Consumer 본격 (PRD: 소비 6/2부터)
+
+> **✅ team-lead 06-02 완료분** (카프카 조율 외 진행 가능 작업 소진): v0.1.0 발행(PR #9) · 게이트 §1 해소(로컬 `--avro` 8/8, 0/5→1/5) · Step 9.1/10.1 시나리오 정의(E2E_SCENARIOS_W4·SLA_VERIFICATION_W4) · MSK terraform/TLS 문서 정합(PR #10) · gitops 하드닝 #87~89 완료·#91 신규. **잔여 = 서비스 owner consumer 머지(engagement·knowledge 🔴) → 그 후 service E2E·배포 검증.**
+
 - [ ] **(platform, P0)** notification 소비 — gamification.level-up / card.review-due → **FCM 푸시** (FR-PL-401). AI 카드 알림은 [NOTIFICATION_TRIGGER_AI_CARDS](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md) 방식(learning-ai→notification-send-v1)
 - [ ] **(platform, P0)** audit 소비 — 전 도메인 이벤트 → `audit_logs` 적재(90일) (FR-PL-404)
 - [ ] **(engagement, P0)** user-registered/review-completed Consumer → 프로필/XP (이슈 #13)
