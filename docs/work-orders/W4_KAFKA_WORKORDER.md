@@ -41,7 +41,7 @@ W4 Day1 전체 레포 pull 후 재확인 — §0(05-29) 대비:
 |---|---|---|
 | **platform** 🟢 | Avro+Registry 전환(#44/#45) · UserRegistered **Outbox** · **notification + audit Consumer** · 멱등성(`ProcessedEvent`) · ErrorHandler | **dev→main PR**(열린 PR 0건) |
 | **learning** 🟢 | learning-ai **Avro 소비 전환 + 알림(notification-send) 발행**(#35) · learning-card 정렬(#33) · **#32 CLOSED** | dev→main PR |
-| **engagement** 🟡 | **06-02 갱신**: Producer Avro 전환 ✅ · **스키마 표준화 ✅**(shared `LevelUp`/`BadgeEarned` 벤더링, 구 GamificationLevelUp 제거 — #13 CLOSED) · 신고/모더레이션(#14) 선행 ✅ · **Consumer 여전히 0건**(@KafkaListener 없음) | **Consumer 신규 + dev→main** → [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15) |
+| **engagement** 🟢 | **06-02 갱신**: Producer Avro·스키마 표준화 ✅(#13 CLOSED) · 신고/모더레이션(#14) ✅ · **Consumer 구현 ✅**(#17: `EngagementKafkaConsumer` @KafkaListener ×2·group `engagement-svc-group`·멱등성·ErrorHandlingDeserializer) | **dev→main 머지** → [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15) (소소: 벤더링 ReviewCompleted eventId 재동기) |
 | **knowledge** 🟡 | **06-02 갱신**: NoteCreated/Updated **Kafka Producer 구현 ✅**(#32) — Confluent Avro·shared 스키마 바이트동일(title/deckId)·`@TransactionalEventListener(AFTER_COMMIT)` 브리지·테스트. 검색 RRF(#28/#31) ✅ | **dev→main 머지**(knowledge#26 머지 시 클로즈) |
 
 ### ✅ 해소(06-02) — engagement 스키마 비호환 (D-002 재발) → 표준 정합 완료
@@ -86,8 +86,8 @@ W4 Day1 전체 레포 pull 후 재확인 — §0(05-29) 대비:
 - **Done**: 노트 생성/수정 API → 토픽 발행 확인(로컬 harness `--scenarios` S3-1/S4 통과). learning-ai Consumer 수신 확인.
 - **이슈**: [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22)
 
-### 🟡 P0-2 — engagement-svc (스키마/Producer ✅, Consumer 부재 잔여)
-- **현 상태(06-02)**: Producer Avro 전환 ✅ + shared 스키마 벤더링 ✅(#13 CLOSED). **Consumer 여전히 미구현** → 잔여 추적 [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15).
+### 🟢 P0-2 — engagement-svc (Producer/스키마/Consumer ✅, 머지 잔여)
+- **현 상태(06-02)**: Producer Avro·스키마 벤더링 ✅(#13 CLOSED) + **Consumer 구현 ✅**(#17 — @KafkaListener user-registered/review-completed·group `engagement-svc-group`·멱등성·ErrorHandlingDeserializer). **dev→main 머지**만 잔여 → [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15). (소소: 벤더링 `learning/ReviewCompleted.avsc` 구버전 → eventId 재동기 권고)
 - **할 일**: `@KafkaListener` 추가 — `platform.auth.user-registered-v1`(프로필 생성), `learning.card.review-completed-v1`(XP 적립). Consumer Group `engagement-svc-group`. **멱등성**(reviewId 중복 적립 방지) 필수.
 - **추가**: 구현된 GamificationKafkaProducer(level_up/badge_earned)는 PRD FR-EG-205 충족분 → 유지·머지.
 - **Done**: dev→main **PR 생성**, S1/S2 Consumer 처리 확인.
@@ -126,7 +126,7 @@ W4 Day1 전체 레포 pull 후 재확인 — §0(05-29) 대비:
 | 서비스 | 액션 | PR | 머지 | E2E | 비고 |
 |--------|------|:--:|:----:|:---:|------|
 | knowledge-svc | Producer 신규 구현 ✅(#32) · **dev→main**(#26) | ⏳ | ⏳ | ⏳ | P0 — 구현 완료, 머지 잔여 |
-| engagement-svc | 스키마/Producer Avro ✅(#13) · **Consumer 추가 + dev→main**(#15) | ⏳ | ⏳ | ⏳ | P0 — 스키마 해소, Consumer 잔여 |
+| engagement-svc | 스키마/Producer ✅(#13) · Consumer ✅(#17) · **dev→main**(#15) | ⏳ | ⏳ | ⏳ | P0 — 구현 완료, 머지 잔여 |
 | platform-svc | dev→main PR + 알림(AI_CARDS_READY) 수용·dedupe 확인 | ⏳ | ⏳ | ⏳ | P1 |
 | learning-ai | 알림 NotificationSend 발행 추가 (CardsGenerated는 불요) | ⏳ | ⏳ | ⏳ | P1-3 |
 | learning-card | — | ✅ | ✅ | ⏳ | 완료 |
