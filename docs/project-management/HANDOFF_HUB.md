@@ -46,7 +46,7 @@
 | 토픽 (로컬 Kafka) | ✅ 8종 생성(신규 4종 추가: review-due/level-up/badge-earned/notification-send) + round-trip 검증 |
 | MSK 토픽 (EKS) | ⏳ destroy — 재기동 window에 `create-kafka-topics.sh` 9토픽(8 active + cards-generated 잔존) 재생성 |
 | 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
-| 라이브러리 발행 | ✅ 구현 — GitHub Packages `com.synapse:synapse-shared`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). 잔여: org Packages 활성화 + v0.1.0 태그 발행 |
+| 라이브러리 발행 | ✅ **발행 완료(06-02)** — GitHub Packages `com.synapse:synapse-shared:0.1.0`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). `v0.1.0` 태그 push → publish.yml run 26792658024 성공. 잔여: 각 서비스 소비측 의존 배선(read:packages 토큰) |
 | 서비스 Kafka Producer/Consumer | 🟡 dev (**06-01 코드 실측**): **platform** 🟢(Avro+Outbox·notification/audit Consumer·멱등성) · **learning** 🟢(Avro 소비+알림발행, #32 CLOSED) — 둘 다 **dev 고립·PR 0건 → main 머지 필요** / **engagement** 🔴(Consumer 0건 + ⚠️**자체 스키마 비호환**: GamificationLevelUp@event.engagement, eventId 없음, occurredAt logicalType=표준위반) / **knowledge** 🔴(NoteCreated Kafka Producer 부재, in-process listener만 → 체인 시작점 단절). cards-generated HTTP(D-001). → [W4_KAFKA_WORKORDER §0.5](../work-orders/W4_KAFKA_WORKORDER.md) |
 
 ---
@@ -86,7 +86,7 @@
 
 ## 4. 다음 세션 작업 순서
 
-> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(충족 0/5 · 부분 2 · 미확인 3, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
+> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(**충족 1/5** · 부분 1 · 미확인 3, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). **§1 레지스트리 BACKWARD는 06-02 로컬 `--avro`(8/8)+강제 프로브로 실검증 → ✅.** shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
 > **▶ 월요일(06-01) 바로 시작 순서: [W4_PLAN.md](./W4_PLAN.md)** — Day1 병렬 2트랙(A: EKS `terraform apply` / B: v0.1.0 발행 + knowledge Producer 착수 + 필드 확정), 화요일 consumer, 목요일 통합 E2E.
 
 ```
@@ -114,6 +114,6 @@
 |---|---|---|---|
 | W1 (5/12-16) | ArgoCD bootstrap + CI | ✅ 완료 | 5/16 |
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
-| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 0/5 (부분 2·미확인 3) — shared 전제 완료. 서비스 Kafka 부분구현(learning main / platform·engagement dev / knowledge 미구현) + EKS destroy로 W4 이월 |
+| W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 **1/5** (부분 1·미확인 3) — §1 레지스트리 BACKWARD 06-02 실검증 ✅. shared 전제 완료. 서비스 Kafka 부분구현(learning·platform dev완성 / engagement·knowledge 🔴) + EKS destroy로 W4 이월 |
 | W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | ⏳ 계획 | — |
 | W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | ⏳ 계획 | — |

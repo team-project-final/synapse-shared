@@ -30,7 +30,7 @@
 - → Step 8(1.7~1.9)·staging·Observability·**EKS 레지스트리** 실검증은 이 window에서. **계약 BACKWARD 실검증은 로컬 `--avro`(8/8)로 이미 가능 — EKS 불필요**
 
 ### Track B — 계약 적용 착수 (team-lead + 각 owner)
-- [ ] **(team-lead)** shared **v0.1.0 발행** — org GitHub Packages 활성화 + `git tag v0.1.0 && git push` (runbook `PUBLISH_SHARED_LIBRARY.md`). → 서비스가 `com.synapse:synapse-shared` 의존 가능
+- [x] **(team-lead)** shared **v0.1.0 발행 완료(06-02)** — `v0.1.0` 태그 push → publish.yml run 26792658024 성공. `com.synapse:synapse-shared:0.1.0` GitHub Packages 등록. → 서비스가 `com.synapse:synapse-shared` 의존 가능(소비측 read:packages 토큰 배선만 잔여)
 - [ ] **(데일리 10:00 합의)** D-002(Avro 사수) 공유 + **2개 필드 확정**: `LevelUp`/`BadgeEarned` 도메인 필드(engagement), `NoteCreated.title`/`deckId` 채움(knowledge·learning-ai) → shared PR로 fix
 - [ ] **(knowledge owner, P0 최우선)** note-created/updated **Producer 신규 구현** (이슈 [#26](https://github.com/team-project-final/synapse-knowledge-svc/issues/26)) — **체인 시작점, 이게 늦으면 W4 소비 전체 지연**
 - [ ] **(platform/engagement/learning owner)** 계약 표준 적용 + dev→main PR (이슈 [#43](https://github.com/team-project-final/synapse-platform-svc/issues/43)/[#13](https://github.com/team-project-final/synapse-engagement-svc/issues/13)/[#32](https://github.com/team-project-final/synapse-learning-svc/issues/32))
@@ -75,7 +75,7 @@
 ## 7. 선결 체크 (월요일 출발 전 확인)
 - ✅ 이벤트 계약 표준·스키마(11종)·토픽(8종)·harness `--avro`(8/8) — **준비 완료**
 - ✅ 서비스 이슈 4건 발행(Avro/shared 사용/Kafka 설정/로컬 실행/DoD/기한)
-- ✅ 라이브러리 발행 구현 + runbook — **org Packages 활성화 + v0.1.0 태그만 남음**(Day1 Track B)
+- ✅ 라이브러리 발행 **완료(06-02)** — `com.synapse:synapse-shared:0.1.0` GitHub Packages 등록(run 26792658024). 소비측 의존 배선만 잔여
 - ⛔ EKS destroy — Day1 Track A `terraform apply` 필요
 - ⛔ owner 필드 확정 2건 — Day1 데일리
 
