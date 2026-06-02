@@ -54,10 +54,18 @@
 
 | Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
 |------|------|------|--------|--------|------|
-| Step 9 | E2E 테스트 시나리오 정의/조율 | Not Started | — | — | |
-| Step 10 | SLA 성능 검증 | Not Started | — | — | |
-| Step 11 | Staging 최종 배포 + 모니터링 | Not Started | — | — | |
+| Step 9 | E2E 테스트 시나리오 정의/조율 | In Progress | 06-02 | — | 9.1 정의 완료 — [E2E_SCENARIOS_W4](../../guides/E2E_SCENARIOS_W4.md)(W1~W5). 실행은 서비스 consumer 머지 후 |
+| Step 10 | SLA 성능 검증 | In Progress | 06-02 | — | 10.1 정의 완료 — [SLA_VERIFICATION_W4](../../reports/SLA_VERIFICATION_W4.md)(P1~P7+측정법). 측정은 E2E 통과 후(Day4) |
+| Step 11 | Staging 최종 배포 + 모니터링 | Not Started | — | — | EKS window + gitops ArgoCD 부트스트랩([gitops #91](https://github.com/team-project-final/synapse-gitops/issues/91)) 선행 |
 | Step 12 | 발표 자료 + 시연 리허설 | Not Started | — | — | **실행은 W5**(6/12 리허설·6/15 발표, [PRD_W5](../prd/PRD_W5.md)) — W4는 준비 착수만 |
+
+**06-02 달성 사항 (W4 Day 2 — 카프카 조율 외 진행 가능 작업 소진):**
+- **v0.1.0 라이브러리 발행 완료** — `v0.1.0` 태그 push → publish.yml run 26792658024 성공 → `com.synapse:synapse-shared:0.1.0` GitHub Packages 등록 (PR #9). 잔여=소비측 read:packages 배선.
+- **W3 종료 게이트 §1 해소** — 로컬 Schema Registry `--avro` 8/8 + 라이브 BACKWARD 강제 프로브(호환 통과/비호환 거부) → §1 🟡조건부→✅, **충족 0/5→1/5** (EKS 불필요).
+- **Step 9.1 / 10.1 정의 완료** — E2E_SCENARIOS_W4(W1~W5) + SLA_VERIFICATION_W4(P1~P7) 신규 작성. 테스트데이터 갭 2건(레벨업 경계·신고 reports) 명시.
+- **MSK terraform화 + TLS-only 문서 정합** (PR #10) — gitops 06-02 완료(토픽 terraform·RF 3→2·TLS-only)에 맞춰 MSK_TOPIC_SETUP/W4_DAY1_POST_APPLY/HANDOFF_SHARED 3파일 정합.
+- **gitops EKS window 진입 하드닝 요청·완료** — #87(bastion aws-auth/kafka read)·#88(브로커 ConfigMap 자동화)·#89(D-026 SG 코드화) 이슈 등록 → gitops PR #90 머지로 코드+라이브 검증 후 자동 클로즈. 잔여 **#91(ArgoCD 부트스트랩→verify 5/5, P0)** 신규 등록.
+- PR #9·#10 머지·브랜치 정리 완료.
 
 **W4 진행률**: 0/3 Steps 완료 (Step 9~11 = W4 실작업. Step 12 실행은 W5로 이월)
 

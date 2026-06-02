@@ -32,7 +32,7 @@
 - [ ] API 문서 최신화
 - [ ] HISTORY 완료 기록
 
-**Step 9 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 9 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 9.1 정의 완료(06-02, E2E_SCENARIOS_W4). 9.2~ 실행은 서비스 consumer 머지 후
 
 ---
 
@@ -64,7 +64,7 @@
 - [ ] 성능 SLA 검증 결과 문서화
 - [ ] HISTORY 완료 기록
 
-**Step 10 Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Step 10 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 10.1 정의 완료(06-02, SLA_VERIFICATION_W4). 측정은 E2E 통과 후(Day4)
 
 ---
 
