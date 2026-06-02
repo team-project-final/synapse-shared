@@ -89,4 +89,5 @@ dependencies {
 ## 6. 검증된 사실 (2026-05-29)
 - `./gradlew publishToMavenLocal` → `synapse-shared-0.1.0.jar`에 생성 Avro 클래스 전부 포함(UserRegistered/NoteCreated/NoteUpdated/ReviewCompleted/CardReviewDue/LevelUp/BadgeEarned/NotificationSend/CloudEventEnvelope 등).
 - 발행 태스크 `publishMavenPublicationToGitHubPackagesRepository` 정상 생성 확인.
-- **잔여**: org Packages 활성화 + 최초 `v0.1.0` 태그 발행(권한 보유자) + svc-template 소비 설정 배선.
+- **2026-06-02 발행 완료**: `v0.1.0` 태그 push → publish.yml run 26792658024 성공 → `com.synapse:synapse-shared:0.1.0` GitHub Packages 등록. org Packages 정상 동작 확인.
+- **잔여**: 각 서비스 소비 설정 배선(§3, `read:packages` 토큰). 비차단 경고: publish.yml 액션 Node.js 20 deprecation(2026-06-16 이후) → `actions/checkout`/`setup-java` 버전 업 권장.
