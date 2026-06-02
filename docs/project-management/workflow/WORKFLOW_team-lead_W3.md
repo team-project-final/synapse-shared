@@ -47,7 +47,7 @@
 - [x] Kafka 이벤트 체인 E2E 테스트 작성 (~~Testcontainers~~ → 로컬 shell harness `scripts/kafka-e2e-test.sh`로 대체, EKS destroy로 로컬 우선)
 - [x] 서비스 간 이벤트 발행 → 소비 → 결과 검증 자동화 (**전송 경로 한정**: produce→consume + CloudEvent 페이로드 단위 round-trip. consumer 비즈니스 로직은 서비스 구현 도착 시 확장)
 - [x] 코드 리뷰 전 PR 승인 프로세스 적용 → work-order 발행 + 코드 리뷰 승인 기준 (`W3_KAFKA_WORKORDER.md`, TASK Step 7)
-- [~] 각 서비스 담당자 테스트 결과 취합 — **06-01 코드 실측(전체 레포 pull)**: platform 🟢(Avro+Outbox+notification/audit Consumer)·learning 🟢(Avro 소비+알림) dev 완성 / engagement 🔴(Consumer 0건 + 자체 스키마 비호환) / knowledge 🔴(NoteCreated Producer 부재). 상세 [W4_KAFKA_WORKORDER §0.5](../../work-orders/W4_KAFKA_WORKORDER.md). 완전 취합은 main 머지 후
+- [~] 각 서비스 담당자 테스트 결과 취합 — **06-01 코드 실측(전체 레포 pull)**: platform 🟢(Avro+Outbox+notification/audit Consumer)·learning 🟢(Avro 소비+알림) dev 완성 / engagement 🟡(06-02: 스키마 비호환 해소·Producer Avro ✅ #13 CLOSED / Consumer 0건 잔여 → #15) / knowledge 🟡(06-02: NoteCreated/Updated Producer ✅ #32, 스키마 바이트동일 / dev→main 잔여 #26). 상세 [W4_KAFKA_WORKORDER §0.5](../../work-orders/W4_KAFKA_WORKORDER.md). 완전 취합은 main 머지 후
 
 ### 1.8 통합 테스트 실행 및 검증
 - [x] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry/kafka-init) 기동 + **`--avro` 라이브 8/8 PASSED**(8토픽 Avro 라운드트립 + subject 자동등록, 전역 BACKWARD). 앱 서비스 비즈니스 로직 E2E는 구현 도착 후(W4)

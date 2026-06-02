@@ -78,7 +78,7 @@ docker logs synapse-platform-svc 2>&1 | grep -E "level-up|FCM|push"
 - [ ] **전체 체인 < 10초** (NFR-401)
 - [ ] 동일 reviewId 재전송 → XP 중복 적립 없음 + level-up 중복 발행 없음 (멱등성)
 
-> 🚩 **리스크(코드 실측)**: engagement가 shared `LevelUp` 대신 자체 `GamificationLevelUp`(eventId 없음, occurredAt logicalType, userId long) 발행 중 → platform Consumer 역직렬화 실패 위험. **이 시나리오 통과의 선결 = engagement shared 스키마 벤더링** ([W4_KAFKA_WORKORDER §0.5](../work-orders/W4_KAFKA_WORKORDER.md)).
+> ✅ **스키마 리스크 해소(06-02)**: engagement가 shared `LevelUp`/`BadgeEarned`를 벤더링(구 `GamificationLevelUp` 제거, Producer Avro 전환 — #13 CLOSED)하여 platform Consumer 역직렬화 위험 제거. **이 시나리오 통과의 잔여 선결 = engagement Consumer 신규 + dev→main** ([engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15)).
 
 ---
 
