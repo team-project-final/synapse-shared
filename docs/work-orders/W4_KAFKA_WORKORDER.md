@@ -41,11 +41,13 @@ W4 Day1 전체 레포 pull 후 재확인 — §0(05-29) 대비:
 |---|---|---|
 | **platform** 🟢 | Avro+Registry 전환(#44/#45) · UserRegistered **Outbox** · **notification + audit Consumer** · 멱등성(`ProcessedEvent`) · ErrorHandler | **dev→main PR**(열린 PR 0건) |
 | **learning** 🟢 | learning-ai **Avro 소비 전환 + 알림(notification-send) 발행**(#35) · learning-card 정렬(#33) · **#32 CLOSED** | dev→main PR |
-| **engagement** 🔴 | Producer만(level-up/badge-earned) · **Consumer 여전히 0건**(@KafkaListener 없음) · ⚠️ **자체 스키마 비호환** | Consumer 신규 + **스키마 표준화** |
-| **knowledge** 🔴 | **NoteCreated Kafka Producer 여전히 부재**(in-process `@TransactionalEventListener`만) · 06-01엔 검색(RRF) 작업 | **P0 Producer 신규** |
+| **engagement** 🟡 | **06-02 갱신**: Producer Avro 전환 ✅ · **스키마 표준화 ✅**(shared `LevelUp`/`BadgeEarned` 벤더링, 구 GamificationLevelUp 제거 — #13 CLOSED) · 신고/모더레이션(#14) 선행 ✅ · **Consumer 여전히 0건**(@KafkaListener 없음) | **Consumer 신규 + dev→main** → [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15) |
+| **knowledge** 🟡 | **06-02 갱신**: NoteCreated/Updated **Kafka Producer 구현 ✅**(#32) — Confluent Avro·shared 스키마 바이트동일(title/deckId)·`@TransactionalEventListener(AFTER_COMMIT)` 브리지·테스트. 검색 RRF(#28/#31) ✅ | **dev→main 머지**(knowledge#26 머지 시 클로즈) |
 
-### 🚨 신규 발견 — engagement 스키마 비호환 (D-002 재발, 코드 실측)
-engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스키마**(`src/main/resources/avro/GamificationLevelUp.avsc`, 자체 `CloudEventEnvelope.java`)를 작성. **5개 축 비호환**:
+### ✅ 해소(06-02) — engagement 스키마 비호환 (D-002 재발) → 표준 정합 완료
+> **2026-06-02 코드 실측(origin/dev `828ae2b`)**: engagement가 shared `engagement.LevelUp`·`BadgeEarned`를 **벤더링**(`src/main/avro/engagement/`, shared와 바이트 동일)하고 구 `GamificationLevelUp.avsc`·자체 `CloudEventEnvelope`·`com.synapse.event.engagement`를 **제거**. Producer도 `KafkaAvroSerializer`로 전환. → **아래 5개 축 전부 해소, #13 CLOSED.** 잔여는 Consumer(역할)뿐 → [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15). 아래 표는 **이력 보존**(06-01 시점 비호환 진단).
+
+~~engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스키마**(`src/main/resources/avro/GamificationLevelUp.avsc`, 자체 `CloudEventEnvelope.java`)를 작성. **5개 축 비호환**~~ (해소됨):
 
 | 축 | shared 표준 | engagement 자체 | 영향 |
 |---|---|---|---|
@@ -55,7 +57,7 @@ engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스
 | **occurredAt** | 평문 long | **logicalType=timestamp-millis** | **표준 §1 명시 금지** (콘솔/폴리글랏·BACKWARD 위험) |
 | userId | string(UUID) | **long** | 타입 불일치 |
 
-→ engagement 발행 시 platform notification Consumer(shared 스키마 기대)가 **역직렬화 실패/불일치** 가능. **#13은 단순 미적용이 아니라 능동적 스키마 충돌** → 데일리 최우선 + **shared 벤더링 강제**(자체 .avsc 폐기).
+→ (06-01 진단) engagement 발행 시 platform notification Consumer가 역직렬화 실패 가능했던 리스크. **06-02 shared 벤더링으로 해소 → platform Consumer 역직렬화 위험 제거.** #13 CLOSED.
 
 ---
 
@@ -78,14 +80,14 @@ engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스
 
 ## 2. 서비스별 액션 (P0 → P1)
 
-### 🔴 P0-1 — knowledge-svc (가장 치명적: 체인 B 시작점)
-- **현 상태**: Kafka 코드 없음. note 생성/수정은 in-process 이벤트만.
+### 🟡 P0-1 — knowledge-svc (체인 B 시작점 — Producer ✅, 머지 잔여)
+- **현 상태(06-02)**: NoteCreated/Updated **Kafka Producer 구현 완료**(#32) — Confluent Avro + shared 스키마 벤더링(바이트동일) + `@TransactionalEventListener(AFTER_COMMIT)` 브리지 + 테스트. **dev→main 미머지**가 잔여(knowledge#26).
 - **할 일**: `NoteCreated`·`NoteUpdated` **Kafka Producer 구현** → `knowledge.note.note-created-v1` / `note-updated-v1` 발행. 기존 `@TransactionalEventListener`를 Kafka 발행으로 브리지(Outbox 권장).
 - **Done**: 노트 생성/수정 API → 토픽 발행 확인(로컬 harness `--scenarios` S3-1/S4 통과). learning-ai Consumer 수신 확인.
 - **이슈**: [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22)
 
-### 🔴 P0-2 — engagement-svc (역할 미이행: Consumer 부재)
-- **현 상태**: `GamificationKafkaProducer`(dev)만, **Consumer 미구현**.
+### 🟡 P0-2 — engagement-svc (스키마/Producer ✅, Consumer 부재 잔여)
+- **현 상태(06-02)**: Producer Avro 전환 ✅ + shared 스키마 벤더링 ✅(#13 CLOSED). **Consumer 여전히 미구현** → 잔여 추적 [engagement#15](https://github.com/team-project-final/synapse-engagement-svc/issues/15).
 - **할 일**: `@KafkaListener` 추가 — `platform.auth.user-registered-v1`(프로필 생성), `learning.card.review-completed-v1`(XP 적립). Consumer Group `engagement-svc-group`. **멱등성**(reviewId 중복 적립 방지) 필수.
 - **추가**: 구현된 GamificationKafkaProducer(level_up/badge_earned)는 PRD FR-EG-205 충족분 → 유지·머지.
 - **Done**: dev→main **PR 생성**, S1/S2 Consumer 처리 확인.
@@ -123,8 +125,8 @@ engagement가 shared `engagement.LevelUp`을 벤더링하지 않고 **자체 스
 
 | 서비스 | 액션 | PR | 머지 | E2E | 비고 |
 |--------|------|:--:|:----:|:---:|------|
-| knowledge-svc | Producer 신규 구현 | ⏳ | ⏳ | ⏳ | P0 |
-| engagement-svc | Consumer 추가 + dev→main | ⏳ | ⏳ | ⏳ | P0 |
+| knowledge-svc | Producer 신규 구현 ✅(#32) · **dev→main**(#26) | ⏳ | ⏳ | ⏳ | P0 — 구현 완료, 머지 잔여 |
+| engagement-svc | 스키마/Producer Avro ✅(#13) · **Consumer 추가 + dev→main**(#15) | ⏳ | ⏳ | ⏳ | P0 — 스키마 해소, Consumer 잔여 |
 | platform-svc | dev→main PR + 알림(AI_CARDS_READY) 수용·dedupe 확인 | ⏳ | ⏳ | ⏳ | P1 |
 | learning-ai | 알림 NotificationSend 발행 추가 (CardsGenerated는 불요) | ⏳ | ⏳ | ⏳ | P1-3 |
 | learning-card | — | ✅ | ✅ | ⏳ | 완료 |
