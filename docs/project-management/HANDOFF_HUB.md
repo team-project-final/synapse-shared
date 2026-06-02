@@ -16,25 +16,25 @@
 
 | 서비스 | 로컬 compose | dev (EKS) | staging | prod |
 |---|---|---|---|---|
-| platform-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| engagement-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| knowledge-svc | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| learning-card | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
-| learning-ai | ✅ Healthy | ⏳ destroy | ⏳ destroy | ⏳ W4 |
+| platform-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | 🔴 CrashLoop([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37)) | ⏳ W4 |
+| engagement-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
+| knowledge-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
+| learning-card | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
+| learning-ai | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
 
 > 상태 enum: ✅ Healthy / 🔄 검증 대기(apply 후) / ⚠️ Degraded / 🔴 Down / ⏳ destroy(on-demand 재기동) or Not Started
-> dev/staging EKS는 05-22 5/5 Healthy 달성 → 비용관리 destroy → 06-01 apply → **재 destroy**. **배포 검증 window에 재기동** 후 `verify-argocd-deploy.sh synapse-dev` 5/5 재확인하면 ✅. 로컬 compose는 항상 ✅.
+> **06-02 라이브 검증(gitops #91)**: ArgoCD 부트스트랩 → **dev `verify-argocd-deploy.sh synapse-dev` 15/15 ALL PASSED(5/5)** + 롤백 124s(<3분) → **FR-TL-402 dev 충족**. **staging 4/5** — platform-svc만 CrashLoop([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37): application-staging.yml datasource 미연결). 검증 후 비용관리 destroy(on-demand). 로컬 compose는 항상 ✅.
 
 ### 인프라 상태
 
 | 컴포넌트 | 상태 | 비고 |
 |---|---|---|
-| EKS | ⏳ destroy (on-demand) | 06-01 destroy. 재apply 시 v1.30, 프라이빗 엔드포인트. **bastion aws-auth 코드화 완료(gitops #87)** → kubectl 401 해소 |
+| EKS | ⏳ destroy (on-demand) | **06-02 재apply→부트스트랩→dev 5/5 검증→destroy**(gitops #91). v1.30, 프라이빗 엔드포인트, bastion aws-auth 코드화(#87) |
 | RDS PostgreSQL 16 | ⏳ destroy | **D-026 SG terraform 코드화 완료(gitops #89)** — 재apply 시 자동(수동 불요) |
 | MSK Kafka | ⏳ destroy | **토픽 terraform 관리(gitops kafka-topics/, RF=2)** + **브로커 주소 ConfigMap 자동화(#88)** → 재apply 시 자동. 로컬 Kafka로 대체 검증 |
 | Redis | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
 | OpenSearch | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
-| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual. 재apply 시 **부트스트랩 필요([gitops #91](https://github.com/team-project-final/synapse-gitops/issues/91), P0)** → verify 5/5 |
+| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual. **06-02 부트스트랩 완료·검증(gitops #91)** — 재apply 시 `bring-up.sh`로 부트스트랩 |
 | 로컬 docker-compose | ✅ | 13 서비스 Healthy — **W4 임계경로 검증 환경**(EKS 무관) |
 
 ### Kafka / 스키마 상태
@@ -67,8 +67,8 @@
 [해소] EKS window 진입 하드닝 ✅(gitops #87~89) → 잔여 ArgoCD 부트스트랩(gitops #91)
     └─→ dev/staging EKS 검증 (MSK 토픽=terraform 자동)
 
-[블로커] platform-svc application-staging.yml 추가 (platform owner)
-    └─→ staging 5/5 Healthy 달성 (인프라 재기동 후)
+[블로커] platform-svc application-staging.yml datasource 연결 (platform owner, #37/gitops#92)
+    └─→ staging 4/5→5/5 (다른 4개 ✅ 06-02 검증, platform-svc만 CrashLoop)
 
 [독립] Observability 스택 (gitops, 매니페스트 작성됨) → window apply
 [독립] terraform state 정리 — OIDC 코드 반영 (gitops) / SG D-026 ✅(#89)
@@ -98,10 +98,10 @@
 2. [shared] 서비스 PR 도착 시 E2E consumer 시나리오 확장 검증
      → ✅ 선행 완료: 로컬 harness 전송 경로 + CloudEvent 단위 round-trip (--all 5/5, --full 13/13)
      → 잔여: E2E_SCENARIOS_W3.md 시나리오로 consumer 비즈니스 로직까지 검증
-3. [gitops] terraform apply (EKS destroy 상태) → **ArgoCD 부트스트랩([#91](https://github.com/team-project-final/synapse-gitops/issues/91), P0)** → `verify-argocd-deploy.sh synapse-dev` 5/5
-     → ✅ 선결 자동화 완료(06-02): 토픽 terraform·브로커 ConfigMap(#88)·D-026 SG(#89)·bastion aws-auth(#87). 수동 단계 제거
-4. [platform owner] platform-svc `application-staging.yml`(Spring 프로필) → staging 5/5
-     → gitops overlay(`apps/platform-svc/overlays/staging`)는 이미 존재 — 서비스 프로필만 잔여
+3. [gitops] ArgoCD 부트스트랩([#91](https://github.com/team-project-final/synapse-gitops/issues/91)) — **✅ 06-02 dev 5/5(15/15)+롤백 검증 완료** (FR-TL-402 dev 충족). 재apply 시 `bring-up.sh`
+     → ✅ 선결 자동화(06-02): 토픽 terraform·브로커 ConfigMap(#88)·D-026 SG(#89)·bastion aws-auth(#87)
+4. [platform owner] platform-svc `application-staging.yml` **datasource url/password 연결**([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37)) → staging 4/5→5/5
+     → 06-02 검증: 다른 4개 staging ✅, **platform-svc만 CrashLoop**(datasource 미연결). gitops overlay/시크릿은 정상
 5. [gitops] Observability 설치 — 매니페스트 작성됨(`infra/monitoring/`) → window apply + 서비스별 `/metrics` 노출(서비스 owner)
 6. [gitops] terraform state 정리 — D-026 SG ✅(#89 완료) / OIDC 코드 반영 잔여
      → 완료 기준: terraform plan → no unexpected drift
