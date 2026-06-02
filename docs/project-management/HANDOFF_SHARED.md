@@ -28,7 +28,7 @@
 ## 2. Kafka 토픽 / MSK 상태
 
 > **단일 출처**: 토픽·Producer·Consumer 카탈로그는 [EVENT_CONTRACT_STANDARD §2](../guides/EVENT_CONTRACT_STANDARD.md)가 권위. 아래는 그 미러 — 변경 시 카탈로그를 먼저 갱신.
-> 파티션 3 / 복제 MSK 2·로컬 1, 호환성 BACKWARD. **EKS destroy 중** → MSK 토픽은 재기동 후 `create-kafka-topics.sh`로 재생성, 검증은 로컬 docker-compose(`kafka-init` 자동생성) 기준.
+> 파티션 3 / 복제 MSK 2·로컬 1, 호환성 BACKWARD. **MSK 토픽은 terraform 선언 관리**(gitops `infra/aws/dev/kafka-topics/`, 2026-06-02 전환·라이브 입증) → 재apply 시 `terraform apply`로 자동 재생성(수동 `create-kafka-topics.sh`는 로컬·폴백 전용). 검증은 로컬 docker-compose(`kafka-init` 자동생성) 기준.
 
 | 토픽 (8 active) | Avro 레코드 | Producer | Consumer |
 |---|---|---|---|
