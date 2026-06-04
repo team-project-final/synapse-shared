@@ -7,7 +7,7 @@
 | Handle | @team-lead |
 | 역할 | 팀장 (1명) |
 | 담당 서비스 | Spring Cloud Gateway / 인프라 / 아키텍처 |
-| 담당 영역 | EKS, RDS, MSK, Redis, OpenSearch, ArgoCD, Schema Registry, CI/CD, Docker Compose |
+| 담당 영역 | EKS, RDS, MSK, Redis, Elasticsearch, ArgoCD, Schema Registry, CI/CD, Docker Compose |
 | GitHub Repository | [syn](https://github.com/team-project-final/syn) · [synapse-shared](https://github.com/team-project-final/synapse-shared) · [synapse-mirror](https://github.com/team-project-final/synapse-mirror) · [synapse-gitops](https://github.com/team-project-final/synapse-gitops) |
 
 ## 4주 전체 책임 범위
@@ -15,7 +15,7 @@
 ### 도메인 경계
 
 - **In Scope**:
-  - AWS 인프라 프로비저닝 (EKS, RDS, MSK, ElastiCache, OpenSearch)
+  - AWS 인프라 프로비저닝 (EKS, RDS, MSK, ElastiCache, Elasticsearch)
   - ArgoCD ApplicationSet 구성 (5서비스 × 3환경)
   - Docker Compose 로컬 개발 환경
   - CI/CD 파이프라인 (GitHub Actions: mirror, ci, deploy)

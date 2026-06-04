@@ -32,7 +32,7 @@
 |------|------|----------|----------|------------|
 | `platform.auth.user-registered-v1` | `platform.UserRegistered` | platform | engagement | userId, email, displayName |
 | `knowledge.note.note-created-v1` | `knowledge.NoteCreated` | knowledge | learning-ai | noteId, userId, deckId, title |
-| `knowledge.note.note-updated-v1` | `knowledge.NoteUpdated` | knowledge | learning-ai | noteId, userId, title |
+| `knowledge.note.note-updated-v1` | `knowledge.NoteUpdated` | knowledge | learning-ai, **knowledge-svc (ES indexer)** | noteId, userId, title |
 | `learning.card.review-completed-v1` | `learning.ReviewCompleted` | learning-card | engagement | userId, cardId, rating(AGAIN\|HARD\|GOOD\|EASY), nextReviewAt |
 | `learning.card.review-due-v1` | `learning.CardReviewDue` | learning-card | platform(알림,W4) | userId, dueCardCount, dueDate |
 | `engagement.gamification.level-up-v1` | `engagement.LevelUp` | engagement | platform(알림,W4) | userId, newLevel *(owner 확정)* |
@@ -41,6 +41,7 @@
 
 > ❌ `learning.ai.cards-generated-v1` 제외 — 카드 등록은 HTTP([D-001](./EVENT_FLOW_MATRIX.md)). 노트 본문은 learning-ai가 `note_client`(HTTP)로 조회.
 > ⚠️ 레코드명/필드 단일 출처 = synapse-shared `src/main/avro/`. 변경은 PR + `schema-check`(BACKWARD) 통과 필요.
+> 🔍 **`knowledge.note.note-updated-v1` ES 인덱서**: `knowledge-svc`의 **Elasticsearch indexer 모듈**(knowledge-svc 내부 컴포넌트, 독립 프로세스 아님)이 이 이벤트를 소비해 ES에 문서를 재인덱싱한다. 연결 환경 변수: `ELASTICSEARCH_URIS` (로컬 기본값 `http://elasticsearch:9200`). Avro 스키마는 검색 엔진과 무관하게 그대로 유지. 참조: [D-003_SEARCH_ENGINE_DECISION](../designs/D-003_SEARCH_ENGINE_DECISION.md).
 
 ---
 

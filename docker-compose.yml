@@ -134,17 +134,17 @@ services:
     networks:
       - synapse-net
 
-  opensearch:
-    image: opensearchproject/opensearch:2.11.0
-    container_name: synapse-opensearch
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.1
+    container_name: synapse-elasticsearch
     environment:
       - discovery.type=single-node
-      - plugins.security.disabled=true
-      - OPENSEARCH_JAVA_OPTS=-Xms256m -Xmx256m
+      - xpack.security.enabled=false
+      - ES_JAVA_OPTS=-Xms256m -Xmx256m
     ports:
       - "9200:9200"
     volumes:
-      - opensearch-data:/usr/share/opensearch/data
+      - elasticsearch-data:/usr/share/elasticsearch/data
     healthcheck:
       test: ["CMD-SHELL", "curl -f http://localhost:9200/_cluster/health || exit 1"]
       interval: 10s
@@ -229,8 +229,10 @@ services:
         condition: service_healthy
       kafka:
         condition: service_healthy
-      opensearch:
+      elasticsearch:
         condition: service_healthy
+    environment:
+      ELASTICSEARCH_URIS: http://elasticsearch:9200
     networks:
       - synapse-net
 
@@ -265,7 +267,7 @@ services:
 volumes:
   postgres-data:
   redis-data:
-  opensearch-data:
+  elasticsearch-data:
 
 networks:
   synapse-net:
