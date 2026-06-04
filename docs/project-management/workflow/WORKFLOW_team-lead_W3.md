@@ -116,7 +116,7 @@
 - [ ] dev 환경 전체 서비스 Health OK 확인
 - [ ] staging 환경 전체 서비스 Health OK 확인
 - [ ] Kafka 연결 상태 확인 (consumer group lag = 0) — consumer 배포 필요(W4 Kafka 구현 후)
-- [ ] RDS/Redis/OpenSearch 연결 상태 확인
+- [ ] RDS/Redis/Elasticsearch 연결 상태 확인
 
 ### 1.9 배포 이슈 대응 — ⛔ EKS destroy로 대기 (절차는 §B 정의됨)
 - [ ] 배포 실패 시 롤백 절차 실행 및 검증

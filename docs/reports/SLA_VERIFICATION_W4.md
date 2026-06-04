@@ -41,7 +41,7 @@
 - consumer 처리 완료 기준 = DB 반영(예: user_profiles insert) 시각.
 
 ### P3 — 검색 (<2초)
-- 하이브리드 검색 API에 테스트 쿼리 세트(§3) 투입 → `time_total` 측정. OpenSearch 인덱스 워밍업 후.
+- 하이브리드 검색 API에 테스트 쿼리 세트(§3) 투입 → `time_total` 측정. Elasticsearch 인덱스 워밍업 후.
 
 ### P4 — E2E 체인 (<10초)
 - W1 시나리오([E2E_SCENARIOS_W4 §2](../guides/E2E_SCENARIOS_W4.md)) 전체. 시작 = 복습 API 요청 시각, 종료 = platform FCM 발송(시도) 로그 시각.

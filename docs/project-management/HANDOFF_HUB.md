@@ -33,7 +33,7 @@
 | RDS PostgreSQL 16 | ⏳ destroy | **D-026 SG terraform 코드화 완료(gitops #89)** — 재apply 시 자동(수동 불요) |
 | MSK Kafka | ⏳ destroy | **토픽 terraform 관리(gitops kafka-topics/, RF=2)** + **브로커 주소 ConfigMap 자동화(#88)** → 재apply 시 자동. 로컬 Kafka로 대체 검증 |
 | Redis | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
-| OpenSearch | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
+| Elasticsearch | ⏳ destroy | OpenSearch→Elasticsearch 전환(gitops PR #114). D-026 SG terraform 코드화 완료(#89) — 자동 |
 | ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual. **06-02 부트스트랩 완료·검증(gitops #91)** — 재apply 시 `bring-up.sh`로 부트스트랩 |
 | 로컬 docker-compose | ✅ | 13 서비스 Healthy — **W4 임계경로 검증 환경**(EKS 무관) |
 

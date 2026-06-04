@@ -26,7 +26,7 @@ docker compose up -d
 | Redis | 6379 |
 | Kafka | 9092 |
 | Schema Registry | 8086 |
-| OpenSearch | 9200 |
+| Elasticsearch | 9200 |
 | platform-svc | 8081 |
 | engagement-svc | 8082 |
 | knowledge-svc | 8083 |
