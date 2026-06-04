@@ -110,7 +110,7 @@
 - [x] Schema Registry 접속 테스트 (http://localhost:8086)
 - [x] PostgreSQL + Redis + Kafka + OpenSearch 접속 확인
 - [x] 메모리 8GB 환경 동작 확인
-- [ ] Apple Silicon(ARM) 호환 확인 — Windows 환경에서 테스트, ARM은 이미지 호환 확인됨
+- [x] Apple Silicon(ARM) 호환 확인 — 전 이미지 arm64 멀티아치 확인([ARM_COMPATIBILITY.md](../../guides/ARM_COMPATIBILITY.md)); 라이브 ARM 실행만 Mac 필요(개발/CI는 x86_64 Windows)
 
 ### 1.9 N/A (인프라 — Controller 해당 없음)
 

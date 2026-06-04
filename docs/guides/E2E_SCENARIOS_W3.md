@@ -14,6 +14,8 @@
 | S2 | 카드 복습 → XP 적립 | C | learning-card → engagement | Day 3 |
 | S3 | 노트 생성 → AI 카드 → 알림 | B | knowledge → learning-ai → platform/learning-card | Day 3~4 |
 | S4 | 노트 수정 → 재인덱싱 | D | knowledge → learning-ai/opensearch | Day 4 |
+| S5 | 커뮤니티 신고 → 모더레이션 → 알림 | — | engagement → platform (FCM) | W4 (설계 선반영) |
+| S6 | 도메인 이벤트 → 감사 로그 적재 | — | (전 서비스) → platform audit | W4 (설계 선반영) |
 | E1 | 에러: 필수 필드 누락 | — | 전체 Consumer | Day 4 |
 | E2 | 에러: 유효하지 않은 테넌트 | — | 전체 Consumer | Day 4 |
 | E3 | 에러: 빈 데이터 | — | 전체 Consumer | Day 4 |
@@ -202,6 +204,98 @@ curl -s http://localhost:9200/notes/_doc/e2e-note-01 | jq '.._source.title'
 - [ ] opensearch 인덱스에서 갱신된 title 확인
 
 **사용 샘플**: `src/test/resources/e2e-samples/note-updated.json`
+
+---
+
+### S5: 커뮤니티 신고 → 모더레이션 → 알림
+
+> **상태**: W4 범위 (설계 선반영, 2026-06-04). 신고/모더레이션 API는 구현됨, 알림 발행은 W4.
+
+**이벤트 체인**:
+```
+engagement-svc (POST /api/community/reports — 신고 접수)
+  → engagement-svc (PATCH /api/community/reports/{id}/moderate — 모더레이션 결정)
+  → [platform.notification.notification-send-v1]   ← Kafka (engagement 발행 ⚠️ W4 미구현)
+  → platform-svc NotificationKafkaConsumer → FCM 푸시
+```
+
+> ⚠️ **W4 구현 갭**: engagement community 모듈에 신고/모더레이션 API(`ReportService`/`ModerationService`)는 구현 완료. 그러나 모더레이션 결과를 `notification-send-v1`로 발행하는 **Producer는 미구현**. 본 시나리오는 의도된 전체 체인을 설계하며, 현재는 신고 접수 + 모더레이션까지 검증 가능.
+
+**사전 조건**: S1 완료(사용자 존재) + 신고 대상 콘텐츠/그룹 존재
+
+**수동 테스트 (알림 발행 구현 전 — 토픽 스모크)**:
+```bash
+bash scripts/kafka-e2e-test.sh platform.notification.notification-send-v1 notification-send.json
+```
+
+**서비스 구현 후 E2E**:
+```bash
+# 1. 신고 접수 (engagement-svc, port 8082)
+curl -X POST http://localhost:8082/api/community/reports \
+  -H "Content-Type: application/json" \
+  -d '{"targetType":"NOTE","targetId":"e2e-note-01","reason":"SPAM","reporterId":"e2e-user-01"}'
+
+# 2. 모더레이션 결정 (관리자) — {reportId}는 1단계 응답값
+curl -X PATCH http://localhost:8082/api/community/reports/{reportId}/moderate \
+  -H "Content-Type: application/json" \
+  -d '{"decision":"REMOVED","moderatorId":"e2e-admin-01"}'
+
+# 3. (W4 알림 구현 후) 발행·소비 확인
+docker logs synapse-platform-svc 2>&1 | grep "notification-send"
+```
+
+**성공 기준**:
+- [ ] 신고 접수 API 2xx + `reports` 레코드 생성
+- [ ] 모더레이션 결정 API 2xx + 상태 변경(REMOVED 등)
+- [ ] (W4) engagement가 `notification-send-v1` 발행
+- [ ] (W4) platform NotificationKafkaConsumer 수신 → FCM 푸시 로그
+
+**사용 샘플**: `src/test/resources/e2e-samples/notification-send.json` (제안 — 미생성)
+
+---
+
+### S6: 도메인 이벤트 → 감사 로그 적재 (audit_logs)
+
+> **상태**: W4 범위 (설계 선반영, 2026-06-04). audit Consumer는 구현됨, 현재 단일 토픽 구독.
+
+**이벤트 체인**:
+```
+(각 서비스 도메인 이벤트)
+  → [platform.auth.user-registered-v1]            ← 현재 구현된 유일 구독 토픽
+  → platform-svc AuditKafkaConsumer (@KafkaListener, group=platform-svc-group)
+  → audit_logs 적재 (V29__create_audit_logs.sql)
+```
+
+> ⚠️ **현재 커버리지 / W4 확장**: platform `AuditKafkaConsumer`는 구현 완료. 단 **현재 `platform.auth.user-registered-v1` 단일 토픽만 구독**. "각 서비스 이벤트 → audit_logs"의 전체 의도는 W4에서 추가 토픽(review-completed, note-created/updated 등) 구독 확장으로 완성.
+
+**사전 조건**: 없음 (회원가입 흐름 = S1과 공유 — audit는 같은 user-registered 이벤트를 별도 그룹으로 소비)
+
+**수동 테스트 (토픽 스모크)**:
+```bash
+bash scripts/kafka-e2e-test.sh platform.auth.user-registered-v1 user-registered.json
+```
+
+**서비스 구현 후 E2E**:
+```bash
+# 1. 회원가입 (감사 대상 이벤트 발생)
+curl -X POST http://localhost:8081/api/v1/auth/register \
+  -H "Content-Type: application/json" \
+  -d '{"email":"e2e-s6@test.synapse.dev","password":"Test1234!"}'
+
+# 2. 비동기 처리 대기
+sleep 3
+
+# 3. audit_logs 적재 확인 (컬럼은 V29 기준)
+docker exec synapse-postgres psql -U synapse -c \
+  "SELECT * FROM platform.audit_logs ORDER BY created_at DESC LIMIT 5"
+```
+
+**성공 기준**:
+- [ ] user-registered 이벤트 → `audit_logs` row 1건 적재
+- [ ] 이벤트 타입/액터/페이로드 필드 정확 (V29 스키마)
+- [ ] (W4) 추가 도메인 토픽 구독 확장 후 멀티-이벤트 적재 검증
+
+**사용 샘플**: `src/test/resources/e2e-samples/user-registered.json` (S1 재사용)
 
 ---
 

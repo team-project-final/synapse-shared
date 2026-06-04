@@ -27,10 +27,10 @@
 
 ### 1.4 E2E 테스트 시나리오 설계
 - [x] gamification 이벤트 체인 시나리오 (카드 복습 → XP 적립 → 레벨업 → 배지 수여 → 알림) → E2E_SCENARIOS_W3.md S2
-- [ ] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림) — W3 범위 외, W4 이월
+- [~] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림) — 설계 선반영 완료(E2E_SCENARIOS_W3.md S5); 구현(engagement 알림 발행)·실행 W4
 - [x] card.review.due 이벤트 체인 시나리오 (스케줄러 → Kafka → 알림 발송) → E2E_SCENARIOS_W3.md S3 (샘플 추가 완료)
-- [ ] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재) — W4 범위
-- [ ] Duration(final) 갱신
+- [~] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재) — 설계 선반영 완료(E2E_SCENARIOS_W3.md S6); 현재 user-registered 단일 토픽, 추가 토픽 W4
+- [x] Duration(final) 갱신 — 팀리드 설계·검증설계분 2일(Day 3~4) 완료; 배포 실행(§1.7~1.9)은 EKS 재기동 윈도 이월(별도)
 
 ### 1.5 Security 2차 검토
 - [x] E2E 테스트 환경 시크릿 분리 확인 → 로컬 throwaway 스택, 테스트 리소스 실 시크릿 0건
@@ -108,17 +108,20 @@
 - [x] 환경별 values.yaml 분리 확인 — dev/staging overlay 분리
 
 ### 1.7 배포 실행 — ⛔ EKS destroy로 대기 (재기동 후)
+> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.7 (turnkey 명령·기준)
 - [ ] dev 환경: main push → autoSync 자동 배포 확인
 - [ ] staging 환경: 수동 Sync 버튼 → 배포 실행
 - [ ] ECR 이미지 태그 일치 확인
 
 ### 1.8 배포 후 검증 — ⛔ EKS destroy로 대기 (재기동 후)
+> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.8 (Kafka lag은 W4 consumer 후)
 - [ ] dev 환경 전체 서비스 Health OK 확인
 - [ ] staging 환경 전체 서비스 Health OK 확인
 - [ ] Kafka 연결 상태 확인 (consumer group lag = 0) — consumer 배포 필요(W4 Kafka 구현 후)
 - [ ] RDS/Redis/OpenSearch 연결 상태 확인
 
 ### 1.9 배포 이슈 대응 — ⛔ EKS destroy로 대기 (절차는 §B 정의됨)
+> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.9 (DEPLOY_REPORT §B 롤백 <3분)
 - [ ] 배포 실패 시 롤백 절차 실행 및 검증
 - [ ] 환경별 로그 수집 및 이슈 분석
 - [ ] 배포 성공 기준 충족 여부 최종 확인
