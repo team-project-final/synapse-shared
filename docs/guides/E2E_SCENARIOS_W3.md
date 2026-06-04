@@ -13,7 +13,7 @@
 | S1 | 회원가입 → 프로필 자동 생성 | A | platform → engagement | Day 3 |
 | S2 | 카드 복습 → XP 적립 | C | learning-card → engagement | Day 3 |
 | S3 | 노트 생성 → AI 카드 → 알림 | B | knowledge → learning-ai → platform/learning-card | Day 3~4 |
-| S4 | 노트 수정 → 재인덱싱 | D | knowledge → learning-ai/opensearch | Day 4 |
+| S4 | 노트 수정 → 재인덱싱 | D | knowledge → learning-ai/Elasticsearch | Day 4 |
 | S5 | 커뮤니티 신고 → 모더레이션 → 알림 | — | engagement → platform (FCM) | W4 (설계 선반영) |
 | S6 | 도메인 이벤트 → 감사 로그 적재 | — | (전 서비스) → platform audit | W4 (설계 선반영) |
 | E1 | 에러: 필수 필드 누락 | — | 전체 Consumer | Day 4 |
@@ -172,7 +172,7 @@ docker logs synapse-platform-svc 2>&1 | grep "cards-generated"
 knowledge-svc (PUT /api/v1/notes/{id})
   → [knowledge.note.note-updated-v1]
   → learning-ai (카드 갱신 필요 여부 판단)
-  → opensearch (문서 재인덱싱)
+  → knowledge-svc Elasticsearch indexer (문서 재인덱싱)
 ```
 
 **사전 조건**: S3 완료 (노트 존재)
@@ -195,13 +195,13 @@ sleep 5
 # 3. learning-ai 로그 확인
 docker logs synapse-learning-ai 2>&1 | grep "note-updated"
 
-# 4. opensearch 인덱스 갱신 확인
+# 4. elasticsearch 인덱스 갱신 확인
 curl -s http://localhost:9200/notes/_doc/e2e-note-01 | jq '.._source.title'
 ```
 
 **성공 기준**:
 - [ ] learning-ai가 note-updated 이벤트 수신
-- [ ] opensearch 인덱스에서 갱신된 title 확인
+- [ ] Elasticsearch 인덱스에서 갱신된 title 확인
 
 **사용 샘플**: `src/test/resources/e2e-samples/note-updated.json`
 

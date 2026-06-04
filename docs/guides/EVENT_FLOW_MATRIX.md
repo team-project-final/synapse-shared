@@ -27,7 +27,7 @@
 |---|----------|-------|----------|--------|--------|
 | 1 | platform-svc | `platform.auth.user-registered-v1` | engagement-svc | UserRegistered | 회원가입 API 성공 |
 | 2 | knowledge-svc | `knowledge.note.note-created-v1` | learning-ai | NoteCreated | 노트 생성 API 성공 |
-| 3 | knowledge-svc | `knowledge.note.note-updated-v1` | learning-ai, opensearch | NoteUpdated | 노트 수정 API 성공 |
+| 3 | knowledge-svc | `knowledge.note.note-updated-v1` | learning-ai, knowledge-svc (ES indexer) | NoteUpdated | 노트 수정 API 성공 |
 | 4 | learning-card | `learning.card.review-completed-v1` | engagement-svc | ReviewCompleted | 카드 복습 API 성공 |
 | 5 | ~~learning-ai~~ | ~~`learning.ai.cards-generated-v1`~~ | ~~learning-card, platform-svc~~ | ~~CardsGenerated~~ | **D-001: HTTP로 대체(deprecated)** |
 | 6 | learning-ai (외 다수 가능) | `platform.notification.notification-send-v1` | platform-svc | NotificationSend | **알림 버스** — AI 카드 생성 알림 등 ([설계](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md)) |
@@ -93,10 +93,10 @@ learning-card (복습 완료 API)
 knowledge-svc (노트 수정 API)
   → [knowledge.note.note-updated-v1]
   → learning-ai (카드 갱신 필요 여부 판단)
-  → opensearch (문서 재인덱싱)
+  → knowledge-svc Elasticsearch indexer (문서 재인덱싱)
 ```
 
-- **검증**: opensearch 인덱스 갱신 확인 + learning-ai 로그
+- **검증**: Elasticsearch 인덱스 갱신 확인 (`:9200`) + learning-ai 로그
 - **의존성**: 노트 존재 필요
 
 ---

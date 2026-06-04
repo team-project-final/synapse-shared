@@ -196,9 +196,9 @@ run_scenarios() {
     "learning.ai.cards-generated-v1" "cards-generated.json" \
     "learning-ai가 learning-card REST(card_client)로 카드 등록 — 알림 트리거는 재설계 open(D-001)"
   # S4: 노트 수정 → 재인덱싱 (Chain D) — 노트 선행
-  scenario "S4" "노트수정→재인덱싱 (knowledge→learning-ai/opensearch)" \
+  scenario "S4" "노트수정→재인덱싱 (knowledge→learning-ai/elasticsearch)" \
     "knowledge.note.note-updated-v1" "note-updated.json" \
-    "opensearch notes 인덱스 갱신 + learning-ai note-updated 로그 — §S4"
+    "elasticsearch notes 인덱스 갱신 + learning-ai note-updated 로그 — §S4"
 }
 
 # --- Avro round-trip (Schema Registry) -----------------------------------------

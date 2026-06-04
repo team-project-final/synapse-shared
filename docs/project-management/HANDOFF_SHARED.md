@@ -50,7 +50,7 @@
 13개 서비스 로컬 환경: ✅ 전체 Healthy
 - DB/Cache: postgres, redis, zookeeper
 - Kafka: kafka, schema-registry
-- Search: opensearch
+- Search: elasticsearch
 - App: platform, engagement, knowledge, learning-card, learning-ai, gateway
 
 ## 4. CI/CD 파이프라인 상태

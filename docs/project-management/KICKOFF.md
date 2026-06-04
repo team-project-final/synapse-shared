@@ -42,7 +42,7 @@
 | Backend | Spring Boot 4 + Modulith, Java 21, Gradle |
 | AI 서비스 | FastAPI, Python 3.11, Anthropic SDK, OpenAI SDK |
 | Frontend | Flutter 3, Riverpod 3, GoRouter 14, Dio 5 |
-| DB | PostgreSQL 16, Redis 7, OpenSearch 8 |
+| DB | PostgreSQL 16, Redis 7, Elasticsearch 9 |
 | 메시징 | Kafka (MSK) + Avro + Confluent Schema Registry |
 | 인프라 | AWS EKS, Docker, Kustomize |
 | DevOps | GitHub Actions (CI/CD), ArgoCD |

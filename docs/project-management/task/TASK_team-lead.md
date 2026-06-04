@@ -9,13 +9,13 @@
 
 ## Step 1: AWS 인프라 프로비저닝
 
-- **Step Goal**: 팀장이 AWS 인프라(EKS, RDS, MSK, ElastiCache, OpenSearch)와 ArgoCD를 프로비저닝하여 4-서비스 배포 기반을 확보한다.
+- **Step Goal**: 팀장이 AWS 인프라(EKS, RDS, MSK, ElastiCache, Elasticsearch)와 ArgoCD를 프로비저닝하여 4-서비스 배포 기반을 확보한다. *(초기 OpenSearch → Elasticsearch 전환 완료, gitops PR #114)*
 - **Done When**:
   - [x] EKS 클러스터 정상 가동 (kubectl get nodes → Ready)
   - [x] RDS PostgreSQL 16 인스턴스 접속 가능
   - [x] MSK(Kafka) 클러스터 브로커 접속 가능
   - [x] ElastiCache(Redis 7) 접속 가능
-  - [x] OpenSearch 도메인 접속 가능
+  - [x] Elasticsearch 도메인 접속 가능 *(초기 OpenSearch, PR #114에서 Elasticsearch로 전환)*
   - [x] ArgoCD 대시보드 접근 가능
 - **Scope**:
   - In Scope:
@@ -23,7 +23,7 @@
     - RDS PostgreSQL 16 (db.t3.medium)
     - MSK Kafka 3.x (3 broker)
     - ElastiCache Redis 7 (cache.t3.micro)
-    - OpenSearch 8.x (1 node dev)
+    - Elasticsearch 9.x (1 node dev, gitops PR #114)
     - ArgoCD 설치 + ApplicationSet
   - Out of Scope:
     - Production 규모 인프라 (dev 환경만)
@@ -35,7 +35,7 @@
   2. RDS PostgreSQL 인스턴스 생성 + 보안 그룹 설정
   3. MSK 클러스터 생성 + Schema Registry 설정
   4. ElastiCache Redis 클러스터 생성
-  5. OpenSearch 도메인 생성 + nori 플러그인
+  5. Elasticsearch 도메인 생성 + nori 플러그인 *(초기 OpenSearch → PR #114 Elasticsearch 전환)*
   6. ArgoCD 설치 + ApplicationSet(5서비스×3환경) 구성
   7. 접속 테스트 및 팀원 접근 권한 부여
 - **Output Format**: 인프라 구성도 + 접속 정보 문서 (Notion 또는 .env.example 업데이트)
