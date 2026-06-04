@@ -37,7 +37,7 @@
 - [ ] **Step 1: 5개 스키마 복사** — shared에서 platform `src/main/avro/`로 namespace 디렉터리 유지 복사:
   - `knowledge/NoteCreated.avsc`, `knowledge/NoteUpdated.avsc`, `learning/ReviewCompleted.avsc`, `engagement/BadgeEarned.avsc`, `engagement/LevelUp.avsc`.
   (의존 공통 타입/봉투가 있으면 함께 복사.)
-- [ ] **Step 2: Avro 생성 확인** `./gradlew generateAvroJava` → BUILD SUCCESSFUL, `build/generated-main-avro-java/com/synapse/event/{knowledge,learning,engagement}/*.java` 생성.
+- [ ] **Step 2: Avro 생성 확인** `./gradlew generateAvroJava` → BUILD SUCCESSFUL, `build/generated-main-avro-java/com/synapse/{knowledge,learning,engagement}/*.java` 생성.
 - [ ] **Step 3: 커밋** `git add src/main/avro && git commit -m "feat(audit): 도메인 이벤트 Avro 스키마 5종 편입 (S6)"`
 
 ## Task 2: 토픽 설정
@@ -103,23 +103,23 @@ private UUID parseUuidOrNull(Object raw) {
     try { return UUID.fromString(raw.toString()); } catch (IllegalArgumentException e) { return null; }
 }
 
-public void processEvent(com.synapse.event.knowledge.NoteCreated e) {
+public void processEvent(com.synapse.knowledge.NoteCreated e) {
     save(AuditLog.of(UUID.fromString(e.getEventId().toString()), "NOTE_CREATED",
         parseUuidOrNull(e.getUserId()), "NOTE", e.getNoteId().toString(), e.toString()));
 }
-public void processEvent(com.synapse.event.knowledge.NoteUpdated e) {
+public void processEvent(com.synapse.knowledge.NoteUpdated e) {
     save(AuditLog.of(UUID.fromString(e.getEventId().toString()), "NOTE_UPDATED",
         parseUuidOrNull(e.getUserId()), "NOTE", e.getNoteId().toString(), e.toString()));
 }
-public void processEvent(com.synapse.event.learning.ReviewCompleted e) {
+public void processEvent(com.synapse.learning.ReviewCompleted e) {
     save(AuditLog.of(UUID.fromString(e.getEventId().toString()), "REVIEW_COMPLETED",
         parseUuidOrNull(e.getUserId()), "CARD", e.getCardId().toString(), e.toString()));
 }
-public void processEvent(com.synapse.event.engagement.BadgeEarned e) {
+public void processEvent(com.synapse.engagement.BadgeEarned e) {
     save(AuditLog.of(UUID.fromString(e.getEventId().toString()), "BADGE_EARNED",
         parseUuidOrNull(e.getUserId()), "BADGE", e.getBadgeId().toString(), e.toString()));
 }
-public void processEvent(com.synapse.event.engagement.LevelUp e) {
+public void processEvent(com.synapse.engagement.LevelUp e) {
     save(AuditLog.of(UUID.fromString(e.getEventId().toString()), "LEVEL_UP",
         parseUuidOrNull(e.getUserId()), "USER", e.getUserId().toString(), e.toString()));
 }
@@ -141,23 +141,23 @@ private void save(AuditLog auditLog) {
 ```java
 @KafkaListener(topics = "${app.kafka.topics.note-created}", groupId = "platform-audit-group",
         containerFactory = "auditKafkaListenerContainerFactory")
-public void consumeNoteCreated(com.synapse.event.knowledge.NoteCreated event) { auditLogService.processEvent(event); }
+public void consumeNoteCreated(com.synapse.knowledge.NoteCreated event) { auditLogService.processEvent(event); }
 
 @KafkaListener(topics = "${app.kafka.topics.note-updated}", groupId = "platform-audit-group",
         containerFactory = "auditKafkaListenerContainerFactory")
-public void consumeNoteUpdated(com.synapse.event.knowledge.NoteUpdated event) { auditLogService.processEvent(event); }
+public void consumeNoteUpdated(com.synapse.knowledge.NoteUpdated event) { auditLogService.processEvent(event); }
 
 @KafkaListener(topics = "${app.kafka.topics.review-completed}", groupId = "platform-audit-group",
         containerFactory = "auditKafkaListenerContainerFactory")
-public void consumeReviewCompleted(com.synapse.event.learning.ReviewCompleted event) { auditLogService.processEvent(event); }
+public void consumeReviewCompleted(com.synapse.learning.ReviewCompleted event) { auditLogService.processEvent(event); }
 
 @KafkaListener(topics = "${app.kafka.topics.badge-earned}", groupId = "platform-audit-group",
         containerFactory = "auditKafkaListenerContainerFactory")
-public void consumeBadgeEarned(com.synapse.event.engagement.BadgeEarned event) { auditLogService.processEvent(event); }
+public void consumeBadgeEarned(com.synapse.engagement.BadgeEarned event) { auditLogService.processEvent(event); }
 
 @KafkaListener(topics = "${app.kafka.topics.level-up}", groupId = "platform-audit-group",
         containerFactory = "auditKafkaListenerContainerFactory")
-public void consumeLevelUp(com.synapse.event.engagement.LevelUp event) { auditLogService.processEvent(event); }
+public void consumeLevelUp(com.synapse.engagement.LevelUp event) { auditLogService.processEvent(event); }
 ```
 > 기존 `consume(UserRegistered)`는 그대로 유지(group `platform-svc-group`). 일관성을 원하면 `platform-audit-group`으로 통일 가능하나 offset 리셋 고려 — 본 작업 범위 밖(선택).
 - [ ] **Step 2: 커밋** `git commit -am "feat(audit): 도메인 토픽 5종 @KafkaListener 추가 (platform-audit-group) (S6)"`
