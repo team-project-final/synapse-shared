@@ -46,3 +46,29 @@ def test_is_timestamp_version_false_for_wrong_length():
 
 def test_is_timestamp_version_false_for_non_digits():
     assert fg.is_timestamp_version("2026060512000X") is False
+
+
+def _make_migration(root, rel, content="-- sql\n"):
+    import os
+    path = os.path.join(root, rel)
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8") as fh:
+        fh.write(content)
+
+
+def test_main_passes_on_unique(tmp_path):
+    _make_migration(str(tmp_path), "src/main/resources/db/migration/V1__a.sql")
+    _make_migration(str(tmp_path), "src/main/resources/db/migration/V2__b.sql")
+    assert fg.main(["--root", str(tmp_path)]) == 0
+
+
+def test_main_fails_on_duplicate(tmp_path):
+    _make_migration(str(tmp_path), "src/main/resources/db/migration/V28__a.sql")
+    _make_migration(str(tmp_path), "src/main/resources/db/migration/V28__b.sql")
+    assert fg.main(["--root", str(tmp_path)]) == 1
+
+
+def test_main_ignores_build_dir(tmp_path):
+    _make_migration(str(tmp_path), "src/main/resources/db/migration/V1__a.sql")
+    _make_migration(str(tmp_path), "build/resources/main/db/migration/V1__a.sql")
+    assert fg.main(["--root", str(tmp_path)]) == 0

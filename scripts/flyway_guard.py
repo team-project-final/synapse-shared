@@ -6,8 +6,10 @@
   2) (base-ref 제공 시) 이번 변경에서 '추가'된 마이그레이션은 14자리 타임스탬프 버전이어야 함.
   3) (base-ref 제공 시) 이미 머지된 마이그레이션 파일의 수정/삭제는 실패(불변성).
 """
+import argparse
 import os
 import re
+import sys
 
 VERSION_RE = re.compile(r"^V(.+?)__.*\.sql$")
 
@@ -38,3 +40,49 @@ TIMESTAMP_LEN = 14
 def is_timestamp_version(token):
     """14자리 숫자(yyyyMMddHHmmss)면 True."""
     return token.isdigit() and len(token) == TIMESTAMP_LEN
+
+
+EXCLUDE_DIRS = {".git", "build", "out", "target", "node_modules", "_mirror", ".gradle"}
+
+
+def is_migration_path(path):
+    return "db/migration" in path.replace(os.sep, "/")
+
+
+def scan_migrations(root):
+    """root 아래 db/migration 경로의 V*.sql 마이그레이션 상대경로 목록(빌드 산출물 제외)."""
+    found = []
+    for dirpath, dirs, files in os.walk(root):
+        dirs[:] = [d for d in dirs if d not in EXCLUDE_DIRS]
+        for f in files:
+            if f.startswith("V") and f.endswith(".sql"):
+                rel = os.path.relpath(os.path.join(dirpath, f), root)
+                if is_migration_path(rel):
+                    found.append(rel.replace(os.sep, "/"))
+    return found
+
+
+def main(argv=None):
+    ap = argparse.ArgumentParser(description="Flyway migration guard")
+    ap.add_argument("--root", default=".")
+    ap.add_argument("--base-ref", default=None)
+    args = ap.parse_args(argv)
+
+    errors = []
+    migrations = scan_migrations(args.root)
+    for version, paths in sorted(find_duplicates(migrations).items()):
+        errors.append(
+            "[duplicate-version] version {} used by: {}".format(version, ", ".join(paths))
+        )
+
+    if errors:
+        print("Flyway guard FAILED:")
+        for e in errors:
+            print("  - " + e)
+        return 1
+    print("Flyway guard OK ({} migrations, no violations).".format(len(migrations)))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
