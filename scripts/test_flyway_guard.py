@@ -72,3 +72,49 @@ def test_main_ignores_build_dir(tmp_path):
     _make_migration(str(tmp_path), "src/main/resources/db/migration/V1__a.sql")
     _make_migration(str(tmp_path), "build/resources/main/db/migration/V1__a.sql")
     assert fg.main(["--root", str(tmp_path)]) == 0
+
+
+import subprocess
+
+
+def _git(root, *args):
+    subprocess.run(
+        ["git", "-c", "user.email=t@t", "-c", "user.name=t", "-C", root, *args],
+        check=True, capture_output=True,
+    )
+
+
+def _init_repo_with_base(tmp_path):
+    root = str(tmp_path)
+    _git(root, "init", "-q")
+    _make_migration(root, "src/main/resources/db/migration/V1__base.sql")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "base")
+    base = subprocess.run(
+        ["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True
+    ).stdout.strip()
+    return root, base
+
+
+def test_main_fails_when_new_migration_not_timestamp(tmp_path):
+    root, base = _init_repo_with_base(tmp_path)
+    _make_migration(root, "src/main/resources/db/migration/V2__bad.sql")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "add bad")
+    assert fg.main(["--root", root, "--base-ref", base]) == 1
+
+
+def test_main_passes_when_new_migration_is_timestamp(tmp_path):
+    root, base = _init_repo_with_base(tmp_path)
+    _make_migration(root, "src/main/resources/db/migration/V20260605120000__ok.sql")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "add ok")
+    assert fg.main(["--root", root, "--base-ref", base]) == 0
+
+
+def test_main_fails_when_merged_migration_modified(tmp_path):
+    root, base = _init_repo_with_base(tmp_path)
+    _make_migration(root, "src/main/resources/db/migration/V1__base.sql", content="-- changed\n")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "mutate base")
+    assert fg.main(["--root", root, "--base-ref", base]) == 1

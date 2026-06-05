@@ -9,6 +9,7 @@
 import argparse
 import os
 import re
+import subprocess
 import sys
 
 VERSION_RE = re.compile(r"^V(.+?)__.*\.sql$")
@@ -62,6 +63,24 @@ def scan_migrations(root):
     return found
 
 
+def changed_migrations(root, base_ref):
+    """(status, path) 리스트. db/migration 경로의 V*.sql 변경만."""
+    out = subprocess.check_output(
+        ["git", "-C", root, "diff", "--name-status", base_ref, "HEAD"],
+        text=True,
+    )
+    result = []
+    for line in out.splitlines():
+        parts = line.split("\t")
+        if len(parts) < 2:
+            continue
+        status, path = parts[0], parts[-1]
+        base = os.path.basename(path)
+        if base.startswith("V") and base.endswith(".sql") and is_migration_path(path):
+            result.append((status, path))
+    return result
+
+
 def main(argv=None):
     ap = argparse.ArgumentParser(description="Flyway migration guard")
     ap.add_argument("--root", default=".")
@@ -74,6 +93,20 @@ def main(argv=None):
         errors.append(
             "[duplicate-version] version {} used by: {}".format(version, ", ".join(paths))
         )
+
+    if args.base_ref:
+        for status, path in changed_migrations(args.root, args.base_ref):
+            version = parse_version(path)
+            if status.startswith("A"):
+                if version is not None and not is_timestamp_version(version):
+                    errors.append(
+                        "[non-timestamp-new] 추가된 마이그레이션은 14자리 타임스탬프 버전이어야 함: "
+                        "{} (got V{})".format(path, version)
+                    )
+            elif status.startswith("M") or status.startswith("D"):
+                errors.append(
+                    "[mutated-migration] 이미 머지된 마이그레이션 변경({}): {}".format(status, path)
+                )
 
     if errors:
         print("Flyway guard FAILED:")
