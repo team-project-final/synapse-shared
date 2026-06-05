@@ -415,7 +415,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 시나리오 정의(E2E_SCENARIOS_W4) + **계약·전송 E2E 06-05 실행 PASS**(E2E_REPORT_W4). 서비스 비즈니스 로직 E2E는 W5 이월(서비스 스택/staging 필요)
 
 ---
 

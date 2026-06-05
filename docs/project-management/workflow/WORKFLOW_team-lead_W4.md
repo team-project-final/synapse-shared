@@ -15,8 +15,9 @@
 - [~] 테스트 데이터 준비 — seed V001~V005 S1~S4 커버 ✅ / **갭 2건**(레벨업 경계 사용자·신고 reports) = engagement 임계·스키마 확정 후
 
 ### 9.2 E2E 테스트 실행
-- [ ] 각 파트별 E2E 테스트 실행 조율
-- [ ] 실패 항목 기록
+- [x] **계약·전송 E2E 06-05 실행** — harness 4모드 PASS(`--avro`8/8·`--all`5/5·`--full`13/13·`--scenarios`5/5), [E2E_REPORT_W4](../../reports/E2E_REPORT_W4.md)
+- [~] 서비스 비즈니스 로직 E2E — shared compose app=스텁이라 불가 → **W5 서비스 스택/staging에서 실행**(이월)
+- [x] 실패 항목 기록 — 전송/계약 0건 실패
 
 ### 9.3 버그 트리아지
 - [ ] P0/P1/P2 분류
