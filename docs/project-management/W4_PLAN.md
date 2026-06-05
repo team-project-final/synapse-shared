@@ -4,9 +4,15 @@
 > **근거**: [PRD_W4](./prd/PRD_W4.md) · [W4_KAFKA_WORKORDER](../work-orders/W4_KAFKA_WORKORDER.md) · [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md) · [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)
 > **W4 목표(PRD)**: notification(FCM/SES) + audit Kafka 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증
 
+> ## 📍 06-05(Day 4, 마지막날) 종료 실측 — 권위 문서: [W4_EXIT_GATE](../reports/W4_EXIT_GATE.md)
+> - **서비스 Kafka 4서비스 전원 origin/main 머지 완료** (knowledge #40·platform #46·engagement #23·learning) → §0 "knowledge Producer 미구현/임계경로" 가정은 **해소**. 통합 E2E는 머지 무관.
+> - **계약·전송 E2E 06-05 실행 PASS** ([E2E_REPORT_W4](../reports/E2E_REPORT_W4.md)): `--avro` 8/8(게이트 §1)·`--all` 5/5·`--full` 13/13·`--scenarios` 5/5.
+> - **잔여(→W5 이월)**: 서비스 비즈니스 로직 E2E 실행(shared compose app=스텁이라 불가, 서비스 스택/staging 필요) · SLA 측정(Step 10) · EKS staging 배포+Observability(Step 11) · 하드닝 dev→main 머지(platform #52 audit/#54 TLS/#48 staging·engagement #24·knowledge #45). → [WORKFLOW_team-lead_W5](./workflow/WORKFLOW_team-lead_W5.md)
+> - **PRD §5**: 6기준 모두 **구현 충족·검증 실행 대기**. dev 배포검증 ✅(5/5) / staging 🟡(platform #37, 수정 #48 dev 대기).
+
 ---
 
-## 0. 임계 경로 (왜 이 순서인가)
+## 0. 임계 경로 (왜 이 순서인가) — ⚠️ 05-29 작성 시점 가정. 06-05 실측은 위 배너 참조
 
 ```
 [체인 시작점] knowledge note-created Producer (현재 미구현, P0)
@@ -61,9 +67,10 @@
 - [ ] **(team-lead, Step 11)** staging 최종 배포 + 모니터링 대시보드
 
 ## 5. 금(06-05) Day 4 — 검증·마감
-- [ ] **PRD_W4 §5 성공 기준 체크리스트** 전수 확인
-- [ ] **(team-lead, Step 10)** SLA 성능 검증 (API P95<200ms, Kafka<5s, NFR)
-- [ ] 미해결 이슈 정리 + **W5(E2E·발표) 인수인계** + HANDOFF 갱신
+- [x] **PRD_W4 §5 성공 기준 체크리스트** 전수 확인 — [W4_EXIT_GATE §1](../reports/W4_EXIT_GATE.md): 6/6 구현충족·검증대기
+- [x] **계약·전송 E2E 실행** — [E2E_REPORT_W4](../reports/E2E_REPORT_W4.md) `--avro`8/8·`--all`5/5·`--full`13/13·`--scenarios`5/5 PASS
+- [~] **(team-lead, Step 10)** SLA 성능 검증 — 시나리오 정의 완료(SLA_VERIFICATION_W4), **측정은 서비스 스택/staging 필요 → W5 이월**
+- [x] 미해결 이슈 정리 + **W5 인수인계** + HANDOFF 갱신 — [W4_EXIT_GATE §4](../reports/W4_EXIT_GATE.md) + HANDOFF_HUB/SHARED origin 실측 정정 + [WORKFLOW_team-lead_W5](./workflow/WORKFLOW_team-lead_W5.md)
 
 ---
 
