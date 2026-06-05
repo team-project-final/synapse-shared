@@ -30,3 +30,11 @@ def find_duplicates(paths):
             continue
         by_version.setdefault(v, []).append(p)
     return {v: sorted(ps) for v, ps in by_version.items() if len(ps) > 1}
+
+
+TIMESTAMP_LEN = 14
+
+
+def is_timestamp_version(token):
+    """14자리 숫자(yyyyMMddHHmmss)면 True."""
+    return token.isdigit() and len(token) == TIMESTAMP_LEN

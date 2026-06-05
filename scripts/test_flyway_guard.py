@@ -30,3 +30,19 @@ def test_find_duplicates_empty_when_unique():
 def test_find_duplicates_ignores_non_migrations():
     paths = ["a/V1__x.sql", "b/README.md", "c/R__view.sql"]
     assert fg.find_duplicates(paths) == {}
+
+
+def test_is_timestamp_version_true_for_14_digits():
+    assert fg.is_timestamp_version("20260605120000") is True
+
+
+def test_is_timestamp_version_false_for_integer():
+    assert fg.is_timestamp_version("28") is False
+
+
+def test_is_timestamp_version_false_for_wrong_length():
+    assert fg.is_timestamp_version("202606051200") is False  # 12자리
+
+
+def test_is_timestamp_version_false_for_non_digits():
+    assert fg.is_timestamp_version("2026060512000X") is False
