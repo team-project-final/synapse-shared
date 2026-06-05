@@ -66,7 +66,7 @@ def scan_migrations(root):
 def changed_migrations(root, base_ref):
     """(status, path) 리스트. db/migration 경로의 V*.sql 변경만."""
     out = subprocess.check_output(
-        ["git", "-C", root, "diff", "--name-status", base_ref, "HEAD"],
+        ["git", "-C", root, "diff", "--no-renames", "--name-status", base_ref, "HEAD"],
         text=True,
     )
     result = []

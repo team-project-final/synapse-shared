@@ -118,3 +118,20 @@ def test_main_fails_when_merged_migration_modified(tmp_path):
     _git(root, "add", "-A")
     _git(root, "commit", "-q", "-m", "mutate base")
     assert fg.main(["--root", root, "--base-ref", base]) == 1
+
+
+def test_main_fails_when_merged_migration_renamed(tmp_path):
+    # 이미 머지된 마이그레이션을 rename하면 불변성 위반으로 잡혀야 한다.
+    root = str(tmp_path)
+    _git(root, "init", "-q")
+    _make_migration(root, "src/main/resources/db/migration/V20260605120000__base.sql")
+    _git(root, "add", "-A")
+    _git(root, "commit", "-q", "-m", "base")
+    base = subprocess.run(
+        ["git", "-C", root, "rev-parse", "HEAD"], capture_output=True, text=True
+    ).stdout.strip()
+    _git(root, "mv",
+         "src/main/resources/db/migration/V20260605120000__base.sql",
+         "src/main/resources/db/migration/V20260605120001__renamed.sql")
+    _git(root, "commit", "-q", "-m", "rename merged migration")
+    assert fg.main(["--root", root, "--base-ref", base]) == 1
