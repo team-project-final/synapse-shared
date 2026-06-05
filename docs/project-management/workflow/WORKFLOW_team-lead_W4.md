@@ -4,6 +4,8 @@
 > **기간**: 2026-06-01 (월) ~ 2026-06-05 (금) — 4영업일 (6/3 지방선거 제외)  
 > **PRD**: [PRD_W4.md](../prd/PRD_W4.md)
 
+> **📍 06-05(Day 4) origin/main 실측 상태**: **4서비스 Kafka Producer/Consumer 전원 origin/main 머지 완료**(knowledge #40·platform #46·engagement #23·learning) → **Step 9 통합 E2E는 머지에 막히지 않고 지금 로컬 compose에서 실행 가능**. 차단요인 없음 = 9.2 실행이 곧 잔여 작업. (주의: `git fetch` 후 `origin/main` 기준 확인 — 로컬 stale main은 미머지 오판 유발). dev 잔여(S6 audit·TLS·KAFKA_ENABLED 게이트·staging 프로파일)는 EKS/MSK 배포용 하드닝으로 별도 머지, 로컬 E2E 무관.
+
 ---
 
 ## Step 9: 전체 E2E 시나리오 정의 + 테스트 실행 조율

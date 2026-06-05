@@ -1,6 +1,6 @@
 # 핸드오프: synapse-shared
 
-> **최종 갱신**: 2026-05-29 (W3 종료 Day 4 — 이벤트 계약 표준(Avro) + 라이브러리 발행)
+> **최종 갱신**: 2026-06-05 (W4 Day 4 — §5 서비스 Kafka 구현 추적 로컬 git 실측 정정: 3/4 main 머지, knowledge 1건 잔여)
 > **허브 참조**: → [HANDOFF_HUB.md](./HANDOFF_HUB.md)
 
 ---
@@ -67,17 +67,16 @@
 
 > **work-order**: 05-26 발행 → **05-29 cross-repo 실측으로 재정렬** ([W4_KAFKA_WORKORDER.md](../work-orders/W4_KAFKA_WORKORDER.md)). "Day 2 PR 0/5" 스냅샷 폐기.
 
-**서비스별 Kafka 구현 상태 (2026-05-29 origin 코드 실측)**:
+**서비스별 Kafka 구현 상태 (2026-06-05 origin/main 실측 — `git fetch` 후 확인)**:
 
-| 서비스 | 역할 | GH 이슈 | 위치 | 구현 상태 |
-|---|---|---|---|---|
-| learning-card | Producer (ReviewCompleted, ReviewDue) | [#21](https://github.com/team-project-final/synapse-learning-svc/issues/21) | main(#26) | 🟢 완료 |
-| learning-ai | Producer (CardsGenerated) + Consumer (NoteCreated) | [#22](https://github.com/team-project-final/synapse-learning-svc/issues/22) | main(#26) | 🟡 Consumer만 — 카드등록 HTTP, CardsGenerated 미발행 |
-| platform-svc | Producer (UserRegistered) + Consumer (CardsGenerated) | [#30](https://github.com/team-project-final/synapse-platform-svc/issues/30) | dev(미머지) | 🟡 Producer+audit/noti Consumer 구현, open PR 없음 |
-| engagement-svc | Consumer (UserRegistered, ReviewCompleted) | [#9](https://github.com/team-project-final/synapse-engagement-svc/issues/9) | dev(미머지) | 🟡 Producer만 — **Consumer 미구현(역할 불일치)** |
-| knowledge-svc | Producer (NoteCreated, NoteUpdated) | [#22](https://github.com/team-project-final/synapse-knowledge-svc/issues/22) | — | 🔴 미구현 (in-process 이벤트만) |
+| 서비스 | 역할 | origin/main 머지 | 구현 상태 (06-05) |
+|---|---|---|---|
+| knowledge-svc | Producer (NoteCreated, NoteUpdated) | ✅ **#40 (06-02)** | 🟢 origin/main에 NoteCreated Producer 존재. dev 3커밋(컨벤션 #42·노트버전이력 #43·MSK TLS #45) 미머지=하드닝 |
+| platform-svc | Producer (UserRegistered) + Consumer (audit 전도메인 / notification) | ✅ #46 (06-01) | 🟢 `AuditKafkaConsumer`·`NotificationKafkaConsumer`. dev 11커밋(S6 audit 다중토픽 #52·TLS #54·KAFKA_ENABLED 게이트 #61·staging 프로파일 #48·Step9 E2E #57) 미머지=W4 하드닝 |
+| engagement-svc | Producer (gamification) + Consumer (UserRegistered, ReviewCompleted) | ✅ **#23 (06-04)** | 🟢 Consumer + **S5 모더레이션 알림 발행 머지됨**. dev 1커밋(#24 step9-11 flow) 미머지 |
+| learning(card/ai) | Producer (ReviewCompleted, ReviewDue) + Consumer (NoteCreated) | ✅ main | 🟢 Avro 전환·알림 발행. 카드등록 HTTP(D-001). TLS는 origin/dev 배선 완료 |
 
-> **종합**: main 머지 learning-svc뿐. platform/engagement dev 고립. knowledge 미구현. **cards-generated 경로 HTTP 대체 → D-001 HTTP 확정**(EVENT_FLOW_MATRIX 정정). AI카드 알림은 platform 알림 버스(notification-send-v1) 재사용으로 **설계 완료**([NOTIFICATION_TRIGGER_AI_CARDS](../designs/NOTIFICATION_TRIGGER_AI_CARDS.md)), 구현·스키마공유 W4.
+> **종합(06-05 origin/main)**: **4서비스 Kafka Producer/Consumer 전원 origin/main 머지 완료** → 통합 E2E는 머지 대기 없이 로컬 compose 실행 가능. ⚠️ **검증 방법**: 반드시 `git fetch` 후 `origin/main` 기준 확인 — 로컬 stale main으로 보면 미머지 오판(이 표 직전 버전이 그 실수). **dev 잔여는 W4 하드닝**(S6 audit·TLS·KAFKA_ENABLED 게이트·staging 프로파일·E2E 테스트)으로 EKS/MSK 배포·전도메인 audit 커버에 필요, 로컬 E2E엔 불요. cards-generated HTTP(D-001). ⚠️ S5 플랜 실측: shared `NotificationSend.avsc`는 발산 DRAFT → **platform-canonical**(`com.synapse.platform`)이 정본, vendor 대상.
 
 ## 6. W3 선행 준비 산출물 (05-22)
 
