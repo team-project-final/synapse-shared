@@ -1,0 +1,46 @@
+name: Flyway Guard (reusable)
+
+on:
+  workflow_call: {}
+
+permissions:
+  contents: read
+
+jobs:
+  flyway-guard:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout caller repo
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Checkout synapse-shared (guard script)
+        uses: actions/checkout@v4
+        with:
+          repository: team-project-final/synapse-shared
+          ref: main
+          path: _shared
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Determine base ref
+        id: base
+        run: |
+          if [ "${{ github.event_name }}" = "pull_request" ]; then
+            git fetch origin "${{ github.base_ref }}"
+            echo "ref=origin/${{ github.base_ref }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "ref=" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Run Flyway guard
+        run: |
+          if [ -n "${{ steps.base.outputs.ref }}" ]; then
+            python _shared/scripts/flyway_guard.py --root . --base-ref "${{ steps.base.outputs.ref }}"
+          else
+            python _shared/scripts/flyway_guard.py --root .
+          fi
