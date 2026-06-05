@@ -1,7 +1,7 @@
 # W4 성능 SLA 검증 시나리오 (Step 10.1)
 
 > **작성**: 2026-06-02 (W4 Day 2 — prep) · **owner**: @team-lead
-> **상태**: 시나리오·측정방법 **정의 완료 / 측정 대기**(서비스 E2E 통과 후, W4 Day 4)
+> **상태**: 시나리오·측정방법 **정의 완료** / **P2 브로커 전송 지연 06-05 측정**(§5) / 풀 측정은 서비스 E2E 통과 후(W5 Step 10.2)
 > **근거**: [PRD_W4](../project-management/prd/PRD_W4.md) §3(NFR) · [WORKFLOW_team-lead_W4](../project-management/workflow/WORKFLOW_team-lead_W4.md) Step 10 · [E2E_SCENARIOS_W4](../guides/E2E_SCENARIOS_W4.md)
 > **베이스라인**: 로컬 transport 전파 지연 [E2E_BASELINE_W3](./E2E_BASELINE_W3.md) (EndToEndLatency 측정 기준)
 
@@ -96,11 +96,18 @@ seed 노트(V002: "Kafka Basics", "Distributed Systems") 기반 예시:
 | ID | 목표 | 실측 | 판정 | 비고 |
 |----|------|------|:----:|------|
 | P1 | <200ms (P95) | — | ⏳ | 엔드포인트별 표 첨부 |
-| P2 | <5초 | — | ⏳ | |
+| P2 | <5초 | **발행 p99 113ms / 소비 fetch 39ms (1k건)** | 🟡 | **06-05 브로커 전송 지연만** 측정 — 풀 홉(consumer→DB)은 서비스 E2E 후 |
 | P3 | <2초 | — | ⏳ | 정확도 별도 |
 | P4 | <10초 | — | ⏳ | W1 체인 |
 | P5 | <30초 | — | ⏳ | |
 | P6 | <30초 | — | ⏳ | LLM 포함 |
 | P7 | >95% | — | ⏳ | FCM 미설정 시 N/A |
 
-> 판정: ✅ 충족 / 🟡 경계(±10%) / 🔴 미달. 미달 시 [WORKFLOW_W4](../project-management/workflow/WORKFLOW_team-lead_W4.md) Step 10.3~10.5 트리아지·수정·회귀.
+> 판정: ✅ 충족 / 🟡 경계(±10%) / 🔴 미달 / **🟡=부분측정**. 미달 시 [WORKFLOW_W4](../project-management/workflow/WORKFLOW_team-lead_W4.md) Step 10.3~10.5 트리아지·수정·회귀.
+
+### 5.1 P2 부분측정 상세 (2026-06-05, 로컬 docker-compose)
+- 도구: `kafka-producer-perf-test`(1000건·256B·200 rec/s·acks=all) + `kafka-consumer-perf-test`(1000건).
+- **발행 지연**: avg 6.6ms · p50 1ms · p95 43ms · **p99 113ms** · max 283ms.
+- **소비**: fetch.time 39ms / 1000건(≈25.6k msg/s), rebalance 3187ms(최초 1회).
+- 판정: **브로커 전송 계층은 <5s를 압도적 여유로 충족**. 단 P2 정의("produce→consumer 처리 완료=DB write")의 **앱 컨슈머 처리·DB 반영 구간은 미측정** → 서비스 E2E(W5 Step 10.2)에서 eventId correlation 로그 delta로 풀 측정.
+- 비고: produce→consume **왕복 wall-clock 7.9s**는 `kafka-console-consumer` JVM 콜드스타트 포함 값이라 실지연 아님(실지연은 위 ms 단위).

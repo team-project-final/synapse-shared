@@ -25,10 +25,12 @@
 
 ## Step 10: 성능 SLA 검증 (W4 이월)
 ### 10.1 정의 — [x] SLA_VERIFICATION_W4 P1~P7 (W4 완료)
-### 10.2 실행 — [ ] API P95<200ms · Kafka<5s · 검색<2s (3회 평균, Day 3)
+### 10.2 실행
+- [~] **P2 Kafka<5s** — 06-05 **브로커 전송 지연 부분측정 PASS**(발행 p99 113ms·소비 fetch 39ms/1k, [SLA_VERIFICATION_W4 §5.1](../../reports/SLA_VERIFICATION_W4.md)). **잔여=풀 홉(consumer→DB) eventId correlation 측정**(서비스 E2E 후)
+- [ ] P1 API P95<200ms · P3 검색<2s · P4 체인<10s · P5 audit<30s · P6 AI카드<30s · P7 FCM>95% (3회 평균, Day 3)
 ### 10.3~10.6 — [ ] 미달 P0 수정 → 회귀 → 결과 문서화
 
-**Step 10 Status**: [ ] Not Started / [ ] In Progress / [ ] Done — 측정은 E2E 통과 후(Day 3)
+**Step 10 Status**: [ ] Not Started / [x] In Progress / [ ] Done — P2 브로커 전송 지연 부분측정(06-05). 나머지·풀 홉은 E2E 통과 후(Day 3)
 
 ---
 
