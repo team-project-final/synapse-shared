@@ -19,3 +19,14 @@ def parse_version(filename):
     if not m:
         return None
     return m.group(1)
+
+
+def find_duplicates(paths):
+    """version 토큰 -> 정렬된 경로 리스트. 2회 이상 쓰인 버전만 포함."""
+    by_version = {}
+    for p in paths:
+        v = parse_version(p)
+        if v is None:
+            continue
+        by_version.setdefault(v, []).append(p)
+    return {v: sorted(ps) for v, ps in by_version.items() if len(ps) > 1}
