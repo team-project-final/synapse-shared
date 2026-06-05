@@ -59,8 +59,10 @@ jobs:
           TAG: ${{ github.sha }}
         run: |
           IMAGE="${REGISTRY}/${REPO}:${TAG}"
-          docker build -f "${{ inputs.build_context }}/${{ inputs.dockerfile }}" -t "$IMAGE" "${{ inputs.build_context }}"
+          DEV_LATEST="${REGISTRY}/${REPO}:dev-latest"
+          docker build -f "${{ inputs.build_context }}/${{ inputs.dockerfile }}" -t "$IMAGE" -t "$DEV_LATEST" "${{ inputs.build_context }}"
           docker push "$IMAGE"
+          docker push "$DEV_LATEST"
           echo "tag=${TAG}" >> "$GITHUB_OUTPUT"
 
       - name: Bump gitops image tag
