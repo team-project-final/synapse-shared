@@ -1,6 +1,6 @@
 # Synapse 이벤트 계약 표준 (Avro + Schema Registry) — 초안
 
-> **작성일**: 2026-05-29 · **갱신**: 2026-05-29(방향 전환) · **작성자**: @team-lead · **상태**: 초안
+> **작성일**: 2026-05-29 · **갱신**: **2026-06-08 — 정본 .avsc 표준 정렬**: `platform/UserRegistered`(구형 registeredAt 제거→§2 카탈로그형) · `platform/NotificationSend`(DRAFT `com.synapse.event.platform` 폐기→`com.synapse.platform`+공통 메타). platform 라이브 writer와 필드 단위 동일, 레지스트리 BACKWARD 검증 완료. 발견 경위: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) · 서비스 수정 지시: [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md) · **작성자**: @team-lead · **상태**: 초안
 > **결정**: [D-002](../designs/D-002_SCHEMA_FAMILY_DECISION.md) **Option 1 채택 — Avro + Confluent Schema Registry 사수** (PRD "모든 producer 토픽 Registry BACKWARD 등록" 준수)
 > **⏰ 구성 완료 기한: W4 1~2일차 (2026-06-01 ~ 06-02)** — 이후 통합/E2E·배포가 여기에 의존
 
