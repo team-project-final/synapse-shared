@@ -12,14 +12,16 @@
 
 ### 9.2 E2E 테스트 실행
 - [x] 계약·전송 E2E (W4 06-05 PASS — E2E_REPORT_W4)
-- [ ] **서비스 단위 E2E** — 4서비스 origin/main 빌드 기동 후 consumer 비즈니스 로직 검증(핵심 10 시나리오, FR-ALL-301/NFR-303)
-- [ ] 전체 체인 < 10초(FR-TL-401) · audit 적재 < 30초(NFR-403)
+- [x] **서비스 단위 E2E 환경** — `docker-compose.e2e.yml`(origin/main worktree 실빌드, 13/13 healthy, 06-08). 가입 스모크 통과 ([E2E_SMOKE_W5_DAY1](../../reports/E2E_SMOKE_W5_DAY1.md))
+- [ ] **핵심 10 시나리오 풀 실행** (FR-ALL-301/NFR-303) — Day 2. **선결: owner P0 2건 수정**(AVRO_CONTRACT_FIX_W5)
+- [ ] 전체 체인 < 10초(FR-TL-401) · audit 적재 < 30초(NFR-403) — Day 2
 ### 9.3 버그 트리아지
-- [ ] P0/P1/P2 분류 + P0 즉시 수정 대상 확정
+- [x] **P0 선발견(스모크)**: F1 engagement UserRegistered reader / F2·F3 learning-ai NotificationSend writer → 정본 정렬(shared#26) + owner 지시서. P2: F4 learning-ai AI키 게이트
+- [ ] Day 2 풀 시나리오 후 잔여 버그 P0/P1/P2 분류
 ### 9.4~9.6
 - [ ] P0 수정 지시·추적 → 회귀 → 커버리지 80%(9.5) → API 문서/HISTORY(9.6)
 
-**Step 9 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 계약/전송 PASS, 서비스 단위 실행 잔여(Day 2)
+**Step 9 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 환경 구성·스모크·P0 선발견 완료(06-08), 풀 10시나리오는 owner P0 수정 후 Day 2
 
 ---
 
@@ -36,13 +38,13 @@
 
 ## Step 11: Staging 배포 + 모니터링 대시보드 (W4 이월)
 ### 11.2 실행
-- [ ] EKS 재apply → ArgoCD 부트스트랩 → dev 5/5 재확인
-- [ ] 하드닝 머지 staging 배포 → **platform CrashLoop(#37/#48) 해소 → staging 5/5**
-- [ ] Observability(kube-prometheus-stack) + ServiceMonitor 5 + Grafana(FR-TL-303) + 알림 규칙
-- [ ] staging 24h 안정(NFR-305)
-### 11.6 — [ ] Staging 배포 결과 + 운영 가이드 문서화
+- [x] EKS 재apply → ArgoCD 부트스트랩 → dev 5/5 재확인 — **06-08 완료 (dev 16/0/0)**
+- [x] **platform/gateway CrashLoop 해소 → staging 5/5** — **06-08 완료 (staging 20/0/0)**. 근본 원인=DB 공유 flyway 충돌(#37 실체) + gateway JWT 미매핑 → [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136)
+- [x] Observability(kube-prometheus-stack) + Grafana + 알림 규칙 — **bring-up에 포함, 06-08 기동** (ServiceMonitor/대시보드 검증·SLA 알림 튜닝은 Day 4)
+- [ ] staging 24h 안정(NFR-305) — Day 4 시작
+### 11.6 — [ ] Staging 배포 결과 + 운영 가이드 문서화 — Day 4
 
-**Step 11 Status**: [ ] Not Started / [ ] In Progress / [ ] Done — EKS window + 하드닝 머지 선결(Day 1·4)
+**Step 11 Status**: [ ] Not Started / [x] In Progress / [ ] Done — dev/staging 5/5 + monitoring 기동 완료(06-08, Day1에 Day4 일부 선반영). 잔여=24h 안정·대시보드 검증·문서화(Day 4)
 
 ---
 

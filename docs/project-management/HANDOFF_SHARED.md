@@ -1,7 +1,9 @@
 # 핸드오프: synapse-shared
 
-> **최종 갱신**: 2026-06-05 (W4 Day 4 — §5 서비스 Kafka 구현 추적 로컬 git 실측 정정: 3/4 main 머지, knowledge 1건 잔여)
+> **최종 갱신**: 2026-06-08 (W5 Day 1 — EKS 재apply→dev/staging 5/5, 서비스 단위 E2E 환경 구축, 정본 avsc 표준 정렬(P0 2건 근본 원인 제거))
 > **허브 참조**: → [HANDOFF_HUB.md](./HANDOFF_HUB.md)
+>
+> **W5 Day 1 (06-08) 요약**: ① EKS/MSK/RDS 재apply + ArgoCD 14앱 + monitoring → **dev 16/0/0 · staging 20/0/0 ALL PASSED** (platform/gateway CrashLoop 근본 해소 [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136): DB 공유 flyway 충돌 + gateway JWT 미매핑) ② 서비스 단위 E2E 환경 `docker-compose.e2e.yml` (origin/main 실빌드, 13/13 healthy, [shared#25](https://github.com/team-project-final/synapse-shared/pull/25)) ③ Avro 전수 감사 → **P0 2건** + 정본 정렬 [shared#26](https://github.com/team-project-final/synapse-shared/pull/26) + owner 지시서 [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md). 상세: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md)
 
 ---
 
@@ -12,14 +14,14 @@
 | 스키마 | 네임스페이스 | 토픽 | 공통메타 | 비고 |
 |---|---|---|---|---|
 | CloudEventEnvelope | com.synapse.shared | (래퍼) | — | |
-| UserRegistered | com.synapse.platform | platform.auth.user-registered-v1 | ✅ 보강 | |
+| UserRegistered | com.synapse.platform | platform.auth.user-registered-v1 | ✅ 보강 | **06-08 정렬**: 구형 registeredAt 제거 → platform writer 정합(displayName+공통메타). reader가 구형 따라 F1 발생 |
 | NoteCreated | com.synapse.knowledge | knowledge.note.note-created-v1 | ✅ 보강 | +deckId |
 | NoteUpdated | com.synapse.knowledge | knowledge.note.note-updated-v1 | ✅ 보강 | |
 | ReviewCompleted | com.synapse.learning | learning.card.review-completed-v1 | ✅ 보강 | |
 | **CardReviewDue** | com.synapse.learning | learning.card.review-due-v1 | ✅ | 신규(learning-card 승격) |
 | **LevelUp** | com.synapse.engagement | engagement.gamification.level-up-v1 | ✅ | 신규 DRAFT(필드 owner 확정) |
 | **BadgeEarned** | com.synapse.engagement | engagement.gamification.badge-earned-v1 | ✅ | 신규 DRAFT(필드 owner 확정) |
-| **NotificationSend** | com.synapse.event.platform | platform.notification.notification-send-v1 | (platform 계약) | 신규(platform 미러) |
+| **NotificationSend** | com.synapse.platform | platform.notification.notification-send-v1 | ✅ | **06-08 정렬**: DRAFT `com.synapse.event.platform` 폐기 → `com.synapse.platform`+공통메타(platform reader 정합). learning-ai writer가 구 DRAFT 따라 F2/F3 발생 |
 | ~~CardsGenerated~~ | com.synapse.learning | ~~cards-generated-v1~~ | — | deprecated(D-001 HTTP) |
 | TenantId / UserId | com.synapse.shared | (공통) | — | |
 
@@ -53,6 +55,8 @@
 - Search: elasticsearch
 - App: platform, engagement, knowledge, learning-card, learning-ai, gateway
 
+> **W5 추가 — 서비스 단위 E2E 오버라이드** `docker-compose.e2e.yml` (06-08, [shared#25](https://github.com/team-project-final/synapse-shared/pull/25)): app 스텁 5개를 **origin/main 고정 worktree(`../.e2e-worktrees/`) 실빌드**로 교체. 서비스별 DB 분리(`synapse_{platform,engagement,knowledge,learning,ai}`, flyway 충돌 방지), postgres→pgvector/pg16, 포트 교정(8081~8084/8090), gateway JWT dev 키, learning-ai alembic 자동. 실행: `docker compose -f docker-compose.yml -f docker-compose.e2e.yml up -d --build` (헤더에 worktree 준비법). → **기본 compose=전송/계약 검증, e2e overlay=서비스 비즈니스 로직 검증.**
+
 ## 4. CI/CD 파이프라인 상태
 
 | 워크플로 | 트리거 | 상태 |
@@ -76,7 +80,7 @@
 | engagement-svc | Producer (gamification) + Consumer (UserRegistered, ReviewCompleted) | ✅ **#23 (06-04)** | 🟢 Consumer + **S5 모더레이션 알림 발행 머지됨**. dev 1커밋(#24 step9-11 flow) 미머지 |
 | learning(card/ai) | Producer (ReviewCompleted, ReviewDue) + Consumer (NoteCreated) | ✅ main | 🟢 Avro 전환·알림 발행. 카드등록 HTTP(D-001). TLS는 origin/dev 배선 완료 |
 
-> **종합(06-05 origin/main)**: **4서비스 Kafka Producer/Consumer 전원 origin/main 머지 완료** → 통합 E2E는 머지 대기 없이 로컬 compose 실행 가능. ⚠️ **검증 방법**: 반드시 `git fetch` 후 `origin/main` 기준 확인 — 로컬 stale main으로 보면 미머지 오판(이 표 직전 버전이 그 실수). **dev 잔여는 W4 하드닝**(S6 audit·TLS·KAFKA_ENABLED 게이트·staging 프로파일·E2E 테스트)으로 EKS/MSK 배포·전도메인 audit 커버에 필요, 로컬 E2E엔 불요. cards-generated HTTP(D-001). ⚠️ S5 플랜 실측: shared `NotificationSend.avsc`는 발산 DRAFT → **platform-canonical**(`com.synapse.platform`)이 정본, vendor 대상.
+> **종합(06-05 origin/main)**: **4서비스 Kafka Producer/Consumer 전원 origin/main 머지 완료** → 통합 E2E는 머지 대기 없이 로컬 compose 실행 가능. ⚠️ **검증 방법**: 반드시 `git fetch` 후 `origin/main` 기준 확인 — 로컬 stale main으로 보면 미머지 오판(이 표 직전 버전이 그 실수). **dev 잔여는 W4 하드닝**(S6 audit·TLS·KAFKA_ENABLED 게이트·staging 프로파일·E2E 테스트)으로 EKS/MSK 배포·전도메인 audit 커버에 필요, 로컬 E2E엔 불요. cards-generated HTTP(D-001). ✅ **06-08 해소**: shared `NotificationSend.avsc`·`UserRegistered.avsc` 정본을 platform-canonical(`com.synapse.platform`)로 정렬 완료([shared#26](https://github.com/team-project-final/synapse-shared/pull/26)). **잔여 owner P0**(서비스 벤더링 교체, [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md)): engagement UserRegistered reader(F1) · learning-ai NotificationSend writer(F2/F3) — Day 2 풀 E2E 선결.
 
 ## 6. W3 선행 준비 산출물 (05-22)
 

@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-05 (W4 Day 4 — **서비스 Kafka 머지 상태 origin 실측 정정**: 4서비스 Kafka Producer/Consumer **전원 origin/main 머지 완료** → 통합 E2E는 머지 무관·실행 가능. 잔여=W4 하드닝 dev→main 머지 + E2E/SLA 실행 + EKS staging window)
-> **현재 주차**: W4 Day 4 (06-05, W4 마지막 영업일)
+> **최종 갱신**: 2026-06-08 (W5 Day 1 — EKS 재apply→**dev/staging 5/5 ALL PASSED**, 서비스 단위 E2E 환경 구축, 정본 avsc 표준 정렬(P0 2건 근본 원인 제거))
+> **현재 주차**: W5 Day 1 (06-08, 발표 06-15)
 > **갱신자**: @VelkaressiaBlutkrone
 >
 > ⚠️ **06-05 실측 방법 주의**: 머지 상태는 반드시 **`git fetch` 후 `origin/main`** 기준으로 확인할 것. 로컬 main/feature 브랜치는 stale일 수 있어 오판 유발(이번 갱신서 knowledge 로컬 main이 05-20에 멈춰 "미머지" 오판 → origin/main #40으로 정정). 검증: `git -C <repo> log origin/main -1`.
@@ -18,11 +18,14 @@
 
 | 서비스 | 로컬 compose | dev (EKS) | staging | prod |
 |---|---|---|---|---|
-| platform-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | 🔴 CrashLoop([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37)) | ⏳ W4 |
-| engagement-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
-| knowledge-svc | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
-| learning-card | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
-| learning-ai | ✅ Healthy | ✅ 5/5(06-02)→destroy | ✅(06-02)→destroy | ⏳ W4 |
+| platform-svc | ✅ Healthy | ✅ **5/5(06-08)** | ✅ **5/5(06-08, CrashLoop 해소)** | ⏳ W5 |
+| engagement-svc | ✅ Healthy | ✅ 5/5(06-08) | ✅ 5/5(06-08) | ⏳ W5 |
+| knowledge-svc | ✅ Healthy | ✅ 5/5(06-08) | ✅ 5/5(06-08) | ⏳ W5 |
+| learning-card | ✅ Healthy | ✅ 5/5(06-08) | ✅ 5/5(06-08) | ⏳ W5 |
+| learning-ai | ✅ Healthy | ✅ 5/5(06-08) | ✅ 5/5(06-08) | ⏳ W5 |
+| gateway | ✅ Healthy | ✅ **5/5(06-08, JWT 매핑 해소)** | — | ⏳ W5 |
+
+> **06-08 라이브 검증**: `verify-argocd-deploy.sh` **dev 16/0/0 · staging 20/0/0 ALL PASSED**. platform CrashLoop(#37)의 실제 근본 원인 = **5서비스가 단일 RDS `synapse` DB 공유 → flyway_schema_history 충돌**(이전 가설 #48 staging 프로파일 아님), gateway CrashLoop = JWT_PUBLIC_KEY ExternalSecret 미매핑(#128 local 전용). 둘 다 [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136)(DB 분리 + JWT 매핑)로 해소. **EKS는 검증 후에도 유지 중**(W5 staging 24h 안정·SLA 측정 필요) — Day 4 종료 후 destroy 판단.
 
 > 상태 enum: ✅ Healthy / 🔄 검증 대기(apply 후) / ⚠️ Degraded / 🔴 Down / ⏳ destroy(on-demand 재기동) or Not Started
 > **06-02 라이브 검증(gitops #91)**: ArgoCD 부트스트랩 → **dev `verify-argocd-deploy.sh synapse-dev` 15/15 ALL PASSED(5/5)** + 롤백 124s(<3분) → **FR-TL-402 dev 충족**. **staging 4/5** — platform-svc만 CrashLoop([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37): application-staging.yml datasource 미연결). 검증 후 비용관리 destroy(on-demand). 로컬 compose는 항상 ✅.
@@ -31,22 +34,23 @@
 
 | 컴포넌트 | 상태 | 비고 |
 |---|---|---|
-| EKS | ⏳ destroy (on-demand) | **06-02 재apply→부트스트랩→dev 5/5 검증→destroy**(gitops #91). v1.30, 프라이빗 엔드포인트, bastion aws-auth 코드화(#87) |
-| RDS PostgreSQL 16 | ⏳ destroy | **D-026 SG terraform 코드화 완료(gitops #89)** — 재apply 시 자동(수동 불요) |
-| MSK Kafka | ⏳ destroy | **토픽 terraform 관리(gitops kafka-topics/, RF=2)** + **브로커 주소 ConfigMap 자동화(#88)** → 재apply 시 자동. 로컬 Kafka로 대체 검증 |
-| Redis | ⏳ destroy | D-026 SG terraform 코드화 완료(#89) — 자동 |
-| Elasticsearch | ⏳ destroy | OpenSearch→Elasticsearch 전환(gitops PR #114). D-026 SG terraform 코드화 완료(#89) — 자동 |
-| ArgoCD | ⏳ destroy | HA, dev auto-sync + staging manual. **06-02 부트스트랩 완료·검증(gitops #91)** — 재apply 시 `bring-up.sh`로 부트스트랩 |
-| 로컬 docker-compose | ✅ | 13 서비스 Healthy — **W4 임계경로 검증 환경**(EKS 무관) |
+| EKS | ✅ **ACTIVE (06-08 재apply)** | 62리소스, v1.30, 프라이빗 엔드포인트. W5 staging 안정·SLA 측정 위해 유지(Day 4 후 destroy 판단) |
+| RDS PostgreSQL 16 | ✅ ACTIVE | 서비스별 DB 5개로 분리(gitops#136, `synapse_*`). learning-ai용 pgvector는 EKS RDS에 별도 확인 필요(Day 2) |
+| MSK Kafka | ✅ ACTIVE | **토픽 terraform 관리(gitops kafka-topics/, RF=2)** + 브로커 ConfigMap 자동화(#88) — 재apply 시 자동 |
+| Redis | ✅ ACTIVE | ElastiCache, transit TLS |
+| Elasticsearch | ✅ ACTIVE | OpenSearch→Elasticsearch 전환(gitops PR #114) |
+| ArgoCD | ✅ ACTIVE | HA, dev auto-sync + staging auto-sync. 14앱 Synced(06-08 `bring-up.sh`) |
+| Observability | ✅ **기동(06-08)** | kube-prometheus-stack + Grafana + Alertmanager + Loki/Promtail (Day 4 ServiceMonitor/대시보드 검증·SLA 알림) |
+| 로컬 docker-compose | ✅ | 13 서비스 Healthy + **e2e overlay**(서비스 단위 E2E, [shared#25](https://github.com/team-project-final/synapse-shared/pull/25)) |
 
 ### Kafka / 스키마 상태
 
 | 항목 | 상태 |
 |---|---|
 | **이벤트 계약 표준** | ✅ 수립 — Avro + Schema Registry (D-002 Option 1). [EVENT_CONTRACT_STANDARD](../guides/EVENT_CONTRACT_STANDARD.md) |
-| Avro 스키마 | ✅ 이벤트 11종(기존 보강 + 신규 CardReviewDue/LevelUp/BadgeEarned/NotificationSend), 공통메타 적용, generateAvroJava 컴파일. BACKWARD |
+| Avro 스키마 | ✅ 이벤트 11종, 공통메타 적용, generateAvroJava 컴파일. BACKWARD. **06-08 정본 정렬**: UserRegistered/NotificationSend → platform-canonical(`com.synapse.platform`), 레지스트리 BACKWARD 검증([shared#26](https://github.com/team-project-final/synapse-shared/pull/26)). ⚠️ 서비스 벤더링 교체 잔여(owner P0, [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md)) |
 | 토픽 (로컬 Kafka) | ✅ 8종 생성(신규 4종 추가: review-due/level-up/badge-earned/notification-send) + round-trip 검증 |
-| MSK 토픽 (EKS) | ⏳ destroy — 재기동 window에 `create-kafka-topics.sh` 9토픽(8 active + cards-generated 잔존) 재생성 |
+| MSK 토픽 (EKS) | ✅ ACTIVE(06-08) — terraform 선언 관리(gitops kafka-topics/) 자동 재생성 |
 | 로컬 E2E harness | ✅ transport(`--all`/`--full`) + **Avro 라운드트립(`--avro`)** 모드 |
 | 라이브러리 발행 | ✅ **발행 완료(06-02)** — GitHub Packages `com.synapse:synapse-shared:0.1.0`([runbook](../runbooks/PUBLISH_SHARED_LIBRARY.md)). `v0.1.0` 태그 push → publish.yml run 26792658024 성공. 잔여: 각 서비스 소비측 의존 배선(read:packages 토큰) |
 | 서비스 Kafka Producer/Consumer | 🟢 **4서비스 전원 origin/main 머지 완료(06-05 실측) → 통합 E2E 머지 무관·실행 가능** · **knowledge** 🟢 origin/main **#40**(06-02) NoteCreated Producer 존재 · **platform** 🟢 **#46**(06-01) `AuditKafkaConsumer`+`NotificationKafkaConsumer` · **engagement** 🟢 **#23**(06-04) Consumer + S5 모더레이션 알림 · **learning** 🟢 main Kafka(Avro·알림발행). **dev 잔여(하드닝, main 미머지)**: platform dev 11커밋(#52 S6 audit 다중토픽·#54 TLS·#61 KAFKA_ENABLED 게이트·#48 staging 프로파일·#57 Step9 E2E) / engagement #24 / knowledge 3커밋(#42 컨벤션·#43 노트버전이력·#45 MSK TLS) → **EKS/MSK 배포·전도메인 audit엔 필요, 로컬 E2E엔 불요**. cards-generated HTTP(D-001). |
@@ -63,21 +67,22 @@
     └─ learning ✅ main Kafka
     └─→ 통합 E2E는 **머지에 막히지 않음** → 로컬 compose에서 즉시 실행 가능(team-lead Step 9)
 
-[독립-잔여] W4 하드닝 dev→main 머지(EKS/MSK 배포 시 필요, 로컬 E2E 무관)
-    ├─ platform dev 11커밋: S6 audit 다중토픽(#52)·TLS(#54)·KAFKA_ENABLED 게이트(#61)·staging 프로파일(#48→#37 해소)·Step9 E2E(#57)
-    ├─ engagement dev: #24 step9-11 flow
-    └─ knowledge dev: 컨벤션(#42)·노트버전이력(#43)·MSK TLS(#45)
+[잔여-owner] 하드닝 dev→main 머지 (W5 Day1 06-08 실측)
+    ├─ platform: #74만 잔여 (S6 audit #52·TLS #54·게이트 #61은 release #73로 main 반영)
+    ├─ engagement dev +2: #24 step9-11·#29 flyway guard (+ #23 main→dev 역동기화)
+    ├─ knowledge dev +3: #42·#43·#45 TLS (+ open PR #51 flyway) · **#46 KAFKA_ENABLED 게이트 미구현(OPEN)**
+    └─ learning dev +18: release PR 필요 (#54 게이트·#56 안정화 포함, + #41/#42 역동기화)
 
-[선행완료] 로컬 E2E harness — 전송 경로 + CloudEvent 단위 round-trip 검증 ✅ / 계약 BACKWARD 실검증 ✅(06-02 --avro)
+[잔여-owner-P0] Avro 계약 — 서비스 벤더링 교체 (Day2 풀 E2E 선결, AVRO_CONTRACT_FIX_W5)
+    ├─ engagement: UserRegistered reader 구형 registeredAt → 정본 교체 (F1, 가입 체인 차단)
+    └─ learning-ai: NotificationSend writer namespace/메타 → 정본 교체 (F2/F3, 알림 체인 차단)
+    └─→ shared 정본은 ✅ 정렬 완료(#26), 서비스 측만 남음
 
-[해소] EKS window 진입 하드닝 ✅(gitops #87~89) → 잔여 ArgoCD 부트스트랩(gitops #91)
-    └─→ dev/staging EKS 검증 (MSK 토픽=terraform 자동)
-
-[블로커] platform-svc application-staging.yml datasource 연결 (platform owner, #37/gitops#92)
-    └─→ staging 4/5→5/5 (다른 4개 ✅ 06-02 검증, platform-svc만 CrashLoop)
-
-[독립] Observability 스택 (gitops, 매니페스트 작성됨) → window apply
-[독립] terraform state 정리 — OIDC 코드 반영 (gitops) / SG D-026 ✅(#89)
+[해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
+[해소-06-08] platform/gateway CrashLoop = DB 공유 flyway 충돌 + JWT 미매핑 → gitops#136
+    └─→ (#37의 실제 근본 원인은 #48 staging 프로파일이 아니었음)
+[해소-06-08] Observability 스택 — bring-up에 포함, 기동 완료 (Day4 검증·SLA 알림)
+[선행완료] 로컬 E2E harness ✅ + 서비스 단위 E2E 환경 ✅(shared#25)
 ```
 
 ---
