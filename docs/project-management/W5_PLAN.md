@@ -24,13 +24,15 @@
 ## 1. 월(06-08) Day 1 — staging window + 하드닝 머지 + E2E 착수 (병렬)
 
 ### Track A — 인프라 (team-lead/gitops)
-- [ ] EKS `terraform apply` → ArgoCD 부트스트랩(`bring-up.sh`) → dev 5/5 재확인 (W4 자동화 #87~89·#91 그대로)
-- [ ] **하드닝 머지 도착분 staging 배포** — platform #48(staging 프로파일) 머지 후 staging Sync → **platform CrashLoop(#37) 해소 확인 → staging 5/5**
+- [x] EKS `terraform apply` → ArgoCD 부트스트랩(`bring-up.sh`) → dev 5/5 재확인 — **06-08 완료**: 62리소스 + 14앱 Synced + monitoring 스택까지(Day 4 Observability 선반영). dev **16/0/0 ALL PASSED**
+- [x] **staging 배포 + platform CrashLoop(#37) 해소 → staging 5/5** — **06-08 완료, 단 경로 변경**: 근본 원인은 #48(staging 프로파일)이 아니라 **5서비스가 단일 RDS `synapse` DB 공유 → flyway_schema_history 충돌** ([gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136) DB 분리로 해소). gateway CrashLoop(JWT_PUBLIC_KEY 미매핑, #128은 local 전용)도 동일 PR. staging **20/0/0 ALL PASSED**
 
 ### Track B — 머지 조율 + 서비스 E2E 착수 (team-lead + owner)
-- [ ] **[owner] 하드닝 dev→main 머지**: platform(#52 audit 다중토픽·#54 TLS·#61 게이트), engagement #24, knowledge(#42·#43·#45 TLS) → main 정합
-- [ ] **[owner] KAFKA_ENABLED 게이트**(Spring 3서비스 #59/#46/#49) — gitops env no-op 해소
-- [ ] **[team-lead] 서비스 스택 E2E 환경 구성** — 각 서비스 origin/main 빌드 기동(자체 compose/Testcontainers) 또는 staging에서 consumer 동작 확인 경로 확정
+- [ ] **[owner] 하드닝 dev→main 머지**: platform #74만 잔여(#52·#54·#61은 release #73로 main 반영됨), engagement #24·#29(+#23 dev 역동기화), knowledge(#42·#43·#45 TLS + open PR #51) → main 정합. **learning은 dev +18커밋 — release PR 필요**
+- [ ] **[owner] KAFKA_ENABLED 게이트**: platform #61 ✅main / learning #54 ✅dev(main 머지 대기) / **knowledge #46 미구현(OPEN)**
+- [x] **[team-lead] 서비스 스택 E2E 환경 구성** — **06-08 완료**: `docker-compose.e2e.yml`(origin/main worktree 실빌드, 13/13 healthy, [shared#25](https://github.com/team-project-final/synapse-shared/pull/25)). 가입 스모크에서 **P0 2건 발견**(engagement UserRegistered reader / learning-ai NotificationSend writer) → 정본 정렬 [shared#26](https://github.com/team-project-final/synapse-shared/pull/26) + owner 지시서 [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md). 상세: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md)
+
+> **Day 2 선결 주의**: 핵심 10 시나리오 중 가입→게이미피케이션·노트→AI카드→알림 체인은 **owner P0 수정(AVRO_CONTRACT_FIX_W5) 전까지 FAIL 확정** — Day 2 트리아지에 선반영됨.
 
 ## 2. 화(06-09) Day 2 — 전체 E2E (서비스 단위) + 버그 트리아지
 - [ ] **(전체, FR-ALL-301 / NFR-303)** 핵심 10 시나리오 E2E — 복습→XP→배지→레벨업→알림 / 노트→AI카드 / 검색 / 신고→모더레이션 / 인증→결제
@@ -66,12 +68,22 @@
 | Step 11 (W4 이월) | Staging 최종 + 모니터링 | Day 4 |
 | Step 12 | 발표 자료 + 리허설 | Day 5 (리허설 6/12) |
 
-## 7. 선결 체크 (월요일 출발 전)
+## 7. 선결 체크 (월요일 출발 전 → 06-08 종료 시점)
 - ✅ 4서비스 Kafka origin/main 머지 완료 (E2E 머지 차단 없음)
 - ✅ 계약·전송 E2E 베이스라인 PASS (E2E_REPORT_W4)
 - ✅ E2E/SLA 시나리오 정의 완료 (E2E_SCENARIOS_W4 / SLA_VERIFICATION_W4)
-- ⛔ EKS destroy — Day1 Track A `terraform apply`
-- ⛔ 하드닝 dev→main 머지 (owner) — staging/audit/TLS 선결
-- ⛔ 서비스 단위 E2E 실행 환경 (서비스 스택 or staging)
+- ✅ ~~EKS destroy~~ — **06-08 재apply 완료**, dev/staging 5/5 (gitops#136 머지 후)
+- ⛔ 하드닝 dev→main 머지 (owner) — **잔여(§1 Track B)**: engagement #24·#29, knowledge #42/#43/#45/#51, learning release, knowledge #46 게이트
+- ✅ ~~서비스 단위 E2E 실행 환경~~ — **06-08 `docker-compose.e2e.yml` 완료**
+
+## 8. Day 1 종료 산출물 (06-08 추가)
+| 산출물 | 경로/PR | 비고 |
+|--------|---------|------|
+| 서비스 E2E 환경 | `docker-compose.e2e.yml` + `scripts/initdb/` ([shared#25](https://github.com/team-project-final/synapse-shared/pull/25), merged) | 스텁→origin/main 실빌드, 서비스별 DB 분리 |
+| Day1 스모크/Avro 감사 | [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) | 13/13 healthy, P0 2건·인프라 F5/F6 |
+| 정본 스키마 정렬 | UserRegistered/NotificationSend ([shared#26](https://github.com/team-project-final/synapse-shared/pull/26), merged) | platform writer 정합, BACKWARD 검증 |
+| owner 수정 지시서 | [AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md) | engagement F1·learning F2/F3/F4 |
+| DB 분리 + gateway JWT | [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136) (merged) | platform/gateway CrashLoop 근본 해소 |
+| verify 스크립트 보강 | `scripts/verify-argocd-deploy.sh` | kubectl CRD 우선(SSM 터널 argocd login 불가 대응) |
 
 > **한 줄 요약**: 월=EKS 올리고+하드닝 머지+E2E 환경, 화=전체 E2E+버그, 수=SLA+커버리지+문서, 목=staging 최종+모니터링, 금=발표 리허설(6/12). 발표 6/15.
