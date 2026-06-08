@@ -91,33 +91,29 @@
 
 | 레포 | 스포크 문서 | 최종 갱신 | 정합성 |
 |---|---|---|---|
-| synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89) 완료, #91 잔여 |
-| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-05 | ✅ 동기 — §5 Kafka 추적 origin/main 실측 정정 |
+| synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89). W5: DB 분리+gateway JWT(#136) |
+| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-08 | ✅ 동기 — W5 Day1 EKS 5/5·E2E 환경·정본 스키마 정렬 |
 
-> **W4 종료 게이트 평가 + W5 인수**: [reports/W4_EXIT_GATE.md](../reports/W4_EXIT_GATE.md) (06-05, §5 성공기준 6/6 구현충족·검증대기 + 머지 조율 + 리스크 처리).
+> **W4 종료 게이트 평가 + W5 인수**: [reports/W4_EXIT_GATE.md](../reports/W4_EXIT_GATE.md) (06-05). **W5 Day1 결과**: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) · [W5_PLAN §8](./W5_PLAN.md).
 
 ---
 
-## 4. 다음 세션 작업 순서
+## 4. 다음 세션 작업 순서 (W5 Day 2, 06-09)
 
-> **W3 종료 → W4 인수인계**: W3 종료 게이트 미통과(**충족 1/5** · 부분 1 · 미확인 3, [W3_EXIT_GATE](../reports/W3_EXIT_GATE.md)). **§1 레지스트리 BACKWARD는 06-02 로컬 `--avro`(8/8)+강제 프로브로 실검증 → ✅.** shared 전제(토픽·스키마·harness·Security·배포전략·계약표준·발행)는 완료.
-> **▶ 월요일(06-01) 바로 시작 순서: [W4_PLAN.md](./W4_PLAN.md)** — Day1 병렬 2트랙(A: EKS `terraform apply` / B: v0.1.0 발행 + knowledge Producer 착수 + 필드 확정), 화요일 consumer, 목요일 통합 E2E.
+> **W5 Day1(06-08) 완료**: EKS 재apply→dev/staging 5/5 · 서비스 단위 E2E 환경 · 정본 스키마 정렬. 인프라·환경 차단 해소됨. **Day2 차단 요소는 owner 액션 2종**(하드닝 머지 + Avro P0 벤더링 교체).
 
 ```
-1. [team-lead] 🟢 최우선 — **통합 E2E 실행**(Step 9). 4서비스 Kafka 전원 origin/main → 머지 대기 없이 로컬 compose에서 즉시 실행 가능.
-     → ✅ 전제 충족(06-05 origin/main 실측): knowledge #40·platform #46·engagement #23·learning — Producer/Consumer 전원 main
-     → 시나리오: E2E_SCENARIOS_W4 S1~S4 (복습→XP→레벨업→알림 <10초 등)
-     → [owner들] W4 하드닝 dev→main 머지(병행): platform(S6 #52/TLS #54/게이트 #61/staging #48), engagement #24, knowledge #42/#43/#45 — EKS 배포·전도메인 audit 커버에 필요
-2. [shared] 서비스 PR 도착 시 E2E consumer 시나리오 확장 검증
-     → ✅ 선행 완료: 로컬 harness 전송 경로 + CloudEvent 단위 round-trip (--all 5/5, --full 13/13)
-     → 잔여: E2E_SCENARIOS_W3.md 시나리오로 consumer 비즈니스 로직까지 검증
-3. [gitops] ArgoCD 부트스트랩([#91](https://github.com/team-project-final/synapse-gitops/issues/91)) — **✅ 06-02 dev 5/5(15/15)+롤백 검증 완료** (FR-TL-402 dev 충족). 재apply 시 `bring-up.sh`
-     → ✅ 선결 자동화(06-02): 토픽 terraform·브로커 ConfigMap(#88)·D-026 SG(#89)·bastion aws-auth(#87)
-4. [platform owner] platform-svc `application-staging.yml` **datasource url/password 연결**([#37](https://github.com/team-project-final/synapse-platform-svc/issues/37)) → staging 4/5→5/5
-     → 06-02 검증: 다른 4개 staging ✅, **platform-svc만 CrashLoop**(datasource 미연결). gitops overlay/시크릿은 정상
-5. [gitops] Observability 설치 — 매니페스트 작성됨(`infra/monitoring/`) → window apply + 서비스별 `/metrics` 노출(서비스 owner)
-6. [gitops] terraform state 정리 — D-026 SG ✅(#89 완료) / OIDC 코드 반영 잔여
-     → 완료 기준: terraform plan → no unexpected drift
+1. [owner들] 🔴 Day2 선결 — **Avro 계약 P0 벤더링 교체** ([AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md))
+     → engagement: UserRegistered reader 정본 교체(F1) — 안 하면 가입→게이미피케이션 체인 FAIL
+     → learning-ai: NotificationSend writer 정본 교체(F2/F3) — 안 하면 노트→AI카드→알림 체인 FAIL
+     → shared 정본은 ✅ 정렬 완료(#26), 서비스 측 벤더링만 남음
+2. [owner들] 하드닝 dev→main 머지: engagement #24·#29, knowledge #42/#43/#45/#51 + #46 게이트 구현, learning release(+#54)
+3. [team-lead] 🟢 **핵심 10 시나리오 풀 E2E**(Step 9) — `docker-compose.e2e.yml`로 실행. P0 수정 도착분부터 재빌드 검증.
+     → 시나리오: E2E_SCENARIOS_W4 (복습→XP→배지→레벨업→알림 <10초 / 노트→AI카드 / 검색 / 신고→모더레이션 / 인증→결제)
+     → 버그 트리아지 P0/P1/P2, 전체 체인 <10초·audit <30초
+4. [team-lead] EKS RDS에 learning-ai pgvector extension 확인(Day2) — 로컬은 pgvector/pg16, EKS RDS는 별도 확인 필요
+5. [team-lead] Day3~ SLA 측정(풀 홉 eventId correlation) · 커버리지 80% · API 문서 · Schema 전수 BACKWARD
+6. [gitops/team-lead] Day4 Observability 검증(ServiceMonitor/대시보드/SLA 알림) + staging 24h 안정
 ```
 
 ---
