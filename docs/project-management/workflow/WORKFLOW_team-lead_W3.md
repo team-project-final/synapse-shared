@@ -4,6 +4,8 @@
 > **기간**: 2026-05-26 (화) ~ 2026-05-29 (금) — 4영업일 (5/25 부처님오신날 제외)  
 > **PRD**: [PRD_W3.md](../prd/PRD_W3.md)
 
+> ✅ **사후 정합(2026-06-08)**: 본 주차 미완 항목은 전수 검토 완료 — 대부분 W5 Day1 해소/결정 또는 W5 일정 추적중, 미추적 잔여 0건. → [SHARED_W1W4_INCOMPLETE_REVIEW](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md)
+
 ---
 
 ## Step 7: 전체 통합 테스트 조율
@@ -65,7 +67,7 @@
 - [x] 미해결 이슈 목록화 및 우선순위 지정 → `W4_KAFKA_WORKORDER.md`(knowledge P0·engagement P0·platform P1) + 서비스 이슈 4건
 - [x] RULE Reference → TASK 반영 (Security 2차 Constraints 등)
 
-**Step 7 Status**: [ ] Not Started / [x] In Progress / [ ] Done
+**Step 7 Status**: [ ] Not Started / [ ] In Progress / [x] Done — 전송/계약 경로 완료, 서비스 Kafka 4종 origin/main 머지(W5 Day1 해소). 서비스 단위 E2E는 W5 Day2 추적. ([SHARED_W1W4_INCOMPLETE_REVIEW](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md))
 
 ---
 
@@ -134,4 +136,4 @@
 > 표기: [x] 완료 / [~] 부분(정의 완료·실검증 재기동 후) / [ ] EKS 재기동 대기
 > **Step 8 진행률**: 설계·정책·매니페스트 완료(1.1~1.6, 1.10). 실행·실검증(1.7~1.9)만 EKS 재기동(`terraform apply`) 대기 — **Kafka 완료와 무관**.
 
-**Step 8 Status**: [ ] Not Started / [x] In Progress / [ ] Done
+**Step 8 Status**: [ ] Not Started / [ ] In Progress / [x] Done — 배포 정책·매니페스트 완료, dev/staging 배포·검증·롤백은 W5 Day1 ALL PASS(dev16/staging20). ([SHARED_W1W4_INCOMPLETE_REVIEW](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md))
