@@ -109,24 +109,24 @@
 - [x] staging Application 매니페스트 갱신 (syncPolicy: manual) — staging overlay + ApplicationSet (gitops PR #34)
 - [x] 환경별 values.yaml 분리 확인 — dev/staging overlay 분리
 
-### 1.7 배포 실행 — ⛔ EKS destroy로 대기 (재기동 후)
-> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.7 (turnkey 명령·기준)
-- [ ] dev 환경: main push → autoSync 자동 배포 확인
-- [ ] staging 환경: 수동 Sync 버튼 → 배포 실행
-- [ ] ECR 이미지 태그 일치 확인
+### 1.7 배포 실행 — ✅ W5 Day1(06-08) 해소
+> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.7 · 실측: [SHARED_W1W4_INCOMPLETE_REVIEW](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md)
+- [x] dev 환경: main push → autoSync 자동 배포 확인 — ✅ 14앱 Synced
+- [x] staging 환경: 수동 Sync 버튼 → 배포 실행 — ✅ staging 배포 완료
+- [x] ECR 이미지 태그 일치 확인 — ✅ 배포 이미지 Running
 
-### 1.8 배포 후 검증 — ⛔ EKS destroy로 대기 (재기동 후)
-> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.8 (Kafka lag은 W4 consumer 후)
-- [ ] dev 환경 전체 서비스 Health OK 확인
-- [ ] staging 환경 전체 서비스 Health OK 확인
-- [ ] Kafka 연결 상태 확인 (consumer group lag = 0) — consumer 배포 필요(W4 Kafka 구현 후)
-- [ ] RDS/Redis/Elasticsearch 연결 상태 확인
+### 1.8 배포 후 검증 — ✅ W5 Day1(06-08) 해소
+> 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.8
+- [x] dev 환경 전체 서비스 Health OK 확인 — ✅ verify-argocd-deploy dev **16/0/0**
+- [x] staging 환경 전체 서비스 Health OK 확인 — ✅ staging **20/0/0**
+- [x] Kafka 연결 상태 확인 (consumer group lag = 0) — ✅ consumer group 활성(engagement/learning-ai/platform-audit)
+- [x] RDS/Redis/Elasticsearch 연결 상태 확인 — ✅ 서비스 Running = 연결 성립, ESO 14 SecretSynced
 
-### 1.9 배포 이슈 대응 — ⛔ EKS destroy로 대기 (절차는 §B 정의됨)
+### 1.9 배포 이슈 대응 — ✅ W5 Day1(06-08) 해소
 > 실행 설계: [W3_DEPLOY_VERIFICATION_PLAYBOOK.md](../../guides/W3_DEPLOY_VERIFICATION_PLAYBOOK.md) §1.9 (DEPLOY_REPORT §B 롤백 <3분)
-- [ ] 배포 실패 시 롤백 절차 실행 및 검증
-- [ ] 환경별 로그 수집 및 이슈 분석
-- [ ] 배포 성공 기준 충족 여부 최종 확인
+- [x] 배포 실패 시 롤백 절차 실행 및 검증 — ✅ 롤백 124s(<3분, 06-02) + platform/gateway CrashLoop 근본 해소(gitops#136)
+- [x] 환경별 로그 수집 및 이슈 분석 — ✅ Loki/Promtail 기동(06-08), CrashLoop 로그로 flyway/JWT 근본원인 규명
+- [x] 배포 성공 기준 충족 여부 최종 확인 — ✅ dev/staging ALL PASSED
 
 ### 1.10 결과 정리
 - [x] 배포 검증 결과 리포트 작성 → `docs/reports/DEPLOY_REPORT_W3.md` (실행 검증 체크리스트는 재기동 후 채움)

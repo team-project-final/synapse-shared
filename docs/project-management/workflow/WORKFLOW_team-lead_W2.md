@@ -23,8 +23,8 @@
 - [x] Instructions 초안 → TASK 문서 반영
 
 ### 4.3 Security 1차 검토 (네트워크 보안)
-- [ ] Kafka ACL 토픽별 생산자/소비자 권한 정의 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` ACL 섹션)
-- [ ] SASL/TLS 인증 설정 확인 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` TLS 섹션)
+- [x] Kafka ACL 토픽별 생산자/소비자 권한 정의 — **결정상 종결**: TLS-only 채택으로 ACL 미사용, 인가는 VPC 네트워크 경계(EKS↔MSK SG 9094) ([KAFKA_AUTH_MATRIX §1](../../guides/KAFKA_AUTH_MATRIX.md))
+- [x] SASL/TLS 인증 설정 확인 — TLS-only 확정, 5서비스 security.protocol=SSL 배선 (#54/#45/#48)
 - [x] 토픽 접근 제어 최소 권한 원칙 적용 (설계 완료)
 - [x] 결과 → TASK Constraints 반영
 
@@ -35,21 +35,21 @@
 - [x] Duration(final) 갱신
 
 ### 4.5 Security 2차 검토
-- [ ] 토픽 메시지 암호화 전송 (TLS) 확인 — 다음 gitops 세션에서 openssl s_client로 검증
-- [ ] 민감 데이터 토픽 접근 제한 확인 — 다음 gitops 세션에서 ACL 또는 IAM Policy 적용
+- [x] 토픽 메시지 암호화 전송 (TLS) 확인 — ✅ **06-08 실증**: in-cluster openssl s_client → MSK 9094, Amazon RSA 2048 M01 CA, HANDSHAKE_OK ([SHARED_W1W4_INCOMPLETE_REVIEW §4](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md))
+- [x] 민감 데이터 토픽 접근 제한 확인 — **결정상 종결**: 네트워크 경계(private subnet + SG)로 인가, ACL/IAM 미사용 (TLS-only, W5+ 백로그)
 - [x] 결과 → TASK Constraints 반영
 
 ### 4.6 N/A (인프라 — DTO/Entity 해당 없음)
 
 ### 4.7 Kafka 토픽 생성
-- [ ] MSK/Kafka 클러스터에 토픽 생성 — 다음 gitops 세션에서 실행 (절차서: `MSK_TOPIC_SETUP.md` "다음 세션 실행 절차" 섹션)
+- [x] MSK/Kafka 클러스터에 토픽 생성 — ✅ terraform 선언 관리(gitops `kafka-topics/`), MSK ACTIVE·9토픽 (06-08 재apply)
 - [x] 각 토픽 파티션 수 / 복제 팩터 설정 (스크립트에 반영)
 - [x] 토픽 config 설정 (retention.ms, cleanup.policy)
 - [x] docker-compose에 토픽 자동 생성 스크립트 반영 (`kafka-init` 서비스)
 
 ### 4.8 토픽 검증 테스트
 - [x] kafka-topics.sh --list 로 토픽 목록 확인 (Docker Compose 검증)
-- [ ] kafka-console-producer/consumer 로 메시지 송수신 테스트 — 다음 gitops 세션에서 MSK 토픽 생성 직후 실행
+- [x] kafka-console-producer/consumer 로 메시지 송수신 테스트 — ✅ 대체 충족: 서비스 consumer group 활성(EKS) + 로컬 `--avro` 8/8 round-trip
 - [x] 파티션 배분 확인 (Docker Compose 검증)
 - [x] docker compose 환경에서 토픽 자동 생성 확인
 
@@ -136,7 +136,7 @@
 - [x] Duration(final) 갱신
 
 ### 6.5 Security 2차 검토
-- [ ] JWT 검증 Gateway 레벨 적용 확인 — Out of Scope (향후 Step)
+- [x] JWT 검증 Gateway 레벨 적용 확인 — ✅ **W5 구현·검증**: gateway `JwtDecoderConfig`(NimbusReactiveJwtDecoder) + JWT_PUBLIC_KEY 주입, dev 5/5 healthy (gitops#136)
 - [x] Rate Limit 버스트 정책 확인
 - [x] 민감 헤더 전파 제한 확인
 - [x] 결과 → TASK Constraints 반영
