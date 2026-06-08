@@ -37,8 +37,12 @@ echo ""
 echo "--- 1. ArgoCD Application Status ---"
 for app in "${APPS[@]}"; do
   app_name="synapse-${app}-${ENV}"
-  sync_status=$(argocd app get "$app_name" -o json 2>/dev/null | jq -r '.status.sync.status // "UNKNOWN"') || sync_status="UNKNOWN"
-  health_status=$(argocd app get "$app_name" -o json 2>/dev/null | jq -r '.status.health.status // "UNKNOWN"') || health_status="UNKNOWN"
+  # Application CRD 직접 조회 우선 — argocd CLI 세션 불필요 (SSM 터널은 port-forward
+  # 업그레이드가 차단돼 argocd login 자체가 불가, W5 Day1 실측). CRD 미접근 시에만 CLI 폴백.
+  app_json=$(kubectl -n argocd get application "$app_name" -o json 2>/dev/null) \
+    || app_json=$(argocd app get "$app_name" -o json 2>/dev/null) || app_json=""
+  sync_status=$(jq -r '.status.sync.status // "UNKNOWN"' <<<"$app_json" 2>/dev/null) || sync_status="UNKNOWN"
+  health_status=$(jq -r '.status.health.status // "UNKNOWN"' <<<"$app_json" 2>/dev/null) || health_status="UNKNOWN"
 
   if [ "$sync_status" = "Synced" ] && [ "$health_status" = "Healthy" ]; then
     check_result "$app_name: Sync=$sync_status Health=$health_status" "PASS"

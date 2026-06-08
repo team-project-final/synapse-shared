@@ -35,3 +35,4 @@ hs_err_pid*
 kafka-topics-*.log
 # Playwright MCP scratch dir
 .playwright-mcp/
+scripts/__pycache__/

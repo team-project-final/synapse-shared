@@ -1,0 +1,192 @@
+# W5 서비스 단위 E2E 오버라이드 — 스텁 → origin/main 실빌드 교체
+#
+# 사용법 (synapse-shared 루트에서):
+#   1) 빌드 컨텍스트 준비(최초 1회, origin/main 고정 worktree):
+#      git -C ../synapse-platform-svc   worktree add ../.e2e-worktrees/synapse-platform-svc   origin/main --detach
+#      git -C ../synapse-engagement-svc worktree add ../.e2e-worktrees/synapse-engagement-svc origin/main --detach
+#      git -C ../synapse-knowledge-svc  worktree add ../.e2e-worktrees/synapse-knowledge-svc  origin/main --detach
+#      git -C ../synapse-learning-svc   worktree add ../.e2e-worktrees/synapse-learning-svc   origin/main --detach
+#      git -C ../synapse-gateway        worktree add ../.e2e-worktrees/synapse-gateway        origin/main --detach
+#   2) docker compose -f docker-compose.yml -f docker-compose.e2e.yml down -v   # initdb 재실행 필요시
+#   3) docker compose -f docker-compose.yml -f docker-compose.e2e.yml up -d --build
+#
+# 주의:
+#   - postgres 이미지는 pgvector/pgvector:pg16 (learning-ai가 CREATE EXTENSION vector 필요).
+#     기존 postgres-data 볼륨이 있으면 initdb 스크립트가 실행되지 않음 → down -v 후 기동.
+#   - 서비스별 DB 분리(synapse_platform/engagement/knowledge/learning/ai) — flyway history 충돌 방지.
+#   - AI 카드 생성 시나리오는 ANTHROPIC_API_KEY / OPENAI_API_KEY 를 .env 또는 셸 환경으로 주입.
+
+services:
+  postgres:
+    image: pgvector/pgvector:pg16
+    volumes:
+      - ./scripts/initdb:/docker-entrypoint-initdb.d:ro
+
+  gateway:
+    build:
+      context: ../.e2e-worktrees/synapse-gateway
+      dockerfile: Dockerfile
+    environment:
+      PLATFORM_SVC_URI: http://platform-svc:8081
+      ENGAGEMENT_SVC_URI: http://engagement-svc:8083
+      KNOWLEDGE_SVC_URI: http://knowledge-svc:8082
+      LEARNING_SVC_URI: http://learning-card-svc:8084
+      # 4개 서비스 application-dev.yml에 내장된 dev 공개키와 동일 (base64 DER 허용 — RsaPublicKeyParser)
+      JWT_PUBLIC_KEY: ${JWT_PUBLIC_KEY:-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAspYublqbb7MHpuJ6d0SUkDTl63/92T74N+dg3Mibzrqz5U8KGZtz8v6sdzbMTaDPmxlDkBLkFaszU3Ym9PvSFoym55dIRzTZKpjLPMFyURgfd6nXfBPoAlzIb00cGYje6eQE1U1OAWoje7XffjZtTsbN3VtEOa6eNbRW2uv95IXkJDtcG/koeLiNb42BF28rhpAYmGE24iQxfARRqh7IZ3E6giWmuXIDsEaWJCKt/UlUbmKpUSAfnwriWxE78lALXHQSmFWl2WZ9ruXzUBWpQZJPEGO4RxX2898HxA7Jv5V7VqmGvEqB3ZYXs2wyaeXpFjfv/iWPC/+83PMyRi6VtQIDAQAB}
+    # base 헬스체크가 curl 사용 — gateway 이미지(alpine)에 curl/bash 없음 → busybox wget으로 교체
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q -O /dev/null http://localhost:8080/actuator/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 30s
+
+  # ── Application Services (origin/main 실빌드) ──────────────────
+
+  platform-svc:
+    image: synapse-platform-svc:e2e
+    build:
+      context: ../.e2e-worktrees/synapse-platform-svc
+      dockerfile: Dockerfile
+    entrypoint: ["java", "-jar", "app.jar"]
+    ports: !override
+      - "8081:8081"
+    depends_on:
+      schema-registry:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/synapse_platform
+      DB_USERNAME: synapse
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-synapse_local_pw}
+      SPRING_DATA_REDIS_HOST: redis
+      SPRING_DATA_REDIS_PORT: "6379"
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_local_pw}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_ENABLED: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8081' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
+
+  engagement-svc:
+    image: synapse-engagement-svc:e2e
+    build:
+      context: ../.e2e-worktrees/synapse-engagement-svc
+      dockerfile: Dockerfile
+    entrypoint: ["java", "-jar", "app.jar"]
+    ports: !override
+      - "8083:8083"
+    depends_on:
+      schema-registry:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/synapse_engagement
+      DB_USERNAME: synapse
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-synapse_local_pw}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_ENABLED: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8083' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
+
+  knowledge-svc:
+    image: synapse-knowledge-svc:e2e
+    build:
+      context: ../.e2e-worktrees/synapse-knowledge-svc
+      dockerfile: Dockerfile
+    entrypoint: ["java", "-jar", "app.jar"]
+    ports: !override
+      - "8082:8082"
+    depends_on:
+      schema-registry:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/synapse_knowledge
+      DB_USERNAME: synapse
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-synapse_local_pw}
+      ELASTICSEARCH_URIS: http://elasticsearch:9200
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_local_pw}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      SEARCH_AI_BASE_URL: http://learning-ai-svc:8090
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8082' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
+
+  learning-card-svc:
+    image: synapse-learning-card-svc:e2e
+    build:
+      context: ../.e2e-worktrees/synapse-learning-svc/learning-card
+      dockerfile: Dockerfile
+    entrypoint: ["java", "-jar", "app.jar"]
+    ports: !override
+      - "8084:8084"
+    depends_on:
+      schema-registry:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: dev
+      DB_URL: jdbc:postgresql://postgres:5432/synapse_learning
+      DB_USERNAME: synapse
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-synapse_local_pw}
+      REDIS_HOST: redis
+      REDIS_PORT: "6379"
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_local_pw}
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_ENABLED: "true"
+    healthcheck:
+      test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8084' || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 90s
+
+  learning-ai-svc:
+    image: synapse-learning-ai-svc:e2e
+    build:
+      context: ../.e2e-worktrees/synapse-learning-svc/learning-ai
+      dockerfile: Dockerfile
+    # alembic 마이그레이션(CREATE EXTENSION vector 포함) 후 앱 기동
+    entrypoint: ["sh", "-c", "alembic upgrade head && exec uvicorn app.main:app --host 0.0.0.0 --port 8090"]
+    ports: !override
+      - "8090:8090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      schema-registry:
+        condition: service_healthy
+    environment:
+      LEARNING_AI_ENVIRONMENT: local
+      LEARNING_AI_DATABASE_URL: postgresql+asyncpg://synapse:${POSTGRES_PASSWORD:-synapse_local_pw}@postgres:5432/synapse_ai
+      LEARNING_AI_KAFKA_ENABLED: "true"
+      LEARNING_AI_KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+      LEARNING_AI_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      LEARNING_AI_REDIS_URL: redis://:${REDIS_PASSWORD:-redis_local_pw}@redis:6379/0
+      LEARNING_AI_NOTE_SERVICE_URL: http://knowledge-svc:8082
+      LEARNING_AI_LEARNING_CARD_SERVICE_URL: http://learning-card-svc:8084
+      # 빈 키면 OpenAI/Anthropic 클라이언트 생성이 기동 단계에서 실패(게이트 없음) → 더미 기본값.
+      # AI 카드/시맨틱 검색 시나리오 실행 시에만 실키를 셸 환경/.env로 주입.
+      LEARNING_AI_ANTHROPIC_API_KEY: ${ANTHROPIC_API_KEY:-sk-ant-dummy-local-e2e}
+      LEARNING_AI_OPENAI_API_KEY: ${OPENAI_API_KEY:-sk-dummy-local-e2e}
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8090/health')\""]
+      interval: 10s
+      timeout: 5s
+      retries: 18
+      start_period: 60s
