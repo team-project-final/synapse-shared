@@ -22,16 +22,16 @@
 - [x] Instructions 초안 → TASK 문서 반영 (05-22 선행 준비)
 
 ### 1.3 Security 1차 검토
-- [~] Kafka 토픽 ACL/권한 확인 — **인증 모델(MSK IAM, ACL 미사용) + 서비스별 produce/consume 권한 매트릭스 확정** → `docs/guides/KAFKA_AUTH_MATRIX.md`. IAM Policy/IRSA 실적용·검증만 EKS window
+- [x] Kafka 토픽 ACL/권한 확인 — ✅ **인증 모델 TLS-only 확정**(B 채택, SASL/IAM·ACL 미사용 → VPC 네트워크 경계로 인가) + 권한 매트릭스 → [KAFKA_AUTH_MATRIX](../../guides/KAFKA_AUTH_MATRIX.md). TLS 전송 06-08 실증([리뷰 §4](../../reports/SHARED_W1W4_INCOMPLETE_REVIEW.md))
 - [x] 이벤트 페이로드 민감정보 포함 여부 점검 → UserRegistered.email만 PII (EVENT_FLOW_MATRIX.md §4)
 - [x] 서비스 간 인증 토큰 전파 방식 확인 → CloudEvent traceparent 기반 (TASK Constraints 반영)
 - [x] 결과 → TASK Constraints 반영 (05-22 선행 준비)
 
 ### 1.4 E2E 테스트 시나리오 설계
 - [x] gamification 이벤트 체인 시나리오 (카드 복습 → XP 적립 → 레벨업 → 배지 수여 → 알림) → E2E_SCENARIOS_W3.md S2
-- [~] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림) — 설계 선반영 완료(E2E_SCENARIOS_W3.md S5); 구현(engagement 알림 발행)·실행 W4
+- [x] community 이벤트 체인 시나리오 (신고 접수 → 모더레이션 → 알림) — ✅ 설계(E2E_SCENARIOS_W3.md S5) + 구현 머지(engagement #23 S5 모더레이션→알림). E2E 실행은 W5 Day2
 - [x] card.review.due 이벤트 체인 시나리오 (스케줄러 → Kafka → 알림 발송) → E2E_SCENARIOS_W3.md S3 (샘플 추가 완료)
-- [~] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재) — 설계 선반영 완료(E2E_SCENARIOS_W3.md S6); 현재 user-registered 단일 토픽, 추가 토픽 W4
+- [x] audit 이벤트 소비 시나리오 (각 서비스 이벤트 → audit_logs 적재) — ✅ 설계(E2E_SCENARIOS_W3.md S6) + 구현 머지(platform #52 audit 다중토픽 S6). E2E 실행은 W5 Day2
 - [x] Duration(final) 갱신 — 팀리드 설계·검증설계분 2일(Day 3~4) 완료; 배포 실행(§1.7~1.9)은 EKS 재기동 윈도 이월(별도)
 
 ### 1.5 Security 2차 검토
@@ -49,7 +49,7 @@
 - [x] Kafka 이벤트 체인 E2E 테스트 작성 (~~Testcontainers~~ → 로컬 shell harness `scripts/kafka-e2e-test.sh`로 대체, EKS destroy로 로컬 우선)
 - [x] 서비스 간 이벤트 발행 → 소비 → 결과 검증 자동화 (**전송 경로 한정**: produce→consume + CloudEvent 페이로드 단위 round-trip. consumer 비즈니스 로직은 서비스 구현 도착 시 확장)
 - [x] 코드 리뷰 전 PR 승인 프로세스 적용 → work-order 발행 + 코드 리뷰 승인 기준 (`W3_KAFKA_WORKORDER.md`, TASK Step 7)
-- [~] 각 서비스 담당자 테스트 결과 취합 — **06-01 코드 실측(전체 레포 pull)**: platform 🟢(Avro+Outbox+notification/audit Consumer)·learning 🟢(Avro 소비+알림) dev 완성 / engagement 🟡(06-02: 스키마 비호환 해소·Producer Avro ✅ #13 CLOSED / Consumer 0건 잔여 → #15) / knowledge 🟡(06-02: NoteCreated/Updated Producer ✅ #32, 스키마 바이트동일 / dev→main 잔여 #26). 상세 [W4_KAFKA_WORKORDER §0.5](../../work-orders/W4_KAFKA_WORKORDER.md). 완전 취합은 main 머지 후
+- [x] 각 서비스 담당자 테스트 결과 취합 — ✅ **4서비스 Kafka Producer/Consumer 전원 origin/main 머지 완료**(06-05 실측: knowledge #40·platform #46·engagement #23·learning). 상세 [W4_KAFKA_WORKORDER §0.5](../../work-orders/W4_KAFKA_WORKORDER.md)
 
 ### 1.8 통합 테스트 실행 및 검증
 - [x] 전체 서비스 Docker Compose 기동 → E2E 테스트 실행 — 인프라(zookeeper/kafka/schema-registry/kafka-init) 기동 + **`--avro` 라이브 8/8 PASSED**(8토픽 Avro 라운드트립 + subject 자동등록, 전역 BACKWARD). 앱 서비스 비즈니스 로직 E2E는 구현 도착 후(W4)
@@ -60,7 +60,7 @@
 ### 1.9 코드 리뷰 조율
 - [x] 각 서비스 PR 리뷰 현황 취합 — cross-repo 실측(05-29): learning main 머지 / platform·engagement dev / knowledge 미구현
 - [x] 크로스 서비스 영향도 리뷰 (이벤트 스키마 호환성) — **스키마 패밀리 분기(D-002) 발견 → Avro 사수 결정 + 이벤트 계약 표준 수립**(`EVENT_CONTRACT_STANDARD.md`). cards-generated HTTP 드리프트 정정(D-001)
-- [~] PR 승인 및 main 브랜치 머지 조율 — 계약 표준 이슈(#43/#13/#26 OPEN·#32 CLOSED). **06-01 재측정: 작업이 전부 dev 고립, 열린 PR 0건** → platform(#44)·learning(#35) **dev→main PR 유도**가 즉시 조율 대상
+- [x] PR 승인 및 main 브랜치 머지 조율 — ✅ 4서비스 Kafka 전원 dev→main 머지 완료(#40/#46/#23/learning). W4 하드닝 잔여 머지는 별도 추적(SHARED_W1W4_INCOMPLETE_REVIEW)
 
 ### 1.10 결과 정리
 - [x] E2E 테스트 결과 리포트 작성 → `docs/reports/E2E_REPORT_W3.md` + 종료 게이트 `W3_EXIT_GATE.md`(미통과 충족 0/5)
@@ -87,7 +87,7 @@
 - [x] Instructions 초안 → TASK 문서 반영
 
 ### 1.3 Security 1차 검토 → DEPLOY_REPORT §C
-- [~] ArgoCD RBAC 설정 확인 (dev: 자동, staging: 승인 필요) — 정책 정의됨, 실제 RBAC 구성·확인은 재기동 후
+- [x] ArgoCD RBAC 설정 확인 (dev: 자동, staging: 승인 필요) — ✅ W5 Day1 ArgoCD 부트스트랩(projects.yaml), 14앱 Synced. dev autoSync 동작 확인
 - [x] 배포 시 시크릿 주입 방식 확인 — ExternalSecret + ClusterSecretStore(ESO IRSA), dev 5/5 SecretSynced
 - [x] 환경별 접근 권한 분리 확인 — 네임스페이스 분리(synapse-dev / synapse-staging)
 - [x] 결과 → TASK Constraints 반영
@@ -100,7 +100,7 @@
 
 ### 1.5 Security 2차 검토 → DEPLOY_REPORT §C
 - [x] 환경별 환경변수/시크릿 분리 확인
-- [~] staging 배포 승인 권한자 지정 — @team-lead 지정, ArgoCD RBAC 명문화는 재기동 후(W4)
+- [x] staging 배포 승인 권한자 지정 — ✅ @team-lead 지정, staging 배포·검증 W5 Day1 완료(20/0/0)
 - [x] 배포 이력 추적 (audit trail) 확인 — ArgoCD app history + gitops 커밋 이력
 - [x] 결과 → TASK Constraints 반영
 
