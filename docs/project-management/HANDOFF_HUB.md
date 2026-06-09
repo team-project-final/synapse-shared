@@ -1,8 +1,10 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-08 (W5 Day 1 — EKS 재apply→**dev/staging 5/5 ALL PASSED**, 서비스 단위 E2E 환경 구축, 정본 avsc 표준 정렬(P0 2건 근본 원인 제거))
-> **현재 주차**: W5 Day 1 (06-08, 발표 06-15)
+> **최종 갱신**: 2026-06-09 (W5 Day 2 — **P0 2건(F1/F2·F3) 벤더링 정본 교체 + 라이브 재검증 완료**(engagement#32·learning#64), 가입→게이미피케이션·알림 발행/소비·audit 적재 E2E PASS. 신규 P1 F7(크로스서비스 JWT 신원 불일치) 발견)
+> **현재 주차**: W5 Day 2 (06-09, 발표 06-15)
 > **갱신자**: @VelkaressiaBlutkrone
+>
+> ⏱ **Day2 E2E 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md) — W4 가입·W2 audit·W3 알림 leg PASS / W1 복습→레벨업·W5 신고→모더레이션 BLOCKED(시드 갭 + F7)
 >
 > ⚠️ **06-05 실측 방법 주의**: 머지 상태는 반드시 **`git fetch` 후 `origin/main`** 기준으로 확인할 것. 로컬 main/feature 브랜치는 stale일 수 있어 오판 유발(이번 갱신서 knowledge 로컬 main이 05-20에 멈춰 "미머지" 오판 → origin/main #40으로 정정). 검증: `git -C <repo> log origin/main -1`.
 
@@ -73,10 +75,32 @@
     ├─ knowledge dev +3: #42·#43·#45 TLS (+ open PR #51 flyway) · **#46 KAFKA_ENABLED 게이트 미구현(OPEN)**
     └─ learning dev +18: release PR 필요 (#54 게이트·#56 안정화 포함, + #41/#42 역동기화)
 
-[잔여-owner-P0] Avro 계약 — 서비스 벤더링 교체 (Day2 풀 E2E 선결, AVRO_CONTRACT_FIX_W5)
-    ├─ engagement: UserRegistered reader 구형 registeredAt → 정본 교체 (F1, 가입 체인 차단)
-    └─ learning-ai: NotificationSend writer namespace/메타 → 정본 교체 (F2/F3, 알림 체인 차단)
-    └─→ shared 정본은 ✅ 정렬 완료(#26), 서비스 측만 남음
+[해소-06-09] Avro 계약 — 서비스 벤더링 교체 + 라이브 재검증 완료 (E2E_W5_DAY2)
+    ├─ engagement: UserRegistered 정본 교체 ✅ PR #32 (가입→게이미피케이션 PASS, AvroTypeException 0)
+    └─ learning-ai: NotificationSend 정본 교체 ✅ PR #64 (알림 발행→platform 소비 PASS, SerializationException 0)
+    └─→ 잔여 = 각 owner 머지(#32·#64) + dev 반영 후 dev→main
+
+[해소-06-09-P1] F7 JWT 신원 모델 불일치 — engagement#33 (W5 신고접수 PASS 검증)
+    └─ engagement 인증 API가 platform JWT(subject=UUID) 거부 → CurrentUser.resolveUserId 단일화
+    └─→ HTTP·Kafka 동일 도출, 신고 201 + reporter_id=Kafka 프로필 PK 일치 입증
+
+[해소-06-09-P2] F9 knowledge 검색 인증 — knowledge#59 (F7 동일 계열)
+    └─ 검색이 platform JWT subject(UUID) 거부 → subject UUID→결정적 Long 폴백(engagement 동일 알고리즘)
+    └─→ 라이브 401→500(인증 통과). 잔여 500=시맨틱 leg(learning-ai)=F4+빈 코퍼스
+
+[잔여-P1] F8 platform ADMIN role 발급 메커니즘 부재 (W5 관리자 모더레이션 차단)
+    └─ login이 ROLE_USER 하드코딩 + users에 roles 컬럼 없음 + role 명명 불일치(ROLE_ADMIN vs ADMIN)
+    └─→ @platform admin 발급 + role claim 규칙 합의 필요 (E2E_W5_DAY2 §3 F8)
+
+[잔여-P1-아키텍처] 식별자 모델 불일치 (F7·F8·F9·F10 한 뿌리, E2E_W5_DAY2 §3.6)
+    └─ platform=UUID 정본 / engagement·knowledge=해시 Long(단방향) → inbound 인증은 패치(F7/F9)
+    └─ F10: outbound 알림은 UUID 복원 불가로 미해소(engagement#34 Draft) — 레벨업→알림 불가
+    └─→ 사용자 식별자 정본 UUID 통일 + 이벤트/저장 보존 합의(@platform·@engagement·@knowledge)
+    └─→ 📐 설계 초안 [D-004](../designs/D-004_USER_IDENTITY_MODEL.md) 작성됨 — 합의 세션 상정 대기
+
+[W1 검증-06-09] 복습→XP→레벨업→audit 체인 PASS (P4 ~0.67s) — 알림 leg만 F10으로 미완
+
+[잔여-owner] PR 머지: engagement#32(F1)·#33(F7) · learning#64(F2/F3) · knowledge#59(F9) → dev 반영
 
 [해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
 [해소-06-08] platform/gateway CrashLoop = DB 공유 flyway 충돌 + JWT 미매핑 → gitops#136
@@ -92,7 +116,7 @@
 | 레포 | 스포크 문서 | 최종 갱신 | 정합성 |
 |---|---|---|---|
 | synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89). W5: DB 분리+gateway JWT(#136) |
-| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-08 | ✅ 동기 — W5 Day1 EKS 5/5·E2E 환경·정본 스키마 정렬 |
+| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-09 | ✅ 동기 — W5 Day2 풀 E2E: P0 2건 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 |
 
 > **W4 종료 게이트 평가 + W5 인수**: [reports/W4_EXIT_GATE.md](../reports/W4_EXIT_GATE.md) (06-05). **W5 Day1 결과**: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) · [W5_PLAN §8](./W5_PLAN.md).
 
@@ -126,4 +150,4 @@
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
 | W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 **1/5** (부분 1·미확인 3) — §1 레지스트리 BACKWARD 06-02 실검증 ✅. shared 전제 완료. 서비스 Kafka(06-02): learning·platform·**knowledge** Producer/스키마 완성 / **engagement** Consumer만 잔여 — **전원 dev→main 미머지** + EKS destroy로 W4 이월 |
 | W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | 🔄 진행(Day4, 마지막날) | — · **서비스 Kafka 4서비스 전원 origin/main 머지 완료**(knowledge#40·platform#46·engagement#23·learning) + S5 모더레이션(#23)·S6 audit(platform dev #52) 구현 / 잔여=통합 E2E·SLA **실행**(머지 무관, 로컬 가능) + EKS staging window + 하드닝 dev→main 머지 |
-| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | ⏳ 계획 | — |
+| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | 🔄 진행(Day2) | Day1 EKS 5/5·E2E 환경·정본 정렬 / **Day2 풀 E2E: P0 2건(F1/F2·F3) 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 충족**(engagement#32/#33·learning#64·knowledge#59). 잔여: W1·W5모더(F8)·W3/P3(F4) |
