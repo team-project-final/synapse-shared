@@ -38,7 +38,7 @@
 > **06-09 실행 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md) — P0 2건(F1/F2·F3) 수정·라이브 재검증 완료. 핵심 시나리오 W4·W2 PASS / W3 알림 leg PASS·AI생성 leg는 F4 차단 / W1·W5 사전 차단(시드 갭 + 신규 F7 JWT 신원 불일치).
 - [x] **(team-lead) Day1 P0 2건 정본 벤더링 교체 + 라이브 재검증** — engagement#32·learning#64, 가입/알림 체인 에러 0 ✅
 - [~] **(전체, FR-ALL-301 / NFR-303)** 핵심 10 시나리오 E2E — W4 가입→프로필 ✅ / W2 audit ✅ / W3 알림발행·소비 ✅(AI생성 leg F4 차단) / **W1 복습→레벨업 🔴**(SRS 세션 API + 레벨업 경계 시드 갭) / **W5 신고→모더레이션 🔴**(F7 JWT 신원 불일치 + 시드 갭)
-- [ ] **(team-lead, FR-TL-401 재검)** 전체 체인 E2E **복습→XP→레벨업→알림 < 10초** — W1 차단으로 미실행(레벨업 경계 시드 + SRS 세션 구동 선결)
+- [~] **(team-lead, FR-TL-401 재검)** 전체 체인 E2E **복습→XP→레벨업→audit ~0.67s**(경계유저 시드+ReviewCompleted 발행) ✅ — 단 **알림(FCM) leg 미배선(F10)**: level-up→notification 경로 부재
 - [x] audit 적재 < 30초 (NFR-403) — `USER_REGISTERED` audit_logs 적재 확인 ✅
 - [x] **버그 트리아지** — P0(F1/F2·F3) 수정 완료 / **신규 P1 F7**(크로스서비스 JWT 신원 모델 불일치) 지시 대상: @engagement+@platform / P2 F4(AI 키 게이트)
 
