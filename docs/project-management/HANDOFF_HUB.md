@@ -1,10 +1,10 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-09 (W5 Day 2 — **P0 2건(F1/F2·F3) 벤더링 정본 교체 + 라이브 재검증 완료**(engagement#32·learning#64), 가입→게이미피케이션·알림 발행/소비·audit 적재 E2E PASS. 신규 P1 F7(크로스서비스 JWT 신원 불일치) 발견)
-> **현재 주차**: W5 Day 2 (06-09, 발표 06-15)
+> **최종 갱신**: 2026-06-09 (W5 Day 2 **종결** — P0 2건(F1·F2/F3) + 신원 버그 2건(F7·F9) 수정·라이브 검증·머지 완료, learning-ai #144(ssl_context) 해소. 시나리오 W4·W2·W3·W5·W1 PASS, SLA P1/P2/P4/P5 충족. 미해결=식별자 모델 통일(D-004))
+> **현재 주차**: W5 Day 2 종결 → Day 3 (발표 06-15) · **다음 세션 진입점: [HANDOFF_W5_DAY3](./HANDOFF_W5_DAY3.md)**
 > **갱신자**: @VelkaressiaBlutkrone
 >
-> ⏱ **Day2 E2E 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md) — W4 가입·W2 audit·W3 알림 leg PASS / W1 복습→레벨업·W5 신고→모더레이션 BLOCKED(시드 갭 + F7)
+> ⏱ **Day2 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md)(§3.6 식별자 모델) — 핵심 시나리오·SLA PASS / F8(admin)·F10(식별자)·Stage2는 다음 세션·합의
 >
 > ⚠️ **06-05 실측 방법 주의**: 머지 상태는 반드시 **`git fetch` 후 `origin/main`** 기준으로 확인할 것. 로컬 main/feature 브랜치는 stale일 수 있어 오판 유발(이번 갱신서 knowledge 로컬 main이 05-20에 멈춰 "미머지" 오판 → origin/main #40으로 정정). 검증: `git -C <repo> log origin/main -1`.
 
@@ -122,22 +122,18 @@
 
 ---
 
-## 4. 다음 세션 작업 순서 (W5 Day 2, 06-09)
+## 4. 다음 세션 작업 순서 (W5 Day 3+) → **[HANDOFF_W5_DAY3](./HANDOFF_W5_DAY3.md) 참조**
 
-> **W5 Day1(06-08) 완료**: EKS 재apply→dev/staging 5/5 · 서비스 단위 E2E 환경 · 정본 스키마 정렬. 인프라·환경 차단 해소됨. **Day2 차단 요소는 owner 액션 2종**(하드닝 머지 + Avro P0 벤더링 교체).
+> **W5 Day2(06-09) 완료**: P0 2건(F1·F2/F3) + 신원 버그 2건(F7·F9) 수정·라이브 검증·머지 + learning-ai #144(ssl_context) 해소. 시나리오 W4·W2·W3·W5·W1 PASS, SLA P1/P2/P4/P5 충족. 미해결은 **식별자 모델 통일(D-004)** 한 갈래로 수렴. 상세·진입점: **[HANDOFF_W5_DAY3](./HANDOFF_W5_DAY3.md)**.
 
 ```
-1. [owner들] 🔴 Day2 선결 — **Avro 계약 P0 벤더링 교체** ([AVRO_CONTRACT_FIX_W5](../fix-requests/AVRO_CONTRACT_FIX_W5.md))
-     → engagement: UserRegistered reader 정본 교체(F1) — 안 하면 가입→게이미피케이션 체인 FAIL
-     → learning-ai: NotificationSend writer 정본 교체(F2/F3) — 안 하면 노트→AI카드→알림 체인 FAIL
-     → shared 정본은 ✅ 정렬 완료(#26), 서비스 측 벤더링만 남음
-2. [owner들] 하드닝 dev→main 머지: engagement #24·#29, knowledge #42/#43/#45/#51 + #46 게이트 구현, learning release(+#54)
-3. [team-lead] 🟢 **핵심 10 시나리오 풀 E2E**(Step 9) — `docker-compose.e2e.yml`로 실행. P0 수정 도착분부터 재빌드 검증.
-     → 시나리오: E2E_SCENARIOS_W4 (복습→XP→배지→레벨업→알림 <10초 / 노트→AI카드 / 검색 / 신고→모더레이션 / 인증→결제)
-     → 버그 트리아지 P0/P1/P2, 전체 체인 <10초·audit <30초
-4. [team-lead] EKS RDS에 learning-ai pgvector extension 확인(Day2) — 로컬은 pgvector/pg16, EKS RDS는 별도 확인 필요
-5. [team-lead] Day3~ SLA 측정(풀 홉 eventId correlation) · 커버리지 80% · API 문서 · Schema 전수 BACKWARD
-6. [gitops/team-lead] Day4 Observability 검증(ServiceMonitor/대시보드/SLA 알림) + staging 24h 안정
+1. [next-session] 🥇 D-004 Stage 1 구현 — engagement outbound UUID(F10 해소, 비파괴)
+     → 플랜: superpowers/plans/2026-06-09-d004-stage1-engagement-uuid-outbound.md (확정)
+     → prod 5 + 테스트 7파일, 구현→dev PR→merge→main PR→merge→Stage 2
+2. [owner 합의·P1] F8(platform ADMIN role 발급 모델) · D-004 Stage 2(PK bigint→uuid)
+3. [team-lead] Day3 — 커버리지 80% · API 문서 · SLA 잔여(P3 검색·P6 AI, F4 선결) · Schema 전 토픽 BACKWARD
+4. [team-lead/gitops] Day4 — staging 최종 + Observability + 24h 안정
+5. [team-lead] Day5 — 발표 슬라이드·데모·리허설 → 발표 06-15
 ```
 
 ---
