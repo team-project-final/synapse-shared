@@ -80,9 +80,10 @@
     └─ learning-ai: NotificationSend 정본 교체 ✅ PR #64 (알림 발행→platform 소비 PASS, SerializationException 0)
     └─→ 잔여 = 각 owner 머지(#32·#64) + dev 반영 후 dev→main
 
-[신규-P1] F7 크로스서비스 JWT 신원 모델 불일치 (W5 신고/모더레이션 차단)
-    └─ engagement 인증 API가 platform JWT(subject=UUID) 거부 — 숫자 user id 요구
-    └─→ @engagement + @platform 신원 모델 합의 필요 (E2E_W5_DAY2 §3 F7)
+[해소-06-09-P1] F7 JWT 신원 모델 불일치 — engagement#33 (W5 신고접수 PASS 검증)
+    └─ engagement 인증 API가 platform JWT(subject=UUID) 거부 → CurrentUser.resolveUserId 단일화
+    └─→ HTTP·Kafka 동일 도출, 신고 201 + reporter_id=Kafka 프로필 PK 일치 입증
+    └─→ 잔여: engagement#33 머지 + W5 관리자 모더레이션(ADMIN 유저 시드)
 
 [해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
 [해소-06-08] platform/gateway CrashLoop = DB 공유 flyway 충돌 + JWT 미매핑 → gitops#136
