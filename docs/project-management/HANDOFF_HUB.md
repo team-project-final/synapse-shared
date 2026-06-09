@@ -96,6 +96,7 @@
     └─ platform=UUID 정본 / engagement·knowledge=해시 Long(단방향) → inbound 인증은 패치(F7/F9)
     └─ F10: outbound 알림은 UUID 복원 불가로 미해소(engagement#34 Draft) — 레벨업→알림 불가
     └─→ 사용자 식별자 정본 UUID 통일 + 이벤트/저장 보존 합의(@platform·@engagement·@knowledge)
+    └─→ 📐 설계 초안 [D-004](../designs/D-004_USER_IDENTITY_MODEL.md) 작성됨 — 합의 세션 상정 대기
 
 [W1 검증-06-09] 복습→XP→레벨업→audit 체인 PASS (P4 ~0.67s) — 알림 leg만 F10으로 미완
 

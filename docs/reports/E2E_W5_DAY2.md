@@ -72,6 +72,8 @@ W5 Day2 신원 관련 발견 4건은 **단일 근본 원인**으로 수렴한다
 - **F10 (outbound, 미해소)**: engagement가 platform에 알림을 보내려면 **platform UUID가 필요**하나, 해시 Long에서 **UUID를 복원할 수 없음** → 해시 패치로 풀리지 않는 **방향성 한계**.
 
 > **결론(P1 아키텍처 결정)**: 해시 Long 우회는 inbound만 임시 봉합. 근본 해소는 **사용자 식별자 정본을 platform UUID로 통일**하고, 서비스가 UUID를 저장·이벤트로 전파(engagement가 UserRegistered의 UUID를 보존)하는 것. 미결 시 outbound 알림(레벨업/배지 등) 전반이 불가. → @platform·@engagement·@knowledge 합의 필요.
+>
+> 📐 **설계 초안**: [D-004 사용자 식별자 정본 통일](../designs/D-004_USER_IDENTITY_MODEL.md) — 선택지(전 서비스 UUID / 이벤트 dual-id / 매핑테이블)·2단계 마이그레이션·서비스별 영향·미해결 질문. owner 합의 대기.
 
 ## 4. 미해결 / 다음 액션
 
