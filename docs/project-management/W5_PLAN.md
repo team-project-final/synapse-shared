@@ -35,10 +35,12 @@
 > **Day 2 선결 주의**: 핵심 10 시나리오 중 가입→게이미피케이션·노트→AI카드→알림 체인은 **owner P0 수정(AVRO_CONTRACT_FIX_W5) 전까지 FAIL 확정** — Day 2 트리아지에 선반영됨.
 
 ## 2. 화(06-09) Day 2 — 전체 E2E (서비스 단위) + 버그 트리아지
-- [ ] **(전체, FR-ALL-301 / NFR-303)** 핵심 10 시나리오 E2E — 복습→XP→배지→레벨업→알림 / 노트→AI카드 / 검색 / 신고→모더레이션 / 인증→결제
-- [ ] **(team-lead, FR-TL-401 재검)** 전체 체인 E2E **복습→XP→레벨업→알림 < 10초**(W4 미실행분)
-- [ ] audit 적재 < 30초 (NFR-403) — platform #52 머지 후
-- [ ] **버그 트리아지** — P0/P1/P2 분류, P0 즉시 수정 지시(owner)
+> **06-09 실행 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md) — P0 2건(F1/F2·F3) 수정·라이브 재검증 완료. 핵심 시나리오 W4·W2 PASS / W3 알림 leg PASS·AI생성 leg는 F4 차단 / W1·W5 사전 차단(시드 갭 + 신규 F7 JWT 신원 불일치).
+- [x] **(team-lead) Day1 P0 2건 정본 벤더링 교체 + 라이브 재검증** — engagement#32·learning#64, 가입/알림 체인 에러 0 ✅
+- [~] **(전체, FR-ALL-301 / NFR-303)** 핵심 10 시나리오 E2E — W4 가입→프로필 ✅ / W2 audit ✅ / W3 알림발행·소비 ✅(AI생성 leg F4 차단) / **W1 복습→레벨업 🔴**(SRS 세션 API + 레벨업 경계 시드 갭) / **W5 신고→모더레이션 🔴**(F7 JWT 신원 불일치 + 시드 갭)
+- [ ] **(team-lead, FR-TL-401 재검)** 전체 체인 E2E **복습→XP→레벨업→알림 < 10초** — W1 차단으로 미실행(레벨업 경계 시드 + SRS 세션 구동 선결)
+- [x] audit 적재 < 30초 (NFR-403) — `USER_REGISTERED` audit_logs 적재 확인 ✅
+- [x] **버그 트리아지** — P0(F1/F2·F3) 수정 완료 / **신규 P1 F7**(크로스서비스 JWT 신원 모델 불일치) 지시 대상: @engagement+@platform / P2 F4(AI 키 게이트)
 
 ## 3. 수(06-10) Day 3 — SLA + 커버리지 + API 문서
 - [ ] **(team-lead, FR-TL-301 / NFR-301)** SLA 측정 — API P95<200ms · Kafka<5s · 검색<2s (SLA_VERIFICATION_W4 P1~P7, 3회 평균)

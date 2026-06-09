@@ -1,8 +1,10 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-08 (W5 Day 1 — EKS 재apply→**dev/staging 5/5 ALL PASSED**, 서비스 단위 E2E 환경 구축, 정본 avsc 표준 정렬(P0 2건 근본 원인 제거))
-> **현재 주차**: W5 Day 1 (06-08, 발표 06-15)
+> **최종 갱신**: 2026-06-09 (W5 Day 2 — **P0 2건(F1/F2·F3) 벤더링 정본 교체 + 라이브 재검증 완료**(engagement#32·learning#64), 가입→게이미피케이션·알림 발행/소비·audit 적재 E2E PASS. 신규 P1 F7(크로스서비스 JWT 신원 불일치) 발견)
+> **현재 주차**: W5 Day 2 (06-09, 발표 06-15)
 > **갱신자**: @VelkaressiaBlutkrone
+>
+> ⏱ **Day2 E2E 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md) — W4 가입·W2 audit·W3 알림 leg PASS / W1 복습→레벨업·W5 신고→모더레이션 BLOCKED(시드 갭 + F7)
 >
 > ⚠️ **06-05 실측 방법 주의**: 머지 상태는 반드시 **`git fetch` 후 `origin/main`** 기준으로 확인할 것. 로컬 main/feature 브랜치는 stale일 수 있어 오판 유발(이번 갱신서 knowledge 로컬 main이 05-20에 멈춰 "미머지" 오판 → origin/main #40으로 정정). 검증: `git -C <repo> log origin/main -1`.
 
@@ -73,10 +75,14 @@
     ├─ knowledge dev +3: #42·#43·#45 TLS (+ open PR #51 flyway) · **#46 KAFKA_ENABLED 게이트 미구현(OPEN)**
     └─ learning dev +18: release PR 필요 (#54 게이트·#56 안정화 포함, + #41/#42 역동기화)
 
-[잔여-owner-P0] Avro 계약 — 서비스 벤더링 교체 (Day2 풀 E2E 선결, AVRO_CONTRACT_FIX_W5)
-    ├─ engagement: UserRegistered reader 구형 registeredAt → 정본 교체 (F1, 가입 체인 차단)
-    └─ learning-ai: NotificationSend writer namespace/메타 → 정본 교체 (F2/F3, 알림 체인 차단)
-    └─→ shared 정본은 ✅ 정렬 완료(#26), 서비스 측만 남음
+[해소-06-09] Avro 계약 — 서비스 벤더링 교체 + 라이브 재검증 완료 (E2E_W5_DAY2)
+    ├─ engagement: UserRegistered 정본 교체 ✅ PR #32 (가입→게이미피케이션 PASS, AvroTypeException 0)
+    └─ learning-ai: NotificationSend 정본 교체 ✅ PR #64 (알림 발행→platform 소비 PASS, SerializationException 0)
+    └─→ 잔여 = 각 owner 머지(#32·#64) + dev 반영 후 dev→main
+
+[신규-P1] F7 크로스서비스 JWT 신원 모델 불일치 (W5 신고/모더레이션 차단)
+    └─ engagement 인증 API가 platform JWT(subject=UUID) 거부 — 숫자 user id 요구
+    └─→ @engagement + @platform 신원 모델 합의 필요 (E2E_W5_DAY2 §3 F7)
 
 [해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
 [해소-06-08] platform/gateway CrashLoop = DB 공유 flyway 충돌 + JWT 미매핑 → gitops#136
