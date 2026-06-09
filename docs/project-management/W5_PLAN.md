@@ -43,7 +43,7 @@
 - [x] **버그 트리아지** — P0(F1/F2·F3) 수정 완료 / **신규 P1 F7**(크로스서비스 JWT 신원 모델 불일치) 지시 대상: @engagement+@platform / P2 F4(AI 키 게이트)
 
 ## 3. 수(06-10) Day 3 — SLA + 커버리지 + API 문서
-- [ ] **(team-lead, FR-TL-301 / NFR-301)** SLA 측정 — API P95<200ms · Kafka<5s · 검색<2s (SLA_VERIFICATION_W4 P1~P7, 3회 평균)
+- [~] **(team-lead, FR-TL-301 / NFR-301)** SLA 측정 — **06-09 선행 측정**([E2E_W5_DAY2 §3.5](../reports/E2E_W5_DAY2.md)): P1 API P95 ✅(로그인 79.7ms·신고 15.3ms) · P2 Kafka 홉 ✅(~1.42s) · P5 audit ✅(~0.72s). 잔여: P3 검색(F9 후) · P4 체인(레벨업 시드) · P6 AI(F4)
 - [ ] **(전체, FR-ALL-303 / NFR-302)** 커버리지 80%+ (jacoco/coverage/flutter_test)
 - [ ] **(team-lead, FR-TL-302)** Schema Registry 전 토픽 BACKWARD 전수 — `--avro` 라이브 + 강제 프로브
 - [ ] **(team-lead, FR-TL-304)** API 문서 최신화 (SpringDoc OpenAPI + gateway 라우팅 대조)
