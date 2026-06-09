@@ -92,6 +92,13 @@
     └─ login이 ROLE_USER 하드코딩 + users에 roles 컬럼 없음 + role 명명 불일치(ROLE_ADMIN vs ADMIN)
     └─→ @platform admin 발급 + role claim 규칙 합의 필요 (E2E_W5_DAY2 §3 F8)
 
+[잔여-P1-아키텍처] 식별자 모델 불일치 (F7·F8·F9·F10 한 뿌리, E2E_W5_DAY2 §3.6)
+    └─ platform=UUID 정본 / engagement·knowledge=해시 Long(단방향) → inbound 인증은 패치(F7/F9)
+    └─ F10: outbound 알림은 UUID 복원 불가로 미해소(engagement#34 Draft) — 레벨업→알림 불가
+    └─→ 사용자 식별자 정본 UUID 통일 + 이벤트/저장 보존 합의(@platform·@engagement·@knowledge)
+
+[W1 검증-06-09] 복습→XP→레벨업→audit 체인 PASS (P4 ~0.67s) — 알림 leg만 F10으로 미완
+
 [잔여-owner] PR 머지: engagement#32(F1)·#33(F7) · learning#64(F2/F3) · knowledge#59(F9) → dev 반영
 
 [해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
