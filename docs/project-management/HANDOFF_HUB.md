@@ -83,7 +83,16 @@
 [해소-06-09-P1] F7 JWT 신원 모델 불일치 — engagement#33 (W5 신고접수 PASS 검증)
     └─ engagement 인증 API가 platform JWT(subject=UUID) 거부 → CurrentUser.resolveUserId 단일화
     └─→ HTTP·Kafka 동일 도출, 신고 201 + reporter_id=Kafka 프로필 PK 일치 입증
-    └─→ 잔여: engagement#33 머지 + W5 관리자 모더레이션(ADMIN 유저 시드)
+
+[해소-06-09-P2] F9 knowledge 검색 인증 — knowledge#59 (F7 동일 계열)
+    └─ 검색이 platform JWT subject(UUID) 거부 → subject UUID→결정적 Long 폴백(engagement 동일 알고리즘)
+    └─→ 라이브 401→500(인증 통과). 잔여 500=시맨틱 leg(learning-ai)=F4+빈 코퍼스
+
+[잔여-P1] F8 platform ADMIN role 발급 메커니즘 부재 (W5 관리자 모더레이션 차단)
+    └─ login이 ROLE_USER 하드코딩 + users에 roles 컬럼 없음 + role 명명 불일치(ROLE_ADMIN vs ADMIN)
+    └─→ @platform admin 발급 + role claim 규칙 합의 필요 (E2E_W5_DAY2 §3 F8)
+
+[잔여-owner] PR 머지: engagement#32(F1)·#33(F7) · learning#64(F2/F3) · knowledge#59(F9) → dev 반영
 
 [해소-06-08] EKS 재apply → ArgoCD 14앱 → dev 16/0/0 · staging 20/0/0 ALL PASSED
 [해소-06-08] platform/gateway CrashLoop = DB 공유 flyway 충돌 + JWT 미매핑 → gitops#136
@@ -99,7 +108,7 @@
 | 레포 | 스포크 문서 | 최종 갱신 | 정합성 |
 |---|---|---|---|
 | synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89). W5: DB 분리+gateway JWT(#136) |
-| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-08 | ✅ 동기 — W5 Day1 EKS 5/5·E2E 환경·정본 스키마 정렬 |
+| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-09 | ✅ 동기 — W5 Day2 풀 E2E: P0 2건 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 |
 
 > **W4 종료 게이트 평가 + W5 인수**: [reports/W4_EXIT_GATE.md](../reports/W4_EXIT_GATE.md) (06-05). **W5 Day1 결과**: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) · [W5_PLAN §8](./W5_PLAN.md).
 
@@ -133,4 +142,4 @@
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
 | W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 **1/5** (부분 1·미확인 3) — §1 레지스트리 BACKWARD 06-02 실검증 ✅. shared 전제 완료. 서비스 Kafka(06-02): learning·platform·**knowledge** Producer/스키마 완성 / **engagement** Consumer만 잔여 — **전원 dev→main 미머지** + EKS destroy로 W4 이월 |
 | W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | 🔄 진행(Day4, 마지막날) | — · **서비스 Kafka 4서비스 전원 origin/main 머지 완료**(knowledge#40·platform#46·engagement#23·learning) + S5 모더레이션(#23)·S6 audit(platform dev #52) 구현 / 잔여=통합 E2E·SLA **실행**(머지 무관, 로컬 가능) + EKS staging window + 하드닝 dev→main 머지 |
-| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | ⏳ 계획 | — |
+| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | 🔄 진행(Day2) | Day1 EKS 5/5·E2E 환경·정본 정렬 / **Day2 풀 E2E: P0 2건(F1/F2·F3) 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 충족**(engagement#32/#33·learning#64·knowledge#59). 잔여: W1·W5모더(F8)·W3/P3(F4) |
