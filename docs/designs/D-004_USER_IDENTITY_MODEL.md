@@ -1,6 +1,6 @@
 # D-004 — 사용자 식별자 정본 통일 (UUID) — **초안 (owner 합의 대기)**
 
-> **상태**: 🟡 초안 — @platform·@engagement·@knowledge 합의 필요 (결정 미확정)
+> **상태**: 🟢 방향 확정(2026-06-09) — **2단계 경로 채택**(§5: 단기 Option-2 → 중기 Option-1). Stage 1 구현 플랜 [2026-06-09-d004-stage1](../superpowers/plans/2026-06-09-d004-stage1-engagement-uuid-outbound.md) 확정·전용 세션 대기. Stage 2(PK 전환)는 여전히 @platform·@engagement·@knowledge 합의 필요.
 > **작성**: 2026-06-09 (W5 Day 2) · **작성자**: @team-lead
 > **근거**: [E2E_W5_DAY2 §3.6](../reports/E2E_W5_DAY2.md) (F7·F8·F9·F10 라이브 검증)
 > **영향 서비스**: platform · engagement · knowledge (learning은 userId를 그대로 전달만 함)
