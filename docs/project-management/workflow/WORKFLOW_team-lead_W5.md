@@ -74,5 +74,17 @@
 | gitops [#174](https://github.com/team-project-final/synapse-gitops/issues/174) | ES analysis-nori 미설치 | W4-4 검색·P3 |
 | gitops [#175](https://github.com/team-project-final/synapse-gitops/issues/175) | bringup.out .gitignore | 정리 |
 | API문서 | platform#84·knowledge#67·learning#72 | FR-TL-304 갭 |
+| knowledge [#71](https://github.com/team-project-final/synapse-knowledge-svc/issues/71) | note→ES 인덱서 컨슈머 미등록 | P3 기능검색(결과 0) |
+| knowledge [#72](https://github.com/team-project-final/synapse-knowledge-svc/issues/72) | 청킹 pgvector 타입 불일치 | 시맨틱/임베딩 |
+| knowledge [#74](https://github.com/team-project-final/synapse-knowledge-svc/issues/74) | note-create deckId 계약 갭 | P6 AI카드 트리거 |
+| learning [#77](https://github.com/team-project-final/synapse-learning-svc/issues/77) | Anthropic 모델ID 폐기(404) | P6 AI 생성 |
+| learning [#78](https://github.com/team-project-final/synapse-learning-svc/issues/78) | note 본문 fetch 계약 불일치 | P6 체인(500→DLQ) |
+| 커버리지 jacoco | engagement#39·knowledge#73·learning#76 | FR-ALL-303 80% |
+
+### P3/P6/P7 착수 결과 (06-10, owner 무관 진전분)
+- **P3** 🟢 nori 해소(shared#42, 검색 200·0.012s≪2s) / 기능검색은 knowledge#71·#72 / EKS는 gitops#174(ECR)
+- **P6** 🔴 키 인증 OK이나 체인 4중 갭(knowledge#74·learning#77/#78·OpenAI 할당량) → 측정불가
+- **P7** 🟢 FCM 배선·인증 검증(SA 주입·실 FCM API 호출, skip 해소) / >95% 발송률은 실 디바이스 토큰 필요. minor: notification status=SENT 부분실패 미반영(platform)
+- **보안** secrets/ .gitignore(shared#44)
 
 > **머지 정책 주의**: 서비스 레포 작업은 직접 머지하지 말 것(owner 직접). team-lead 직접 가능 = gitops/shared/gateway. 머지 상태 확인은 `git fetch` 후 origin/main 기준([W4_EXIT_GATE §4](../../reports/W4_EXIT_GATE.md)).
