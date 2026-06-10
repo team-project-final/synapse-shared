@@ -1,0 +1,18 @@
+# P7 FCM 실측용 오버라이드 — 실 FCM service account 주입 (SLA P7: FCM 발송률 >95%)
+#
+# 선행(사용자):
+#   1) FCM service account JSON을 secrets/fcm-sa.json 에 배치 (secrets/는 .gitignore 됨)
+#   2) .env 에 FCM_PROJECT_ID=<your-firebase-project-id> 설정
+# 적용:
+#   docker compose -f docker-compose.yml -f docker-compose.e2e.yml -f docker-compose.fcm.yml up -d --force-recreate platform-svc
+#
+# platform application.yml: fcm.enabled=${FCM_ENABLED:false} / service-account-path / project-id
+# 미적용 시 NotificationService는 "FCM channel not configured - skipping"(현 기본).
+services:
+  platform-svc:
+    environment:
+      FCM_ENABLED: "true"
+      FCM_SERVICE_ACCOUNT_PATH: /run/secrets/fcm-sa.json
+      FCM_PROJECT_ID: ${FCM_PROJECT_ID:-}
+    volumes:
+      - ./secrets/fcm-sa.json:/run/secrets/fcm-sa.json:ro
