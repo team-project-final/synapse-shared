@@ -29,7 +29,7 @@
 ### 10.1 정의 — [x] SLA_VERIFICATION_W4 P1~P7 (W4 완료)
 ### 10.2 실행
 - [~] **P2 Kafka<5s** — 06-05 **브로커 전송 지연 부분측정 PASS**(발행 p99 113ms·소비 fetch 39ms/1k, [SLA_VERIFICATION_W4 §5.1](../../reports/SLA_VERIFICATION_W4.md)). **잔여=풀 홉(consumer→DB) eventId correlation 측정**(서비스 E2E 후)
-- [x] **P1·P2·P4·P5 충족 + W1 풀체인 PASS** (Day3, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)): P1 79.7/15.3ms · P2 ~1.42s · **P4 체인 1.31s(알림 leg 포함)** · **P5 audit 1.31s**. 보류: P3 검색(ES nori 미설치 → [gitops#174](https://github.com/team-project-final/synapse-gitops/issues/174)) · P6 AI(키 부재 → learning#73) · P7 실 FCM 발송률(자격; 경로·DLT 0은 입증)
+- [x] **P1·P2·P4·P5·P7 충족 + W1 풀체인 PASS** (Day3, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)): P1 79.7/15.3ms · P2 ~1.42s · **P4 체인 1.31s(알림 leg 포함)** · **P5 audit 1.31s** · **P7 FCM 10/10=100%**(실 웹 토큰). 보류: P3 검색 기능(ES nori EKS → [gitops#174](https://github.com/team-project-final/synapse-gitops/issues/174)·knowledge#71) · P6 AI(knowledge#74·learning#77/#78)
 ### 10.3~10.6 — [x] 결과 문서화([SLA_VERIFICATION_W5]) · 미달 P0 없음(측정분 전부 충족)
 
 **Step 10 Status**: [ ] Not Started / [ ] In Progress / [x] Done(측정 가능분) — P1·P2·P4·P5 충족·W1 PASS(Day3 라이브). P3/P6/P7 외부·인프라 의존 보류(이슈 추적)
@@ -84,7 +84,7 @@
 ### P3/P6/P7 착수 결과 (06-10, owner 무관 진전분)
 - **P3** 🟢 nori 해소(shared#42, 검색 200·0.012s≪2s) / 기능검색은 knowledge#71·#72 / EKS는 gitops#174(ECR)
 - **P6** 🔴 키 인증 OK이나 체인 4중 갭(knowledge#74·learning#77/#78·OpenAI 할당량) → 측정불가
-- **P7** 🟢 FCM 배선·인증 검증(SA 주입·실 FCM API 호출, skip 해소) / >95% 발송률은 실 디바이스 토큰 필요. minor: notification status=SENT 부분실패 미반영(platform)
+- **P7** ✅ **충족** — SA 주입 + 실 웹 등록 토큰(Playwright getToken 자동 발급) 등록 → NotificationSend 10건 → **FCM 10/10=100%**(SENT 10/0, DLT 0). minor: notification status=SENT 부분실패 미반영(platform)
 - **보안** secrets/ .gitignore(shared#44)
 
 > **머지 정책 주의**: 서비스 레포 작업은 직접 머지하지 말 것(owner 직접). team-lead 직접 가능 = gitops/shared/gateway. 머지 상태 확인은 `git fetch` 후 origin/main 기준([W4_EXIT_GATE §4](../../reports/W4_EXIT_GATE.md)).
