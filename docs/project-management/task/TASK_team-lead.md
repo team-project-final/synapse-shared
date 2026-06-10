@@ -459,7 +459,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [x] Done(측정분) — **P1·P2·P4(1.31s)·P5(1.31s) 충족 + W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). 보류: P3 검색(nori gitops#174)·P6 AI(키 learning#73)·P7 실 FCM 발송률(자격). 부하(동시100)는 미실행
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done(측정분) — **P1·P2·P4(1.31s)·P5(1.31s) 충족 + W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). **P3 nori 해소·레이턴시 0.012s PASS**(기능검색 knowledge#71/#72)·**P7 FCM 배선·인증 검증**(발송률은 실 디바이스 토큰)·**P6 체인 다중갭**(knowledge#74·learning#77/#78). 부하(동시100)는 미실행
 
 ---
 

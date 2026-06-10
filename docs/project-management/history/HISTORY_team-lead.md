@@ -287,7 +287,8 @@
   - **[closeout]** owner 무관 종결분 — **W1 풀체인 PASS**·**SLA P1·P2·P4(1.31s)·P5(1.31s)**·**platform 커버리지 line 92.4% baseline** ([SLA_VERIFICATION_W5]·[COVERAGE_BASELINE_W5](../../reports/COVERAGE_BASELINE_W5.md), [shared#38])
   - **[일정 문서]** task/workflow/history W5 Day3 갱신([shared#39]) + **W4 진행률 정합**(stalled 표기→"검증 W5 종결", HUB/HISTORY, [shared#40])
   - **[stray 파일 owner 이관]** platform#91(미커밋 V28 oauth rename — 버전 충돌+스키마 갭 가능)·gitops#175(bringup.out .gitignore). 커밋 금지분이라 owner에 이관
-- **진행 중**: e2e 스택 가동 유지(다음 측정용)
+  - **[다음세션 P3/P6/P7 착수]** **P3** nori 커스텀 ES 이미지(shared#42) → 검색 200·0.012s≪2s(레이턴시 PASS), 기능검색은 knowledge#71(인덱서)·#72(pgvector) / **P6** 실키 인증 OK이나 체인 4중 갭(knowledge#74 deckId·learning#77 모델ID·learning#78 note계약·OpenAI 할당량) 측정불가 / **P7** FCM 배선·인증 검증(SA synapse-fcm 주입·실 FCM API 호출, skip 해소, shared#43/#45), >95%는 실 디바이스 토큰 필요 / 커버리지 jacoco owner 이슈(engagement#39·knowledge#73·learning#76) / **보안** secrets/ .gitignore(shared#44)
+- **진행 중**: e2e 스택 가동 유지(다음 측정용). P7 실 디바이스 토큰·P6 owner 갭 대기
 - **이슈**:
   - **신규 발견**: ES `analysis-nori` 미설치(로컬+EKS stock 이미지) → knowledge 검색 전 환경 500 → P3 차단 (gitops#174)
   - platform audit 컨슈머 ReviewCompleted DLT 라이브 재현(가설 A 강화, platform#87)
@@ -300,6 +301,7 @@
 
 | 날짜 | 변경 사항 |
 |------|-----------|
+| 2026-06-10 | W5 Day3(P3/P6/P7 착수) — P3 nori ES(shared#42, 레이턴시 PASS)·P7 FCM 배선검증(shared#43/#45)·secrets gitignore(shared#44) / 신규 owner 이슈 knowledge#71·#72·#74·learning#77·#78·jacoco(eng#39·k#73·l#76) / P6 다중갭·P7 실토큰 대기 |
 | 2026-06-10 | W5 Day3(정합) — 일정문서 갱신(shared#39)·W4 진행률 정합(stalled→검증 W5 종결, shared#40)·stray 파일 owner 이관(platform#91 V28·gitops#175 bringup.out) |
 | 2026-06-10 | W5 Day3 — D-004 Stage1(F10) eng#37→#38 머지·라이브 PASS / Schema BACKWARD 9/9(shared#34) / API문서 survey+이슈(shared#35) / 미완 owner 이슈 5건(platform#86·#87·learning#73·knowledge#68·gitops#174) / closeout: W1 풀체인 PASS·SLA P1·P2·P4·P5·platform 커버리지 92.4%(shared#38) |
 | 2026-06-08~09 | W5 Day1~2 — EKS 재apply dev16/staging20, e2e 환경(shared#25), P0 정본 정렬(shared#26), 풀 E2E P0 2건·F7/F9·SLA P1/P2/P5, D-004 설계·Stage1 플랜 |
