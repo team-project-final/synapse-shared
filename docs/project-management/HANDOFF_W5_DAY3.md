@@ -16,10 +16,22 @@
 | **C. API 문서** | 5서비스 OpenAPI survey + gateway 대조 + 누락 이슈 | ✅ 노출 O: engagement·learning-ai / 누락 3건 상세 이슈 발행 · [대조표](../reports/API_DOC_SURVEY_W5_DAY3.md) | shared **#35** · platform**#84**·knowledge**#67**·learning**#72** |
 
 **주의/관찰(다음 세션):**
-- **F10 해소 → P7 FCM 측정 선결 해제**: outbound 알림이 이제 UUID를 실어 platform이 소비 가능 → 다음 세션에서 P7(FCM>95%)·P4 풀체인(알림 leg 포함) 즉시 측정 가능.
-- **신규 관찰**: 라이브 검증 중 platform **audit** 컨슈머가 raw `ReviewCompleted`를 `.DLT` 적재(audit-leg, F10·A 무관, INFO/WARN). audit 역직렬화/계약 점검 후속 필요(별도 트리아지).
 - **engagement dev 재생성**: 원격 dev가 릴리스 후 삭제돼 있어 main에서 dev 재생성 후 dev-first 적용(A는 #37 dev→#38 main). 이후 dev 상시 유지.
-- **API 문서 갭 3건은 owner 머지 대기**: platform#84(SecurityConfig permitAll), knowledge#67(500), learning#72(swagger 버전 불일치).
+
+### Day3 closeout 추가 측정·종결 (owner 무관, 06-10)
+[설계/플랜: [closeout-design](../superpowers/specs/2026-06-10-w5-day3-closeout-design.md) · [closeout plan](../superpowers/plans/2026-06-10-w5-day3-closeout.md)]
+- **W1 풀체인 PASS** — 복습→XP→레벨업→audit→알림(FCM skip, UUID) 라이브 종결. W5 Day2 🔴(알림 미배선) 해소. [SLA_VERIFICATION_W5](../reports/SLA_VERIFICATION_W5.md)
+- **SLA P1·P2·P4·P5 충족** — **P4 체인 1.31s**·**P5 audit 1.31s**(라이브 실측). 측정분 전부 PASS.
+- **platform 커버리지 baseline** — line **92.4%(>80%)**. 타서비스 jacoco 미설정(owner 이월). [COVERAGE_BASELINE_W5](../reports/COVERAGE_BASELINE_W5.md)
+
+### 미완료 owner 이슈 (전체 레포 실측 후 발행, 06-10)
+- platform [#86](https://github.com/team-project-final/synapse-platform-svc/issues/86)(F8 admin role) · [#87](https://github.com/team-project-final/synapse-platform-svc/issues/87)(audit ReviewCompleted DLT, **Day3 라이브서 실재현 — 가설 A 강화**)
+- learning [#73](https://github.com/team-project-final/synapse-learning-svc/issues/73)(F4 AI키 게이트→P6 차단) · knowledge [#68](https://github.com/team-project-final/synapse-knowledge-svc/issues/68)(dev→main 18커밋 미반영)
+- **gitops [#174](https://github.com/team-project-final/synapse-gitops/issues/174)(ES analysis-nori 미설치 — 검색 전 환경 500 → P3 차단, 신규)**
+- API 문서 갭: platform#84·knowledge#67·learning#72
+
+### 다음 세션 보류(외부·인프라 의존)
+- **P3 검색** — gitops#174(nori) 해소 후 즉시 측정. **P6 AI** — learning#73(키). **P7 실 FCM 발송률** — FCM 자격(경로·DLT 0은 입증). 커버리지 80% — 전 서비스 jacoco(owner).
 
 ---
 
