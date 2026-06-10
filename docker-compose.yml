@@ -135,7 +135,10 @@ services:
       - synapse-net
 
   elasticsearch:
-    image: docker.elastic.co/elasticsearch/elasticsearch:9.2.1
+    # 커스텀 이미지(analysis-nori 포함) — stock 9.2.1엔 nori 없어 검색 인덱스 생성 실패(gitops#174)
+    build:
+      context: ./docker/elasticsearch
+    image: synapse-elasticsearch:nori-9.2.1
     container_name: synapse-elasticsearch
     environment:
       - discovery.type=single-node

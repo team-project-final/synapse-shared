@@ -9,7 +9,7 @@
 |---|---|---|---|---|
 | **P1** API P95 | <200ms | 로그인 79.7ms · 신고 15.3ms | ✅ | W5 Day2 [E2E_W5_DAY2 §3.5](./E2E_W5_DAY2.md) |
 | **P2** Kafka 홉 | <5s | ~1.42s (발행→소비→DB) | ✅ | W5 Day2 |
-| **P3** 검색 | <2s | **측정 불가** | ⛔ 보류 | ES `analysis-nori` 미설치 → 인덱스 생성 실패 → 검색 500. [gitops#174](https://github.com/team-project-final/synapse-gitops/issues/174) |
+| **P3** 검색 | <2s | **0.012s**(직접)/0.021s(gw) | 🟡 레이턴시 PASS·기능 미완 | **nori 해결**(커스텀 ES 이미지, `notes-v1` korean_nori 생성, 검색 200·0.012s≪2s, [gitops#174]). **단 결과 0건** — note→ES 인덱서 컨슈머 미등록([knowledge#71](https://github.com/team-project-final/synapse-knowledge-svc/issues/71)), 청킹 pgvector([knowledge#72](https://github.com/team-project-final/synapse-knowledge-svc/issues/72)) |
 | **P4** 체인 | <10s | **1.31s** (복습 발행→레벨업 audit, **알림 leg 포함**) | ✅ | Day3 라이브 실측 |
 | **P5** audit 적재 | <30s | **1.31s** | ✅ | Day3 라이브(동일 체인) |
 | **P6** AI 카드 | <30s | **측정 불가** | ⛔ 보류 | AI키 부재 → [learning#73](https://github.com/team-project-final/synapse-learning-svc/issues/73) (F4) |
@@ -27,7 +27,7 @@
 
 ## 보류 항목 사유 (owner/인프라)
 
-- **P3 검색** — ES nori 플러그인 부재(로컬 e2e + EKS 둘 다 stock 이미지). knowledge 검색이 전 환경에서 500. → **gitops#174**(커스텀 ES 이미지). 해소 후 P3 즉시 재측정 가능.
+- **P3 검색** — **nori 부분 해소**(06-10): shared 커스텀 ES 이미지(`docker/elasticsearch/Dockerfile`, `analysis-nori`)로 로컬 e2e 인덱스 생성·검색 200·**레이턴시 0.012s≪2s** 확인. EKS는 gitops#174(ECR 커스텀 이미지) 잔여. **기능 검색(결과>0)은 knowledge owner 잔여**: 인덱서 컨슈머 미등록(#71)·청킹 pgvector(#72).
 - **P6 AI 카드** — AI키 미주입 + graceful 게이트 부재. → **learning#73**(F4).
 - **P7 실 FCM 발송률** — FCM 자격 부재. 파이프라인 신뢰성(skip 경로·DLT 0)은 입증, 실 발송률은 자격 확보 후.
 
