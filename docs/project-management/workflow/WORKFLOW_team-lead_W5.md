@@ -63,4 +63,16 @@
 - [x] FR-TL-304 API 문서 최신화 — 5서비스 OpenAPI survey + gateway 대조([API_DOC_SURVEY_W5_DAY3](../../reports/API_DOC_SURVEY_W5_DAY3.md)). 노출 O: engagement·learning-ai / 누락 3서비스 레포 상세 이슈 발행: platform#84·knowledge#67·learning#72(learning-card)
 - [~] FR-ALL-303 커버리지 종합 집계 — platform **line 92.4%(>80%)** baseline([COVERAGE_BASELINE_W5](../../reports/COVERAGE_BASELINE_W5.md)). engagement·knowledge·learning **jacoco 미설정 → owner 이월**(전 서비스 80% 달성 미완)
 
+## 미완 owner 이슈 레지스터 (06-10 실측 발행, team-lead 직접 머지 불가)
+| 이슈 | 항목 | 차단 |
+|---|---|---|
+| platform [#86](https://github.com/team-project-final/synapse-platform-svc/issues/86) | F8 ADMIN role 발급 부재 | W4-3 모더레이션 E2E |
+| platform [#87](https://github.com/team-project-final/synapse-platform-svc/issues/87) | audit 컨슈머 ReviewCompleted DLT(라이브 재현) | audit 정합 |
+| platform [#91](https://github.com/team-project-final/synapse-platform-svc/issues/91) | 미커밋 V28 oauth rename(버전충돌·스키마 갭) | DB 테스트·OAuth |
+| learning [#73](https://github.com/team-project-final/synapse-learning-svc/issues/73) | F4 AI키 graceful 게이트 | W4-5 AI E2E·P6 |
+| knowledge [#68](https://github.com/team-project-final/synapse-knowledge-svc/issues/68) | dev→main 18커밋 미반영(F9·TLS·검색) | 배포 정합 |
+| gitops [#174](https://github.com/team-project-final/synapse-gitops/issues/174) | ES analysis-nori 미설치 | W4-4 검색·P3 |
+| gitops [#175](https://github.com/team-project-final/synapse-gitops/issues/175) | bringup.out .gitignore | 정리 |
+| API문서 | platform#84·knowledge#67·learning#72 | FR-TL-304 갭 |
+
 > **머지 정책 주의**: 서비스 레포 작업은 직접 머지하지 말 것(owner 직접). team-lead 직접 가능 = gitops/shared/gateway. 머지 상태 확인은 `git fetch` 후 origin/main 기준([W4_EXIT_GATE §4](../../reports/W4_EXIT_GATE.md)).

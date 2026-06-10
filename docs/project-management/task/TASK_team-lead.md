@@ -415,7 +415,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 시나리오 정의(E2E_SCENARIOS_W4) + 계약·전송 E2E PASS(E2E_REPORT_W4) + **W5 서비스 단위 E2E: 핵심 시나리오 W4·W2·W3·W5·W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). 잔여 leg=AI생성(F4 learning#73)·검색(nori gitops#174)
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 시나리오 정의(E2E_SCENARIOS_W4) + 계약·전송 E2E PASS(E2E_REPORT_W4) + **W5 서비스 단위 E2E: 핵심 시나리오 W4·W2·W3·W5·W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). 잔여 leg(owner)=AI생성(F4 learning#73)·검색(nori gitops#174)·모더레이션(F8 platform#86)
 
 ---
 
