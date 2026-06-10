@@ -29,10 +29,10 @@
 ### 10.1 정의 — [x] SLA_VERIFICATION_W4 P1~P7 (W4 완료)
 ### 10.2 실행
 - [~] **P2 Kafka<5s** — 06-05 **브로커 전송 지연 부분측정 PASS**(발행 p99 113ms·소비 fetch 39ms/1k, [SLA_VERIFICATION_W4 §5.1](../../reports/SLA_VERIFICATION_W4.md)). **잔여=풀 홉(consumer→DB) eventId correlation 측정**(서비스 E2E 후)
-- [ ] P1 API P95<200ms · P3 검색<2s · P4 체인<10s · P5 audit<30s · P6 AI카드<30s · P7 FCM>95% (3회 평균, Day 3)
-### 10.3~10.6 — [ ] 미달 P0 수정 → 회귀 → 결과 문서화
+- [x] **P1·P2·P4·P5 충족 + W1 풀체인 PASS** (Day3, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)): P1 79.7/15.3ms · P2 ~1.42s · **P4 체인 1.31s(알림 leg 포함)** · **P5 audit 1.31s**. 보류: P3 검색(ES nori 미설치 → [gitops#174](https://github.com/team-project-final/synapse-gitops/issues/174)) · P6 AI(키 부재 → learning#73) · P7 실 FCM 발송률(자격; 경로·DLT 0은 입증)
+### 10.3~10.6 — [x] 결과 문서화([SLA_VERIFICATION_W5]) · 미달 P0 없음(측정분 전부 충족)
 
-**Step 10 Status**: [ ] Not Started / [x] In Progress / [ ] Done — P2 브로커 전송 지연 부분측정(06-05). 나머지·풀 홉은 E2E 통과 후(Day 3)
+**Step 10 Status**: [ ] Not Started / [ ] In Progress / [x] Done(측정 가능분) — P1·P2·P4·P5 충족·W1 PASS(Day3 라이브). P3/P6/P7 외부·인프라 의존 보류(이슈 추적)
 
 ---
 
@@ -61,6 +61,6 @@
 ## team-lead 외 추가 W5 책무 (PRD §2.2)
 - [x] FR-TL-302 Schema BACKWARD 전 토픽 전수 — 9 subject 강제 프로브 전수(cards-generated 포함) 9/9 PASS, `scripts/check-schema-backward-all.ps1` + [SCHEMA_BACKWARD_W5_DAY3](../../reports/SCHEMA_BACKWARD_W5_DAY3.md)
 - [x] FR-TL-304 API 문서 최신화 — 5서비스 OpenAPI survey + gateway 대조([API_DOC_SURVEY_W5_DAY3](../../reports/API_DOC_SURVEY_W5_DAY3.md)). 노출 O: engagement·learning-ai / 누락 3서비스 레포 상세 이슈 발행: platform#84·knowledge#67·learning#72(learning-card)
-- [ ] FR-ALL-303 커버리지 80% 종합 집계 조율
+- [~] FR-ALL-303 커버리지 종합 집계 — platform **line 92.4%(>80%)** baseline([COVERAGE_BASELINE_W5](../../reports/COVERAGE_BASELINE_W5.md)). engagement·knowledge·learning **jacoco 미설정 → owner 이월**(전 서비스 80% 달성 미완)
 
 > **머지 정책 주의**: 서비스 레포 작업은 직접 머지하지 말 것(owner 직접). team-lead 직접 가능 = gitops/shared/gateway. 머지 상태 확인은 `git fetch` 후 origin/main 기준([W4_EXIT_GATE §4](../../reports/W4_EXIT_GATE.md)).
