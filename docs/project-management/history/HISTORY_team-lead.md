@@ -67,7 +67,7 @@
 - **gitops EKS window 진입 하드닝 요청·완료** — #87(bastion aws-auth/kafka read)·#88(브로커 ConfigMap 자동화)·#89(D-026 SG 코드화) 이슈 등록 → gitops PR #90 머지로 코드+라이브 검증 후 자동 클로즈. 잔여 **#91(ArgoCD 부트스트랩→verify 5/5, P0)** 신규 등록.
 - PR #9·#10 머지·브랜치 정리 완료.
 
-**W4 진행률**: 0/3 Steps 완료 (Step 9~11 = W4 실작업. Step 12 실행은 W5로 이월)
+**W4 진행률**: W4 캘린더(06-01~05) 내 0/3(구현 완료·검증 W5 이월, [W4_EXIT_GATE](../../reports/W4_EXIT_GATE.md) 모델 — "0/3"은 W4 창 기준이며 stalled 아님). **실제 산출물은 W5에서 대부분 종결**: Step 9 핵심 E2E·W1 풀체인 PASS(W5 D2/D3) / Step 10 SLA P1·P2·P4·P5(W5 D3) / Step 11 dev·staging 5/5+Observability(W5 D1, 잔여 24h Day4). **미충족=owner/인프라**: 모더레이션 F8(platform#86)·검색 nori(gitops#174)·AI생성 F4(learning#73).
 
 ### W5 (2026-06-08 ~ 06-12, 5영업일 — 발표 06-15)
 
