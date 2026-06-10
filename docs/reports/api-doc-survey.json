@@ -1,0 +1,47 @@
+[
+  {
+    "Service": "platform-svc",
+    "Type": "Spring",
+    "DocPath": "/v3/api-docs",
+    "DirectDoc": 401,
+    "DirectUi": 401,
+    "GatewayDoc": 401,
+    "Exposed": "X"
+  },
+  {
+    "Service": "knowledge-svc",
+    "Type": "Spring",
+    "DocPath": "/v3/api-docs",
+    "DirectDoc": 500,
+    "DirectUi": 200,
+    "GatewayDoc": 401,
+    "Exposed": "X"
+  },
+  {
+    "Service": "engagement-svc",
+    "Type": "Spring",
+    "DocPath": "/v3/api-docs",
+    "DirectDoc": 200,
+    "DirectUi": 200,
+    "GatewayDoc": 401,
+    "Exposed": "O"
+  },
+  {
+    "Service": "learning-card-svc",
+    "Type": "Spring",
+    "DocPath": "/v3/api-docs",
+    "DirectDoc": 500,
+    "DirectUi": 200,
+    "GatewayDoc": 401,
+    "Exposed": "X"
+  },
+  {
+    "Service": "learning-ai-svc",
+    "Type": "FastAPI",
+    "DocPath": "/openapi.json",
+    "DirectDoc": 200,
+    "DirectUi": 200,
+    "GatewayDoc": "N/A(미라우팅)",
+    "Exposed": "O"
+  }
+]
