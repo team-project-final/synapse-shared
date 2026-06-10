@@ -47,9 +47,9 @@ gateway 라우트는 yml이 아니라 Java config(`synapse-gateway` `src/main/ja
 
 | 서비스 | 레포(이슈 대상) | 누락 내용(증거) | 이슈 본문 드래프트 | 발행 이슈 URL |
 |---|---|---|---|---|
-| platform-svc | `team-project-final/synapse-platform-svc` | `/v3/api-docs`·`/swagger-ui/index.html` 모두 **401** — 서비스 SecurityConfig가 doc 경로 permitAll 안 함 | `docs/fix-requests/openapi/platform-svc.md` | TBD(코디네이터) |
-| knowledge-svc | `team-project-final/synapse-knowledge-svc` | `/v3/api-docs` **500**(C500 envelope), UI 셸 200이나 스펙 미렌더 — SpringDoc 문서 생성 실패 | `docs/fix-requests/openapi/knowledge-svc.md` | TBD(코디네이터) |
-| learning-card-svc | `team-project-final/synapse-learning-svc` (하위 `learning-card/`) | `/v3/api-docs` **500** — `NoSuchMethodError: Parameter.validationGroups()` (swagger-annotations/springdoc 버전 불일치) | `docs/fix-requests/openapi/learning-card-svc.md` | TBD(코디네이터) |
+| platform-svc | `team-project-final/synapse-platform-svc` | `/v3/api-docs`·`/swagger-ui/index.html` 모두 **401** — 서비스 SecurityConfig가 doc 경로 permitAll 안 함 | `docs/fix-requests/openapi/platform-svc.md` | [platform#84](https://github.com/team-project-final/synapse-platform-svc/issues/84) |
+| knowledge-svc | `team-project-final/synapse-knowledge-svc` | `/v3/api-docs` **500**(C500 envelope), UI 셸 200이나 스펙 미렌더 — SpringDoc 문서 생성 실패 | `docs/fix-requests/openapi/knowledge-svc.md` | [knowledge#67](https://github.com/team-project-final/synapse-knowledge-svc/issues/67) |
+| learning-card-svc | `team-project-final/synapse-learning-svc` (하위 `learning-card/`) | `/v3/api-docs` **500** — `NoSuchMethodError: Parameter.validationGroups()` (swagger-annotations/springdoc 버전 불일치) | `docs/fix-requests/openapi/learning-card-svc.md` | [learning#72](https://github.com/team-project-final/synapse-learning-svc/issues/72) |
 
 ---
 

@@ -60,7 +60,7 @@
 
 ## team-lead 외 추가 W5 책무 (PRD §2.2)
 - [x] FR-TL-302 Schema BACKWARD 전 토픽 전수 — 9 subject 강제 프로브 전수(cards-generated 포함) 9/9 PASS, `scripts/check-schema-backward-all.ps1` + [SCHEMA_BACKWARD_W5_DAY3](../../reports/SCHEMA_BACKWARD_W5_DAY3.md)
-- [ ] FR-TL-304 API 문서 최신화 (SpringDoc + gateway 라우팅 대조)
+- [x] FR-TL-304 API 문서 최신화 — 5서비스 OpenAPI survey + gateway 대조([API_DOC_SURVEY_W5_DAY3](../../reports/API_DOC_SURVEY_W5_DAY3.md)). 노출 O: engagement·learning-ai / 누락 3서비스 레포 상세 이슈 발행: platform#84·knowledge#67·learning#72(learning-card)
 - [ ] FR-ALL-303 커버리지 80% 종합 집계 조율
 
 > **머지 정책 주의**: 서비스 레포 작업은 직접 머지하지 말 것(owner 직접). team-lead 직접 가능 = gitops/shared/gateway. 머지 상태 확인은 `git fetch` 후 origin/main 기준([W4_EXIT_GATE §4](../../reports/W4_EXIT_GATE.md)).
