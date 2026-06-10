@@ -59,7 +59,7 @@
 ---
 
 ## team-lead 외 추가 W5 책무 (PRD §2.2)
-- [ ] FR-TL-302 Schema BACKWARD 전 토픽 전수 (`--avro` 라이브 + 강제 프로브)
+- [x] FR-TL-302 Schema BACKWARD 전 토픽 전수 — 9 subject 강제 프로브 전수(cards-generated 포함) 9/9 PASS, `scripts/check-schema-backward-all.ps1` + [SCHEMA_BACKWARD_W5_DAY3](../../reports/SCHEMA_BACKWARD_W5_DAY3.md)
 - [ ] FR-TL-304 API 문서 최신화 (SpringDoc + gateway 라우팅 대조)
 - [ ] FR-ALL-303 커버리지 80% 종합 집계 조율
 
