@@ -12,7 +12,7 @@
 | **P3** 검색 | <2s | **0.012s**(직접)/0.021s(gw) | 🟡 레이턴시 PASS·기능 미완 | **nori 해결**(커스텀 ES 이미지, `notes-v1` korean_nori 생성, 검색 200·0.012s≪2s, [gitops#174]). **단 결과 0건** — note→ES 인덱서 컨슈머 미등록([knowledge#71](https://github.com/team-project-final/synapse-knowledge-svc/issues/71)), 청킹 pgvector([knowledge#72](https://github.com/team-project-final/synapse-knowledge-svc/issues/72)) |
 | **P4** 체인 | <10s | **1.31s** (복습 발행→레벨업 audit, **알림 leg 포함**) | ✅ | Day3 라이브 실측 |
 | **P5** audit 적재 | <30s | **1.31s** | ✅ | Day3 라이브(동일 체인) |
-| **P6** AI 카드 | <30s | **측정 불가** | ⛔ 보류 | AI키 부재 → [learning#73](https://github.com/team-project-final/synapse-learning-svc/issues/73) (F4) |
+| **P6** AI 카드 | <30s | **측정 불가(FAIL)** | ⛔ 보류 | 실키 주입·인증 OK이나 체인 다중 갭: deckId([knowledge#74](https://github.com/team-project-final/synapse-knowledge-svc/issues/74))·note본문 계약([learning#78](https://github.com/team-project-final/synapse-learning-svc/issues/78))·**Anthropic 모델ID 폐기**([learning#77](https://github.com/team-project-final/synapse-learning-svc/issues/77))·OpenAI 폴백 할당량0(사용자 키). F4 키([learning#73])는 필요했으나 불충분 |
 | **P7** FCM 발송 | >95% | 경로 OK·실발송률 미측정 | 🟡 부분 | engagement→platform→FCM **skip 검증**(UUID.fromString 통과, DLT 0). 실 FCM 자격 부재로 발송률은 보류 |
 
 ## W1 풀체인 — ✅ PASS (Day3 종결)
@@ -28,7 +28,7 @@
 ## 보류 항목 사유 (owner/인프라)
 
 - **P3 검색** — **nori 부분 해소**(06-10): shared 커스텀 ES 이미지(`docker/elasticsearch/Dockerfile`, `analysis-nori`)로 로컬 e2e 인덱스 생성·검색 200·**레이턴시 0.012s≪2s** 확인. EKS는 gitops#174(ECR 커스텀 이미지) 잔여. **기능 검색(결과>0)은 knowledge owner 잔여**: 인덱서 컨슈머 미등록(#71)·청킹 pgvector(#72).
-- **P6 AI 카드** — AI키 미주입 + graceful 게이트 부재. → **learning#73**(F4).
+- **P6 AI 카드** — 실 AI키 주입(06-10)·Anthropic 인증 OK 확인. 단 **체인 4중 갭**으로 카드 생성 0: ① deckId(knowledge#74) ② note 본문 fetch 계약 불일치(learning#78, 500→DLQ) ③ Anthropic 모델ID 폐기(learning#77, 404) ④ OpenAI 폴백 할당량0(사용자 키 빌링). 모델ID(#77) 교체가 최단 해소 — 이후 deckId·note계약까지 풀려야 풀체인 P6 측정.
 - **P7 실 FCM 발송률** — FCM 자격 부재. 파이프라인 신뢰성(skip 경로·DLT 0)은 입증, 실 발송률은 자격 확보 후.
 
 ## 부수 관찰 (재확인)
