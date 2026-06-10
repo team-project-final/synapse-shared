@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-09 (W5 Day 2 **종결** — P0 2건(F1·F2/F3) + 신원 버그 2건(F7·F9) 수정·라이브 검증·머지 완료, learning-ai #144(ssl_context) 해소. 시나리오 W4·W2·W3·W5·W1 PASS, SLA P1/P2/P4/P5 충족. 미해결=식별자 모델 통일(D-004))
-> **현재 주차**: W5 Day 2 종결 → Day 3 (발표 06-15) · **다음 세션 진입점: [HANDOFF_W5_DAY3](./HANDOFF_W5_DAY3.md)**
+> **최종 갱신**: 2026-06-10 (W5 Day 3 **종결** — **D-004 Stage1(F10) 구현·라이브·머지**(eng#37→#38) + **Schema BACKWARD 전토픽 9/9**(shared#34) + **API 문서 survey+대조+누락 이슈 3건**(shared#35, platform#84·knowledge#67·learning#72). F10 해소로 P7 FCM 측정 선결 해제)
+> **현재 주차**: W5 Day 3 종결 → Day 4 (staging 최종·Observability·24h) → 발표 06-15 · **다음 세션 진입점: [HANDOFF_W5_DAY3 §0](./HANDOFF_W5_DAY3.md)** (다음 1순위=커버리지 80%+SLA 풀측정)
 > **갱신자**: @VelkaressiaBlutkrone
 >
 > ⏱ **Day2 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md)(§3.6 식별자 모델) — 핵심 시나리오·SLA PASS / F8(admin)·F10(식별자)·Stage2는 다음 세션·합의
@@ -116,7 +116,7 @@
 | 레포 | 스포크 문서 | 최종 갱신 | 정합성 |
 |---|---|---|---|
 | synapse-gitops | `docs/project-management/history/HISTORY_gitops.md` | 2026-06-02 | ✅ 동기 — MSK 토픽 terraform화·TLS-only·EKS window 하드닝(#87~89). W5: DB 분리+gateway JWT(#136) |
-| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-09 | ✅ 동기 — W5 Day2 풀 E2E: P0 2건 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 |
+| synapse-shared | `docs/project-management/HANDOFF_SHARED.md` | 2026-06-10 | ✅ 동기 — W5 Day3: D-004 Stage1(F10) 머지·Schema BACKWARD 9/9(#34)·API문서 survey+이슈3건(#35) |
 
 > **W4 종료 게이트 평가 + W5 인수**: [reports/W4_EXIT_GATE.md](../reports/W4_EXIT_GATE.md) (06-05). **W5 Day1 결과**: [E2E_SMOKE_W5_DAY1](../reports/E2E_SMOKE_W5_DAY1.md) · [W5_PLAN §8](./W5_PLAN.md).
 
@@ -127,11 +127,10 @@
 > **W5 Day2(06-09) 완료**: P0 2건(F1·F2/F3) + 신원 버그 2건(F7·F9) 수정·라이브 검증·머지 + learning-ai #144(ssl_context) 해소. 시나리오 W4·W2·W3·W5·W1 PASS, SLA P1/P2/P4/P5 충족. 미해결은 **식별자 모델 통일(D-004)** 한 갈래로 수렴. 상세·진입점: **[HANDOFF_W5_DAY3](./HANDOFF_W5_DAY3.md)**.
 
 ```
-1. [next-session] 🥇 D-004 Stage 1 구현 — engagement outbound UUID(F10 해소, 비파괴)
-     → 플랜: superpowers/plans/2026-06-09-d004-stage1-engagement-uuid-outbound.md (확정)
-     → prod 5 + 테스트 7파일, 구현→dev PR→merge→main PR→merge→Stage 2
+✅ [Day3 완료] D-004 Stage 1(F10) eng#37→#38 머지·라이브 PASS · Schema BACKWARD 9/9(shared#34) · API문서 survey+이슈3건(shared#35)
+1. [next-session 🥇] 커버리지 80%(FR-ALL-303) + SLA 풀측정(P3 검색·P4 체인·P6 AI〔F4 선결〕·P7 FCM〔A로 선결 해제〕)
 2. [owner 합의·P1] F8(platform ADMIN role 발급 모델) · D-004 Stage 2(PK bigint→uuid)
-3. [team-lead] Day3 — 커버리지 80% · API 문서 · SLA 잔여(P3 검색·P6 AI, F4 선결) · Schema 전 토픽 BACKWARD
+3. [owner] API문서 갭 이슈 머지: platform#84·knowledge#67·learning#72 / [트리아지] platform audit 컨슈머 ReviewCompleted DLT(신규 관찰)
 4. [team-lead/gitops] Day4 — staging 최종 + Observability + 24h 안정
 5. [team-lead] Day5 — 발표 슬라이드·데모·리허설 → 발표 06-15
 ```
@@ -146,4 +145,4 @@
 | W2 (5/19-23) | Dev 5앱 + secrets + image sync | ✅ 완료 | 5/21 (9차 세션) |
 | W3 (5/26-29) | Kafka E2E + Staging + Observability | 🔴 게이트 미통과 | 종료 충족 **1/5** (부분 1·미확인 3) — §1 레지스트리 BACKWARD 06-02 실검증 ✅. shared 전제 완료. 서비스 Kafka(06-02): learning·platform·**knowledge** Producer/스키마 완성 / **engagement** Consumer만 잔여 — **전원 dev→main 미머지** + EKS destroy로 W4 이월 |
 | W4 (6/01-05) | Notification/Audit 소비 + Admin 모더레이션 + 통합 E2E + dev/staging 배포 검증 | 🔄 진행(Day4, 마지막날) | — · **서비스 Kafka 4서비스 전원 origin/main 머지 완료**(knowledge#40·platform#46·engagement#23·learning) + S5 모더레이션(#23)·S6 audit(platform dev #52) 구현 / 잔여=통합 E2E·SLA **실행**(머지 무관, 로컬 가능) + EKS staging window + 하드닝 dev→main 머지 |
-| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | 🔄 진행(Day2) | Day1 EKS 5/5·E2E 환경·정본 정렬 / **Day2 풀 E2E: P0 2건(F1/F2·F3) 라이브 PASS·F7/F9 신원 수정·SLA P1/P2/P5 충족**(engagement#32/#33·learning#64·knowledge#59). 잔여: W1·W5모더(F8)·W3/P3(F4) |
+| W5 (6/08-12) | E2E + 버그수정 + P1 마무리 + Staging + 발표 자료/리허설 (발표 6/15) | 🔄 진행(Day3 종결) | Day1 EKS 5/5·E2E 환경 / Day2 풀 E2E P0 2건·F7/F9·SLA P1/P2/P5 / **Day3: D-004 Stage1(F10) 머지(eng#37→#38)·Schema BACKWARD 9/9(shared#34)·API문서 survey+이슈3건(shared#35)**. 잔여: 커버리지 80%·SLA 풀측정(P3/P4/P6/P7, P7·P4 선결 해제)·F8(admin)·D-004 Stage2 / Day4 staging·Observability·24h / Day5 발표 |
