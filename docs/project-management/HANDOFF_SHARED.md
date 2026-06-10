@@ -1,7 +1,9 @@
 # 핸드오프: synapse-shared
 
-> **최종 갱신**: 2026-06-09 (W5 Day 2 — 풀 E2E 실행: P0 2건 owner 벤더링 교체+라이브 재검증, JWT 신원 버그 2건(F7/F9) 수정, SLA P1/P2/P5 충족)
+> **최종 갱신**: 2026-06-10 (W5 Day 3 종결 — D-004 Stage1(F10) 머지·라이브 PASS(eng#37→#38), Schema BACKWARD 전토픽 9/9([shared#34](https://github.com/team-project-final/synapse-shared/pull/34)), API 문서 survey+대조+누락 이슈 3건([shared#35](https://github.com/team-project-final/synapse-shared/pull/35)))
 > **허브 참조**: → [HANDOFF_HUB.md](./HANDOFF_HUB.md)
+>
+> **W5 Day 3 (06-10) 요약**: ① **D-004 Stage 1**(engagement outbound UUID, F10 비파괴 해소) 구현·코드리뷰·라이브 E2E(복습→레벨업 → platform `UUID.fromString` 통과+FCM skip 로그+DLT 0)·**dev→main 머지**(eng#37→#38). ② **Schema BACKWARD 전토픽 9/9**(`check-schema-backward-all.ps1` 강제 프로브, cards-generated 포함, [SCHEMA_BACKWARD_W5_DAY3](../reports/SCHEMA_BACKWARD_W5_DAY3.md)). ③ **API 문서**: 5서비스 OpenAPI survey+gateway 대조([API_DOC_SURVEY_W5_DAY3](../reports/API_DOC_SURVEY_W5_DAY3.md)), 노출 O=engagement·learning-ai, 누락 3건 상세 이슈(platform#84·knowledge#67·learning#72). ④ 관찰: platform audit 컨슈머 ReviewCompleted DLT(별도 트리아지). 잔여: 커버리지 80%·SLA 풀측정(P7·P4 선결 해제).
 >
 > **W5 Day 2 (06-09) 요약**: 서비스 단위 풀 E2E 실행([E2E_W5_DAY2](../reports/E2E_W5_DAY2.md)). ① P0 2건 owner 벤더링 교체 PR — **F1** UserRegistered([engagement#32](https://github.com/team-project-final/synapse-engagement-svc/pull/32)) · **F2/F3** NotificationSend([learning#64](https://github.com/team-project-final/synapse-learning-svc/pull/64)) → 가입·알림 체인 라이브 PASS(에러 0). ② 신규 JWT 신원 버그 수정 — **F7** engagement HTTP/Kafka 신원 통합([engagement#33](https://github.com/team-project-final/synapse-engagement-svc/pull/33), W5 신고접수 PASS) · **F9** knowledge 검색 인증([knowledge#59](https://github.com/team-project-final/synapse-knowledge-svc/pull/59), 401 해소). ③ **F8**(platform ADMIN 발급 부재) 기록. ④ SLA: P1 API P95<200ms·P2 Kafka<5s·P5 audit<30s ✅. 잔여: W1 레벨업 시드·W5 모더레이션(F8)·W3 AI·P3 검색(F4).
 >
