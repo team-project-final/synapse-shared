@@ -13,15 +13,15 @@
 ### 9.2 E2E 테스트 실행
 - [x] 계약·전송 E2E (W4 06-05 PASS — E2E_REPORT_W4)
 - [x] **서비스 단위 E2E 환경** — `docker-compose.e2e.yml`(origin/main worktree 실빌드, 13/13 healthy, 06-08). 가입 스모크 통과 ([E2E_SMOKE_W5_DAY1](../../reports/E2E_SMOKE_W5_DAY1.md))
-- [ ] **핵심 10 시나리오 풀 실행** (FR-ALL-301/NFR-303) — Day 2. **선결: owner P0 2건 수정**(AVRO_CONTRACT_FIX_W5)
-- [ ] 전체 체인 < 10초(FR-TL-401) · audit 적재 < 30초(NFR-403) — Day 2
+- [~] **핵심 시나리오 실행** (FR-ALL-301/NFR-303) — W4·W2·W3·W5·**W1 풀체인 PASS**(Day3, 알림 leg A로 해소). AI생성 leg=F4(learning#73)·검색 leg=nori(gitops#174) 차단
+- [x] 전체 체인 < 10초(FR-TL-401) · audit < 30초(NFR-403) — **W1 체인 1.31s·audit 1.31s**(Day3, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md))
 ### 9.3 버그 트리아지
 - [x] **P0 선발견(스모크)**: F1 engagement UserRegistered reader / F2·F3 learning-ai NotificationSend writer → 정본 정렬(shared#26) + owner 지시서. P2: F4 learning-ai AI키 게이트
-- [ ] Day 2 풀 시나리오 후 잔여 버그 P0/P1/P2 분류
+- [x] 잔여 버그 분류·발행 — F7/F9(수정) · F8 platform#86 · F10 D-004 Stage1(해소) · audit DLT platform#87 · nori gitops#174
 ### 9.4~9.6
-- [ ] P0 수정 지시·추적 → 회귀 → 커버리지 80%(9.5) → API 문서/HISTORY(9.6)
+- [~] P0 수정(F1/F2/F3/F7/F9/F10 ✅) → 회귀 → **커버리지: platform line 92.4% baseline**([COVERAGE_BASELINE_W5](../../reports/COVERAGE_BASELINE_W5.md), 타서비스 jacoco owner 이월) → **API 문서 ✅(shared#35)·HISTORY 갱신**
 
-**Step 9 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 환경 구성·스모크·P0 선발견 완료(06-08), 풀 10시나리오는 owner P0 수정 후 Day 2
+**Step 9 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 핵심 시나리오·W1 풀체인·체인 SLA·API문서·커버리지 baseline 완료(Day3). 잔여=커버리지 80%(전서비스 jacoco·owner)·AI/검색 leg(F4·nori)
 
 ---
 

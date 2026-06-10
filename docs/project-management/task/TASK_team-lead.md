@@ -415,7 +415,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 시나리오 정의(E2E_SCENARIOS_W4) + **계약·전송 E2E 06-05 실행 PASS**(E2E_REPORT_W4). 서비스 비즈니스 로직 E2E는 W5 이월(서비스 스택/staging 필요)
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 시나리오 정의(E2E_SCENARIOS_W4) + 계약·전송 E2E PASS(E2E_REPORT_W4) + **W5 서비스 단위 E2E: 핵심 시나리오 W4·W2·W3·W5·W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). 잔여 leg=AI생성(F4 learning#73)·검색(nori gitops#174)
 
 ---
 
@@ -459,7 +459,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done(측정분) — **P1·P2·P4(1.31s)·P5(1.31s) 충족 + W1 풀체인 PASS**(06-10, [SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). 보류: P3 검색(nori gitops#174)·P6 AI(키 learning#73)·P7 실 FCM 발송률(자격). 부하(동시100)는 미실행
 
 ---
 
@@ -503,7 +503,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done — **dev 16/0/0·staging 20/0/0 ALL PASSED**(06-08, gitops#136 DB분리+JWT) + Observability(kube-prometheus-stack) 기동. 잔여: staging 24h 안정·대시보드/알림 검증(Day4)
 
 ---
 

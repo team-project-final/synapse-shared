@@ -69,6 +69,19 @@
 
 **W4 진행률**: 0/3 Steps 완료 (Step 9~11 = W4 실작업. Step 12 실행은 W5로 이월)
 
+### W5 (2026-06-08 ~ 06-12, 5영업일 — 발표 06-15)
+
+| Step | 내용 | 상태 | 시작일 | 완료일 | 비고 |
+|------|------|------|--------|--------|------|
+| Step 9 | 전체 E2E 서비스 단위 실행 | In Progress | 06-08 | — | 환경(shared#25)·핵심 시나리오 W4·W2·W3·W5·**W1 풀체인 PASS**(06-10, 알림 leg A로 해소). 커버리지: platform line 92.4% baseline / 타서비스 jacoco 미설정(owner) |
+| Step 10 | 성능 SLA 검증 | **Done(측정분)** | 06-08 | 06-10 | P1·P2·**P4 1.31s·P5 1.31s** 충족([SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). P3(nori gitops#174)·P6(키 learning#73)·P7(FCM 자격) 보류 |
+| Step 11 | Staging 최종 + 모니터링 | In Progress | 06-08 | — | dev 16/0/0·staging 20/0/0(06-08, gitops#136) + Observability 기동. 24h·대시보드 검증 Day4 |
+| Step 12 | 발표 자료 + 리허설 | Not Started | — | — | Day5(6/12 리허설) |
+| (FR-TL-302) | Schema BACKWARD 전토픽 | Done | 06-10 | 06-10 | 9 subject 강제 프로브 9/9(shared#34) |
+| (FR-TL-304) | API 문서 survey+대조 | Done | 06-10 | 06-10 | 5서비스 survey+gateway 대조(shared#35), 누락 3 이슈 |
+
+**W5 진행률**: D-004 Stage1(F10)·Schema BACKWARD·API문서·SLA(측정분)·W1 풀체인 종결. 잔여=커버리지80%·P3/P6/P7(인프라·키)·staging 24h·발표.
+
 ---
 
 ## 작업 로그
@@ -257,12 +270,36 @@
 - **이슈**:
 - **주간 요약**:
 
+### W5 (2026-06-08 ~ 06-12, 5영업일 — 발표 06-15)
+
+#### 2026-06-08 (월) Day 1 — 요약
+- EKS/MSK/RDS 재apply + ArgoCD 14앱 + monitoring → **dev 16/0/0·staging 20/0/0 ALL PASSED**(platform/gateway CrashLoop 근본 해소 [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136): DB 공유 flyway 충돌 + JWT 미매핑). 서비스 단위 E2E 환경 `docker-compose.e2e.yml`(13/13, [shared#25](https://github.com/team-project-final/synapse-shared/pull/25)). Avro 감사 → P0 2건 + 정본 정렬([shared#26](https://github.com/team-project-final/synapse-shared/pull/26)).
+
+#### 2026-06-09 (화) Day 2 — 요약
+- 풀 E2E: P0 2건(F1·F2/F3) 라이브 PASS·신원 버그 F7/F9 수정·SLA P1/P2/P5. 미해결을 식별자 모델(D-004)로 수렴, Stage1 플랜 확정.
+
+#### 2026-06-10 (수) Day 3
+- **완료**:
+  - **[A/D-004 Stage1]** engagement outbound UUID 전파(F10 비파괴 해소) — 구현(prod7+test7)·2단계 리뷰·must-fix 4건·라이브 E2E(복습→레벨업 → platform `UUID.fromString` 통과+FCM skip+DLT 0)·**dev→main 머지**(eng#37→#38). 드래프트 wiring cherry-pick + `--onto` 리베이스(squash 잔재 회피). engagement 원격 dev 부재→main에서 재생성.
+  - **[B/FR-TL-302]** Schema BACKWARD 전토픽 — `scripts/check-schema-backward-all.ps1` 신규(9 subject 강제 프로브, cards-generated 포함) **9/9 PASS** ([shared#34], [SCHEMA_BACKWARD_W5_DAY3](../../reports/SCHEMA_BACKWARD_W5_DAY3.md))
+  - **[C/FR-TL-304]** API 문서 — `scripts/api-doc-survey.ps1` + gateway 대조([API_DOC_SURVEY_W5_DAY3](../../reports/API_DOC_SURVEY_W5_DAY3.md)). 노출 O: engagement·learning-ai / 누락 3건 상세 이슈(platform#84·knowledge#67·learning#72) ([shared#35])
+  - **[미완 owner 이슈]** 전체 레포 실측 후 발행 — platform#86(F8)·#87(audit DLT)·learning#73(F4)·knowledge#68(dev→main 18커밋)·**gitops#174(ES nori 미설치)**. Slack 공지.
+  - **[closeout]** owner 무관 종결분 — **W1 풀체인 PASS**·**SLA P1·P2·P4(1.31s)·P5(1.31s)**·**platform 커버리지 line 92.4% baseline** ([SLA_VERIFICATION_W5]·[COVERAGE_BASELINE_W5](../../reports/COVERAGE_BASELINE_W5.md), [shared#38])
+- **진행 중**: e2e 스택 가동 유지(다음 측정용)
+- **이슈**:
+  - **신규 발견**: ES `analysis-nori` 미설치(로컬+EKS stock 이미지) → knowledge 검색 전 환경 500 → P3 차단 (gitops#174)
+  - platform audit 컨슈머 ReviewCompleted DLT 라이브 재현(가설 A 강화, platform#87)
+  - platform 로컬 stray untracked `V28` 마이그레이션(main 무관) → 측정 시 비켜두고 복원
+- **다음**: 커버리지 80%(전 서비스 jacoco·owner)·P3(nori 후)·P6(키)·P7(FCM)·staging 24h·발표 자료
+
 ---
 
 ## 변경 이력
 
 | 날짜 | 변경 사항 |
 |------|-----------|
+| 2026-06-10 | W5 Day3 — D-004 Stage1(F10) eng#37→#38 머지·라이브 PASS / Schema BACKWARD 9/9(shared#34) / API문서 survey+이슈(shared#35) / 미완 owner 이슈 5건(platform#86·#87·learning#73·knowledge#68·gitops#174) / closeout: W1 풀체인 PASS·SLA P1·P2·P4·P5·platform 커버리지 92.4%(shared#38) |
+| 2026-06-08~09 | W5 Day1~2 — EKS 재apply dev16/staging20, e2e 환경(shared#25), P0 정본 정렬(shared#26), 풀 E2E P0 2건·F7/F9·SLA P1/P2/P5, D-004 설계·Stage1 플랜 |
 | 2026-05-29 | 계약 표준화 — D-001(cards HTTP)+D-002(Avro 사수) 결정, EVENT_CONTRACT_STANDARD 수립, 스키마 3종 초안+기존 4종 공통메타 보강, 신규 토픽 4종, GitHub Packages 발행 구현+runbook, harness `--avro`, 서비스 이슈 4건 |
 | 2026-05-29 | cross-repo Kafka 실측 — learning main 머지/platform·engagement dev/knowledge 미구현/cards-generated HTTP 드리프트 → 추적 6종 현행화 + W4_KAFKA_WORKORDER 발행 |
 | 2026-05-29 | W3 Day 4 — 종료 게이트 평가(미통과)·E2E 결과·스키마 호환성·배포 전략/롤백 리포트 4종 + harness `--scenarios` 스캐폴딩 + Security 2차 |
