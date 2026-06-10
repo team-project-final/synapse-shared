@@ -10,6 +10,8 @@
 .env
 .env.*
 !.env.example
+# 로컬 시크릿(FCM service account 등) — 절대 커밋 금지
+secrets/
 
 # === OS ===
 .DS_Store
