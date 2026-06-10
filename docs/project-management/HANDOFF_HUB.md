@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
-> **최종 갱신**: 2026-06-10 (W5 Day 3 **종결** — **D-004 Stage1(F10) 구현·라이브·머지**(eng#37→#38) + **Schema BACKWARD 전토픽 9/9**(shared#34) + **API 문서 survey+대조+누락 이슈 3건**(shared#35, platform#84·knowledge#67·learning#72). F10 해소로 P7 FCM 측정 선결 해제)
-> **현재 주차**: W5 Day 3 종결 → Day 4 (staging 최종·Observability·24h) → 발표 06-15 · **다음 세션 진입점: [HANDOFF_W5_DAY3 §0](./HANDOFF_W5_DAY3.md)** (다음 1순위=커버리지 80%+SLA 풀측정)
+> **최종 갱신**: 2026-06-10 (W5 Day 3 **closeout 종결** — D-004 Stage1(F10, eng#37→#38)·Schema BACKWARD 9/9(shared#34)·API문서(shared#35) + **SLA P1·P2·P4·P5·P7 충족·W1 풀체인 PASS·P3 nori(레이턴시 PASS)·P7 FCM 100%(실 웹 토큰)·platform 커버리지 92.4%** + W4 대시보드 정합(10→82%, shared#47))
+> **현재 주차**: W5 Day 3 closeout 종결 → Day 4 (staging 최종·Observability·24h) → 발표 06-15 · **다음 세션 진입점: [HANDOFF_W5_DAY3_CLOSEOUT](./HANDOFF_W5_DAY3_CLOSEOUT.md)** (다음 1순위=owner P6 AI 체인·P3 기능검색·커버리지 80% / Day4 staging)
 > **갱신자**: @VelkaressiaBlutkrone
 >
 > ⏱ **Day2 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md)(§3.6 식별자 모델) — 핵심 시나리오·SLA PASS / F8(admin)·F10(식별자)·Stage2는 다음 세션·합의
