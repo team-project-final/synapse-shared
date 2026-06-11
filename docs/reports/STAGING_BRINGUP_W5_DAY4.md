@@ -80,4 +80,21 @@ P0(F1/F2/F3 = Avro 계약 poison-message)는 외부 ALB 부재로 in-cluster 검
 - **B 라이브 트리거**: in-cluster `POST /api/v1/auth/signup`(201, userId UUID) → **engagement-svc가 `Created gamification profile from UserRegistered`로 무poison 소비** + `user_profiles_gamification` insert + platform `audit_logs` insert. **신규 직렬화 예외 0**.
 - → **F1(engagement UserRegistered reader) 경로 배포본에서 라이브 정상. P0 재발 0.**
 
-> ⚠️ 별도 finding(P0 무관, Observability 갭): **platform-svc `GET /actuator/prometheus` 미노출**(`NoResourceFoundException`, 135건/3h) → Prometheus가 platform-svc 메트릭 스크랩 실패 → [platform#101](https://github.com/team-project-final/synapse-platform-svc/issues/101)(actuator prometheus 엔드포인트 노출).
+> ⚠️ 별도 finding(P0 무관, Observability 갭): **platform-svc `GET /actuator/prometheus` 미노출**(`NoResourceFoundException`, 135건/3h) → Prometheus가 platform-svc 메트릭 스크랩 실패 → [platform#101](https://github.com/team-project-final/synapse-platform-svc/issues/101).
+
+## 10. 24h 안정 점검 — 알림/메트릭 갭 (2026-06-11 앵커 스냅샷)
+
+> **앵커(의미 있는 24h 시작)**: 2026-06-11 ~17:15 KST(dev+staging 전 서비스 Healthy 확정) → **24h 완료 예정 2026-06-12 ~17:15 KST**.
+
+**워크로드: 안정** — ArgoCD 16/16 Healthy, 전 파드 Running, 신규 재시작 0(schema-registry restarts=4는 기동기 잔재), ES green.
+
+**알림 레이어: firing 다수 → 클린 사인오프 전 해소 필요.** Alertmanager active:
+| alert | 성격 | 이슈 |
+|---|---|---|
+| KubeControllerManagerDown · KubeSchedulerDown (critical) | **EKS 매니지드 컨트롤플레인 false-positive** | [gitops#194](https://github.com/team-project-final/synapse-gitops/issues/194) |
+| TargetDown(16) · SynapsePodDown(22) | **메트릭 스크랩 갭** — `/actuator/prometheus`: platform 500·engagement 401·knowledge 500·learning-card 500·learning-ai 404, **gateway만 200** | 아래 owner |
+| SynapseHighMemory(12) | t3.large 메모리 압박 가능(실측 필요) | gitops#194 |
+
+**서비스 메트릭 엔드포인트 갭 (owner)**: [platform#101](https://github.com/team-project-final/synapse-platform-svc/issues/101)(500) · [engagement#45](https://github.com/team-project-final/synapse-engagement-svc/issues/45)(401) · [knowledge#82](https://github.com/team-project-final/synapse-knowledge-svc/issues/82)(500) · [learning#85](https://github.com/team-project-final/synapse-learning-svc/issues/85)(card 500 + ai 404 Python) · EKS 룰·learning-ai 경로 = [gitops#194](https://github.com/team-project-final/synapse-gitops/issues/194).
+
+→ **24h 클린 사인오프(2026-06-12 17:15 이후) 선결**: 위 메트릭 갭 + EKS 알림 룰 정리 → firing이 Watchdog만 남아야 함.
