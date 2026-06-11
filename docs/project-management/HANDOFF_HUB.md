@@ -1,7 +1,7 @@
 # Synapse 통합 핸드오프 허브
 
 > **최종 갱신**: 2026-06-10 (W5 Day 3 **closeout 종결** — D-004 Stage1(F10, eng#37→#38)·Schema BACKWARD 9/9(shared#34)·API문서(shared#35) + **SLA P1·P2·P4·P5·P7 충족·W1 풀체인 PASS·P3 nori(레이턴시 PASS)·P7 FCM 100%(실 웹 토큰)·platform 커버리지 92.4%** + W4 대시보드 정합(10→82%, shared#47))
-> **현재 주차**: W5 Day 3 closeout 종결 → Day 4 (staging 최종·Observability·24h) → 발표 06-15 · **다음 세션 진입점: [HANDOFF_W5_DAY3_CLOSEOUT](./HANDOFF_W5_DAY3_CLOSEOUT.md)** (다음 1순위=owner P6 AI 체인·P3 기능검색·커버리지 80% / Day4 staging)
+> **현재 주차**: W5 **Day 4 closeout 종결** (staging 완전 가동: ArgoCD 16/16 Healthy·ES nori green·Observability·P0 회귀 PASS) → Day 5(06-12 발표 준비) → 발표 06-15 · **다음 세션 진입점: [HANDOFF_W5_DAY4_CLOSEOUT](./HANDOFF_W5_DAY4_CLOSEOUT.md)** (다음 1순위=Day5 발표 자료 / 24h 사인오프 06-12 17:15·메트릭 갭 선결 / owner: P6 AI·P3 기능검색·커버리지·메트릭 actuator)
 > **갱신자**: @VelkaressiaBlutkrone
 >
 > ⏱ **Day2 결과**: [E2E_W5_DAY2](../reports/E2E_W5_DAY2.md)(§3.6 식별자 모델) — 핵심 시나리오·SLA PASS / F8(admin)·F10(식별자)·Stage2는 다음 세션·합의
