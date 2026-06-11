@@ -42,7 +42,7 @@ D-004 Stage1(F10)·Schema BACKWARD·API문서에 더해 **SLA P1·P2·P4·P5·P7
 | **P3 기능검색** | knowledge#71(note→ES 인덱서 컨슈머 미등록) · knowledge#72(청킹 pgvector 타입) · gitops#174(EKS nori ECR 이미지) |
 | **커버리지 80%** | engagement#39 · knowledge#73 · learning#76(jacoco 설정+테스트) |
 | **인증/신원** | platform#86(F8 ADMIN role) · platform#91(미커밋 V28 oauth rename·스키마 갭) |
-| **staging/인프라(W5 Day4)** | **gitops#182**(bastion role `eks:DescribeCluster` 결여 → bring-up 자동화 중단·복구됨 + 서비스 ECR 레포 7종 미프로비저닝·team-lead 선생성) · 서비스 이미지 빌드·push 필요(각 owner, 레포는 준비됨) · **gitops#183**(EKS window — **결정: Day4용 유지**, 24h 검증 후 teardown) — 상세 [STAGING_BRINGUP_W5_DAY4](../reports/STAGING_BRINGUP_W5_DAY4.md) |
+| **staging/인프라(W5 Day4)** | **gitops#182**(bastion role `eks:DescribeCluster` 결여 → bring-up 자동화 중단·복구됨 + 서비스 ECR 레포 7종 미프로비저닝·team-lead 선생성) · 서비스 이미지 — **dev 9/9 Healthy** ✅ / staging engagement-svc·learning-card 태그 불일치(**gitops#191**) · **gitops#183**(EKS window — **결정: Day4용 유지**, 24h 검증 후 teardown) — 상세 [STAGING_BRINGUP_W5_DAY4](../reports/STAGING_BRINGUP_W5_DAY4.md) |
 | **audit/배포** | **learning#81**(ReviewCompleted 발행 스키마 정본 분기 → platform#87 DLT **근본수정**, 가설 A 확정: learning=`com.synapse.event.learning`+timestamp-millis ≠ 정본 `com.synapse.learning`+string/long) · platform#87(정본 유지·소비측 graceful skip만 선택) · knowledge#68(dev→main 18커밋 미반영) |
 | **API 문서** | platform#84 · knowledge#67 · learning#72(learning-card) |
 | **정리** | gitops#175(bringup.out .gitignore) |
