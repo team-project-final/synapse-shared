@@ -1,0 +1,90 @@
+name: Build Elasticsearch (analysis-nori) → ECR
+
+# 커스텀 ES(analysis-nori) 이미지를 ECR에 빌드·push 하는 전용 워크플로.
+# gitops#174 EKS 경로 / 검색 P3. shared #53.
+# 앱용 deploy-service.yml은 gitops dev 오버레이를 SHA로 bump 하는 가정이 있어
+# 고정태그 인프라 이미지(ES)엔 부적합 → 별도 lightweight 워크플로(이슈 #53 option a).
+# gitops statefulset image 교체는 gitops 측에서 별도 처리(이 이슈 close가 트리거).
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "ECR 이미지 태그(서술적·고정). 기본 nori-9.2.1"
+        required: false
+        type: string
+        default: "nori-9.2.1"
+  push:
+    branches: [main]
+    paths:
+      - "docker/elasticsearch/**"
+      - ".github/workflows/build-elasticsearch.yml"
+
+permissions:
+  contents: read
+  id-token: write
+
+env:
+  AWS_REGION: ap-northeast-2
+  ECR_REPO: synapse/elasticsearch
+  DEFAULT_TAG: nori-9.2.1
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve tag
+        id: tag
+        run: echo "value=${{ inputs.image_tag || env.DEFAULT_TAG }}" >> "$GITHUB_OUTPUT"
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: ecr-login
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Ensure ECR repository
+        run: |
+          if aws ecr describe-repositories --repository-names "$ECR_REPO" >/dev/null 2>&1; then
+            echo "ECR repo $ECR_REPO exists."
+          else
+            echo "ECR repo $ECR_REPO 없음 → 생성 시도."
+            aws ecr create-repository \
+              --repository-name "$ECR_REPO" \
+              --image-tag-mutability MUTABLE \
+              --image-scanning-configuration scanOnPush=true \
+            || { echo "::error::ECR repo 생성 실패 — OIDC role에 ecr:CreateRepository 권한이 없거나 terraform 선생성 필요. 인프라 측 레포 선생성 후 재실행."; exit 1; }
+          fi
+
+      - name: Build, verify plugin, push
+        env:
+          REGISTRY: ${{ steps.ecr-login.outputs.registry }}
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          IMAGE="${REGISTRY}/${ECR_REPO}:${TAG}"
+          echo "Building $IMAGE"
+          docker build -f docker/elasticsearch/Dockerfile -t "$IMAGE" docker/elasticsearch
+
+          echo "== plugin 검증(analysis-nori) =="
+          docker run --rm "$IMAGE" bin/elasticsearch-plugin list | tee plugins.txt
+          grep -qx "analysis-nori" plugins.txt || { echo "::error::analysis-nori 미포함 — Dockerfile 확인"; exit 1; }
+
+          docker push "$IMAGE"
+          echo "pushed $IMAGE"
+
+      - name: Verify pushed image (DoD)
+        env:
+          TAG: ${{ steps.tag.outputs.value }}
+        run: |
+          aws ecr describe-images \
+            --repository-name "$ECR_REPO" \
+            --image-ids imageTag="$TAG" \
+            --query 'imageDetails[0].{tags:imageTags,pushedAt:imagePushedAt,digest:imageDigest}' \
+            --output table
