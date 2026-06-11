@@ -50,18 +50,11 @@ jobs:
         id: ecr-login
         uses: aws-actions/amazon-ecr-login@v2
 
-      - name: Ensure ECR repository
-        run: |
-          if aws ecr describe-repositories --repository-names "$ECR_REPO" >/dev/null 2>&1; then
-            echo "ECR repo $ECR_REPO exists."
-          else
-            echo "ECR repo $ECR_REPO 없음 → 생성 시도."
-            aws ecr create-repository \
-              --repository-name "$ECR_REPO" \
-              --image-tag-mutability MUTABLE \
-              --image-scanning-configuration scanOnPush=true \
-            || { echo "::error::ECR repo 생성 실패 — OIDC role에 ecr:CreateRepository 권한이 없거나 terraform 선생성 필요. 인프라 측 레포 선생성 후 재실행."; exit 1; }
-          fi
+      # NOTE: ECR 레포(synapse/elasticsearch)는 인프라 측에서 선생성하는 전제.
+      # 배포 OIDC role(synapse-gha-deploy-role)은 push/pull(GetAuthorizationToken)만 보유하고
+      # ecr:DescribeRepositories·CreateRepository 권한이 없음(실측, #53). 레포 미존재 시
+      # admin/terraform으로 `aws ecr create-repository --repository-name synapse/elasticsearch
+      # --image-tag-mutability MUTABLE --image-scanning-configuration scanOnPush=true` 선생성 후 재실행.
 
       - name: Build, verify plugin, push
         env:
@@ -79,7 +72,10 @@ jobs:
           docker push "$IMAGE"
           echo "pushed $IMAGE"
 
-      - name: Verify pushed image (DoD)
+      # describe-images는 ecr:DescribeImages 권한 의존 → 배포 role엔 없을 수 있어 비차단.
+      # 권위 DoD 검증(describe-images)은 admin 측에서 별도 수행(#53).
+      - name: Verify pushed image (DoD, non-blocking)
+        continue-on-error: true
         env:
           TAG: ${{ steps.tag.outputs.value }}
         run: |
@@ -87,4 +83,5 @@ jobs:
             --repository-name "$ECR_REPO" \
             --image-ids imageTag="$TAG" \
             --query 'imageDetails[0].{tags:imageTags,pushedAt:imagePushedAt,digest:imageDigest}' \
-            --output table
+            --output table \
+          || echo "::notice::describe-images skipped(권한). admin 측 DoD 검증으로 대체."
