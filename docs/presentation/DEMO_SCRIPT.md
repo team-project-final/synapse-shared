@@ -5,6 +5,21 @@
 
 ---
 
+## 0-A. 사전점검 실측 결과 (2026-06-12 오전, team-lead)
+
+| 항목 | 결과 |
+|---|---|
+| 클러스터 | ArgoCD 16/16 Synced/Healthy, staging 재시작 0 ✅ |
+| frontend | **staging·dev 모두 배포됨**(nginx 정적 서빙). 단 빌드가 `dev-latest` = API base `http://localhost:8080` → **gateway port-forward 8080 필수** (+ learning-card 8084, learning-ai 8090) |
+| gateway | **dev 네임스페이스에만 존재** → 데모는 dev 환경으로 진행. 경로 프리픽스 `/api/platform|knowledge|engagement|learning/**`, 가입·로그인 검증 완료(201/JWT) |
+| AI 키 (P6) | dev·staging 모두 `sk-dev-test-...` 더미 + ANTHROPIC 키 없음(MODEL_NAME=gpt-4o-mini) → **클러스터 내 AI 카드 실생성 불가**. ③ 구간은 실키 확보(ESO/Secrets Manager 주입) 또는 로컬 E2E 컷 폴백 |
+| 노트→이벤트 | 노트 생성 → outbox → `note-created-v1` 발행 검증 완료 ✅ |
+| ⚠️ **검색 색인** | **[gitops#204](https://github.com/team-project-final/synapse-gitops/issues/204)** — dev/staging이 같은 MSK 토픽·컨슈머 그룹 공유 → staging 파드가 dev 메시지를 가로채 색인 ~2/3 유실. **녹화는 24h 사인오프(17:15) 후 staging 컨슈머 scale 0 상태에서** 진행해야 풀체인 동작 |
+| 시드 계정 | `demo-w5-recording2@synapse.app` 가입 완료, 노트 1건(스프링 트랜잭션) 생성 |
+| Grafana | monitoring 네임스페이스 `kube-prometheus-stack-grafana` port-forward로 접근 |
+
+**확정 녹화 시퀀스**: ① 17:15 24h 사인오프 → ② staging 앱 auto-sync 일시중지 + 컨슈머 scale 0 → ③ dev 풀체인 녹화(아래 §1) → ④ 클러스터 destroy
+
 ## 0. 녹화 전 점검 체크리스트 (Go/No-Go)
 
 ### 인프라
