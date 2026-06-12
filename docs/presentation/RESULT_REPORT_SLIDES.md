@@ -45,7 +45,7 @@ footer: 'SYNAPSE — K-Digital Training 팀별 프로젝트 결과보고서'
 <!-- _class: lead -->
 <!-- _footer: '' -->
 
-###### K-DIGITAL TRAINING · {{훈련기관명}}
+###### K-DIGITAL TRAINING
 
 # SYNAPSE
 ## 노트가 카드가 되는 AI 통합 학습 플랫폼 (PKM + SRS + AI)
@@ -53,7 +53,7 @@ footer: 'SYNAPSE — K-Digital Training 팀별 프로젝트 결과보고서'
 **TEAM SYNAPSE** (7인)
 김민구(팀장) · 김해준 · 한승완 · 김현지 · 박은서 · 김나경 · 조유지
 
-<span class="small">멘토: {{멘토명}} | 개발 기간: 2026-05-12 ~ 06-15 (5주) | 발표: 2026-06-15</span>
+<span class="small">개발 기간: 2026-05-12 ~ 06-15 (5주) | 발표: 2026-06-15</span>
 
 ---
 
@@ -200,7 +200,6 @@ footer: 'SYNAPSE — K-Digital Training 팀별 프로젝트 결과보고서'
 | 조유지 | 팀원 | D-2 · learning-ai | **Claude 카드 자동 생성**, OpenAI 임베딩, pgvector 시맨틱 검색, RAG |
 
 - **Flutter 프론트엔드**: 별도 owner 없이 **각자 자기 도메인 화면을 전원 공동 구현**
-- 멘토 지원: {{멘토 지원내역 — 주제 선정 피드백, 질의응답 등}}
 
 ---
 
