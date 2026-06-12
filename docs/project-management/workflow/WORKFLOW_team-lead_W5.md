@@ -41,20 +41,30 @@
 - [x] EKS 재apply → ArgoCD 부트스트랩 → dev 5/5 재확인 — **06-08 완료 (dev 16/0/0)**
 - [x] **platform/gateway CrashLoop 해소 → staging 5/5** — **06-08 완료 (staging 20/0/0)**. 근본 원인=DB 공유 flyway 충돌(#37 실체) + gateway JWT 미매핑 → [gitops#136](https://github.com/team-project-final/synapse-gitops/pull/136)
 - [x] Observability(kube-prometheus-stack) + Grafana + 알림 규칙 — **bring-up에 포함, 06-08 기동** (ServiceMonitor/대시보드 검증·SLA 알림 튜닝은 Day 4)
-- [ ] staging 24h 안정(NFR-305) — Day 4 시작
-### 11.6 — [ ] Staging 배포 결과 + 운영 가이드 문서화 — Day 4
+- [x] staging 24h 안정(NFR-305) — **06-12 17:15+ 사인오프 승인**([gitops#183 코멘트](https://github.com/team-project-final/synapse-gitops/issues/183)): ArgoCD 16/16 Healthy·윈도우 내 비정상 재시작 0·ES green. 알림 클린은 부분(잔여=platform#101·engagement#45·staging 태그·비대상 스크랩 [gitops#207](https://github.com/team-project-final/synapse-gitops/issues/207))
+### 11.6 — [x] Staging 배포 결과 + 운영 가이드 문서화 — [STAGING_BRINGUP_W5_DAY4](../../reports/STAGING_BRINGUP_W5_DAY4.md) + #183 사인오프 기록. **사인오프 직후 destroy 완료**(RDS·MSK·노드 삭제 확인, ECR standalone 보존)
 
-**Step 11 Status**: [ ] Not Started / [x] In Progress / [ ] Done — dev/staging 5/5 + monitoring 기동 완료(06-08, Day1에 Day4 일부 선반영). 잔여=24h 안정·대시보드 검증·문서화(Day 4)
+**Step 11 Status**: [ ] Not Started / [ ] In Progress / [x] Done — 24h 사인오프(06-12) + destroy까지 종결. 잔여 알림 클린은 owner 이슈·gitops#207로 이관
 
 ---
 
 ## Step 12: 최종 발표 자료 + 시연 리허설
-- [ ] 슬라이드 15~20 + 데모 스크립트 5분 (FR-TL-305)
-- [ ] 시연 환경 사전 점검 (staging/네트워크/시드/깨진링크 0)
-- [ ] **전체 팀 리허설 1회+ (06-12, 발표 D-3)** + 회고 → 보완
+- [x] 슬라이드 15~20 + 데모 스크립트 5분 (FR-TL-305) — **20장 Marp + PPTX/PDF**(`docs/presentation/`, PR #68/#69/#73). 양식=K-Digital 결과보고서 5목차, 04장=제품 순환 스토리(전처리→4모델→SLA 실측→staging 복구). 잔여=자체평가 점수 `{{N}}`
+- [x] 시연 환경 사전 점검 (staging/네트워크/시드/깨진링크 0) — 06-12 실측(가입 201·로그인 JWT·노트 200·검색 200). 발견: AI 키 전 환경 더미 + **dev/staging 컨슈머 그룹 충돌**([gitops#199](https://github.com/team-project-final/synapse-gitops/issues/199) 증거 보강 → shared `EVENT_CONTRACT_STANDARD §2.1` env-prefix 표준 머지 PR #72)
+- [~] **시연 영상**(양식 필수, 5~10분·100MB↓) — 클러스터 destroy로 **로컬 E2E 녹화로 전환**, 팀원 별도 진행(가이드 = DEMO_SCRIPT §갱신)
+- [ ] **전체 팀 리허설 1회+ (발표 D-3)** + 회고 → 보완 — 영상 완성 후
 - [ ] 코드 동결 (06-15 전, P0 hotfix만)
 
-**Step 12 Status**: [ ] Not Started / [ ] In Progress / [ ] Done — 실행 Day 5
+**Step 12 Status**: [ ] Not Started / [x] In Progress / [ ] Done — 자료·스크립트·사전점검 완료(06-12). 잔여=영상(팀원)·리허설·회고
+
+### Day5(06-12) 메트릭 갭 추적 (24h 사인오프 연계)
+| 이슈 | 상태(06-12 저녁) |
+|---|---|
+| learning#85 | ✅ CLOSED (PR #89·#91 머지, dev 알림 소멸 실측) |
+| knowledge#82 | 🟡 수정 PR #86 머지·dev 알림 소멸 실측 — 이슈 close 대기 |
+| engagement#45 | 🟡 수정 PR #48 **dev 머지**(Closes 키워드는 main 머지 시 동작) — dev→main 승격 대기 |
+| platform#101 | 🟡 수정 PR #103 OPEN (checks green, 리뷰 대기) |
+| (신규) gitops#207 | 비대상 스크랩(frontend·ES·SR·gateway) 분리 — 전부 해소 시 firing=Watchdog 도달 |
 
 ---
 
