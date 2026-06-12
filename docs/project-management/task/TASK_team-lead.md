@@ -503,7 +503,7 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [x] In Progress / [ ] Done — **dev 16/0/0·staging 20/0/0 ALL PASSED**(06-08, gitops#136 DB분리+JWT) + Observability(kube-prometheus-stack) 기동. 잔여: staging 24h 안정·대시보드/알림 검증(Day4)
+**Status**: [ ] Not Started / [ ] In Progress / [x] Done — **24h 안정 사인오프 승인(06-12 17:15+, [gitops#183 코멘트](https://github.com/team-project-final/synapse-gitops/issues/183))**: ArgoCD 16/16 Healthy·윈도우 내 비정상 재시작 0·ES green(notes-v1 rep 0 조치). 알림 클린(Watchdog-only)은 부분 — 잔여 귀속: platform#101(PR#103 리뷰중)·engagement#45(PR#48 dev머지)·staging 태그 미반영·비대상 스크랩([gitops#207](https://github.com/team-project-final/synapse-gitops/issues/207)). 사인오프 직후 클러스터 destroy 완료(RDS·MSK·노드 삭제 확인, ECR은 standalone 보존)
 
 ---
 
@@ -511,10 +511,10 @@
 
 - **Step Goal**: 팀장이 최종 발표 자료를 준비하고 전체 팀과 시연 리허설을 1회 이상 수행한다.
 - **Done When**:
-  - [ ] 발표 슬라이드 작성 완료 (15~20슬라이드)
-  - [ ] 데모 시나리오 스크립트 확정
-  - [ ] 시연 환경 사전 점검 (네트워크, 테스트 데이터, 시드 계정)
-  - [ ] 전체 팀 시연 리허설 1회 이상 수행 (W5 마지막 영업일 6/12 권장)
+  - [x] 발표 슬라이드 작성 완료 (15~20슬라이드) — **20장 Marp**(`docs/presentation/RESULT_REPORT_SLIDES.md`, PPTX/PDF 빌드, 06-12, PR #68/#69/#73). 잔여=자체평가 점수 `{{N}}`(팀 회고)
+  - [x] 데모 시나리오 스크립트 확정 — 5분 시나리오+내레이션+트러블 대응(`docs/presentation/DEMO_SCRIPT.md`)
+  - [x] 시연 환경 사전 점검 (네트워크, 테스트 데이터, 시드 계정) — 06-12 실측: 가입/로그인/노트/검색 경로 검증, AI 키 부재·gitops#199 충돌 식별 → **클러스터 destroy로 녹화는 로컬 E2E 전환**(스크립트 §갱신), 영상은 팀원 별도 진행
+  - [ ] 전체 팀 시연 리허설 1회 이상 수행 (W5 마지막 영업일 6/12 권장) — 영상 완성 후
   - [ ] 리허설 회고 + 보완점 반영
 - **Scope**:
   - In Scope:
@@ -546,4 +546,4 @@
 - **Assignee**: @team-lead
 - **Reviewer**: —
 
-**Status**: [ ] Not Started / [ ] In Progress / [ ] Done
+**Status**: [ ] Not Started / [x] In Progress / [ ] Done — 슬라이드 20장+데모 스크립트+사전 점검 완료(06-12). 잔여=시연 영상(팀원 별도)·리허설 1회+·회고·자체평가 점수

@@ -75,12 +75,12 @@
 |------|------|------|--------|--------|------|
 | Step 9 | 전체 E2E 서비스 단위 실행 | In Progress | 06-08 | — | 환경(shared#25)·핵심 시나리오 W4·W2·W3·W5·**W1 풀체인 PASS**(06-10, 알림 leg A로 해소). 커버리지: platform line 92.4% baseline / 타서비스 jacoco 미설정(owner) |
 | Step 10 | 성능 SLA 검증 | **Done(측정분)** | 06-08 | 06-10 | P1·P2·**P4 1.31s·P5 1.31s** 충족([SLA_VERIFICATION_W5](../../reports/SLA_VERIFICATION_W5.md)). P3(nori gitops#174)·P6(키 learning#73)·P7(FCM 자격) 보류 |
-| Step 11 | Staging 최종 + 모니터링 | In Progress | 06-08 | — | dev 16/0/0·staging 20/0/0(06-08, gitops#136) + Observability 기동. 24h·대시보드 검증 Day4 |
-| Step 12 | 발표 자료 + 리허설 | Not Started | — | — | Day5(6/12 리허설) |
+| Step 11 | Staging 최종 + 모니터링 | **Done** | 06-08 | 06-12 | dev/staging 기동(06-08)→완전가동·P0회귀 PASS(Day4)→**24h 사인오프 승인(06-12 17:15+, gitops#183)**→destroy 완료. 잔여 알림클린=owner 이슈+gitops#207 이관 |
+| Step 12 | 발표 자료 + 리허설 | In Progress | 06-12 | — | **슬라이드 20장(Marp+PPTX/PDF)+데모 스크립트+사전점검 완료**(PR #68/#69/#73). 잔여=영상(팀원 별도)·리허설·회고·자체평가점수 |
 | (FR-TL-302) | Schema BACKWARD 전토픽 | Done | 06-10 | 06-10 | 9 subject 강제 프로브 9/9(shared#34) |
 | (FR-TL-304) | API 문서 survey+대조 | Done | 06-10 | 06-10 | 5서비스 survey+gateway 대조(shared#35), 누락 3 이슈 |
 
-**W5 진행률**: D-004 Stage1(F10)·Schema BACKWARD·API문서·SLA(측정분)·W1 풀체인 종결. 잔여=커버리지80%·P3/P6/P7(인프라·키)·staging 24h·발표.
+**W5 진행률**: D-004 Stage1(F10)·Schema BACKWARD·API문서·SLA(측정분)·W1 풀체인·**staging 24h 사인오프·발표 자료** 종결. 잔여=커버리지80%(owner)·P6(키)·시연 영상(팀원)·리허설·코드 동결(06-15). Day1~4 상세=[HANDOFF_W5_DAY3/DAY4_CLOSEOUT](../HANDOFF_W5_DAY4_CLOSEOUT.md), Day5=아래 작업 로그.
 
 ---
 
@@ -295,12 +295,29 @@
   - platform 로컬 stray untracked `V28` 마이그레이션(main 무관, oauth rename) → 측정 시 비켜두고 복원 → **owner 이관(platform#91)**. main에 oauth provider 컬럼 rename 부재 = 스키마 갭 가능
 - **다음**: 커버리지 80%(전 서비스 jacoco·owner)·P3(nori 후)·P6(키)·P7(FCM)·staging 24h·발표 자료
 
+#### 2026-06-11 (목) Day 4 — 요약
+- staging 완전 가동(bastion IAM 결함 로컬 우회 → ArgoCD 16/16·ES nori green·ECR 7종 선생성·P0 회귀 PASS) + 24h 앵커(17:15) 수립. 상세=[HANDOFF_W5_DAY4_CLOSEOUT](../HANDOFF_W5_DAY4_CLOSEOUT.md)·[STAGING_BRINGUP_W5_DAY4](../../reports/STAGING_BRINGUP_W5_DAY4.md). 메트릭 갭 owner 이슈 4건 발행(platform#101·engagement#45·knowledge#82·learning#85) + gitops#194.
+
+#### 2026-06-12 (금) Day 5
+- **완료**:
+  - **[Step 12/FR-TL-305]** 발표 자료 — 결과보고서 양식(5목차) 기반 **Marp 슬라이드 20장 + PPTX/PDF 빌드**(`docs/presentation/RESULT_REPORT_SLIDES.md`, 전 장 렌더 검증, PR #68/#69) + **5분 데모 스크립트**(`DEMO_SCRIPT.md`). 04장=제품 순환 스토리(전처리→4모델→평가·개선→SLA 실측→staging 복구→시연)
+  - **[E2E 환경]** knowledge `KAFKA_ENABLED` 누락 해소(이슈 #66 → PR #67) — shared 기본 E2E에서 knowledge→learning-ai 체인 활성
+  - **[시연 사전점검 실측]** SSM 터널+port-forward로 가입 201·로그인 JWT·노트 200·검색 200(BM25/hybrid, semanticFallback 동작) 검증. **발견**: AI 키 전 환경 더미(P6) + **dev/staging 동일 MSK·컨슈머 그룹 충돌 실측**(staging이 dev 색인 이벤트 가로채 DLQ — gitops#199 증거 보강, 중복 #204 정리)
+  - **[#199 대응]** shared `EVENT_CONTRACT_STANDARD §2.1` **토픽 환경 프리픽스 표준** 리뷰·머지(PR #72, gitops PR #206 연계)
+  - **[Step 11 종결]** **24h 안정 사인오프 승인**(17:15+, gitops#183 코멘트): ArgoCD 16/16 Healthy·비정상 재시작 0·ES green(notes-v1 rep0 조치). 알림 클린 잔여 귀속 분해 → 비대상 스크랩 신규 이슈 **gitops#207**. 직후 클러스터 destroy 확인(RDS·MSK·노드 삭제, ECR standalone 보존)
+  - **[메트릭 갭 추적]** 오전 owner 작업요청 슬랙 공지 → **learning#85 CLOSED(PR#89/#91)·knowledge#82 수정 머지(PR#86, dev 알림 소멸 실측)**·engagement#45 수정 dev 머지(PR#48)·platform#101 수정 PR#103 리뷰 대기
+  - **[녹화 전환]** destroy로 시연 영상은 **로컬 E2E 녹화·팀원 별도 진행**으로 확정 — DEMO_SCRIPT 갱신 + 슬라이드 문구 조정(PR #70/#71/#73)
+- **진행 중**: 시연 영상(팀원)·platform#101 PR#103 리뷰·engagement dev→main 승격
+- **이슈**: 가입 401(게이트웨이 공개경로=`/api/platform/api/v1/auth/*` 프리픽스 필요)·Git Bash curl 한글 CP949(UTF-8 파일 `--data-binary`로 해소) — 데모 함정으로 DEMO_SCRIPT에 기록
+- **다음**: 시연 영상 완성 확인 → 리허설 1회+ → 회고·자체평가 점수 확정 → 06-15 발표·코드 동결
+
 ---
 
 ## 변경 이력
 
 | 날짜 | 변경 사항 |
 |------|-----------|
+| 2026-06-12 | W5 Day5 — 발표자료 20장+데모 스크립트(PR#68/#69/#73)·E2E knowledge Kafka(#66/#67)·#199 실측+env-prefix 표준(PR#72)·**24h 사인오프(#183)+destroy**·gitops#207 신규·메트릭 갭 4건 중 2건 해소 추적·Step11 Done/Step12 In Progress |
 | 2026-06-10 | W5 Day3(P3/P6/P7 착수) — P3 nori ES(shared#42, 레이턴시 PASS)·P7 FCM 배선검증(shared#43/#45)·secrets gitignore(shared#44) / 신규 owner 이슈 knowledge#71·#72·#74·learning#77·#78·jacoco(eng#39·k#73·l#76) / P6 다중갭·P7 실토큰 대기 |
 | 2026-06-10 | W5 Day3(정합) — 일정문서 갱신(shared#39)·W4 진행률 정합(stalled→검증 W5 종결, shared#40)·stray 파일 owner 이관(platform#91 V28·gitops#175 bringup.out) |
 | 2026-06-10 | W5 Day3 — D-004 Stage1(F10) eng#37→#38 머지·라이브 PASS / Schema BACKWARD 9/9(shared#34) / API문서 survey+이슈(shared#35) / 미완 owner 이슈 5건(platform#86·#87·learning#73·knowledge#68·gitops#174) / closeout: W1 풀체인 PASS·SLA P1·P2·P4·P5·platform 커버리지 92.4%(shared#38) |
