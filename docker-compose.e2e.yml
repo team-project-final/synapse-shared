@@ -120,6 +120,7 @@ services:
       SPRING_DATA_REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_local_pw}
       KAFKA_BOOTSTRAP_SERVERS: kafka:29092
       SCHEMA_REGISTRY_URL: http://schema-registry:8081
+      KAFKA_ENABLED: "true"
       SEARCH_AI_BASE_URL: http://learning-ai-svc:8090
     healthcheck:
       test: ["CMD-SHELL", "bash -c 'exec 3<>/dev/tcp/localhost/8082' || exit 1"]
