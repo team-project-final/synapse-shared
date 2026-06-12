@@ -14,7 +14,7 @@
 | gateway | **dev 네임스페이스에만 존재** → 데모는 dev 환경으로 진행. 경로 프리픽스 `/api/platform|knowledge|engagement|learning/**`, 가입·로그인 검증 완료(201/JWT) |
 | AI 키 (P6) | dev·staging 모두 `sk-dev-test-...` 더미 + ANTHROPIC 키 없음(MODEL_NAME=gpt-4o-mini) → **클러스터 내 AI 카드 실생성 불가**. ③ 구간은 실키 확보(ESO/Secrets Manager 주입) 또는 로컬 E2E 컷 폴백 |
 | 노트→이벤트 | 노트 생성 → outbox → `note-created-v1` 발행 검증 완료 ✅ |
-| ⚠️ **검색 색인** | **[gitops#204](https://github.com/team-project-final/synapse-gitops/issues/204)** — dev/staging이 같은 MSK 토픽·컨슈머 그룹 공유 → staging 파드가 dev 메시지를 가로채 색인 ~2/3 유실. **녹화는 24h 사인오프(17:15) 후 staging 컨슈머 scale 0 상태에서** 진행해야 풀체인 동작 |
+| ⚠️ **검색 색인** | 파이프라인 자체는 gitops PR #200으로 복구(토픽 정본·Redis idempotency·SEARCH_AI_BASE_URL — 인증 검색 200 E2E 완주, P3 0.105~0.183s). 잔존 리스크는 **[gitops#199](https://github.com/team-project-final/synapse-gitops/issues/199)** — dev/staging 동일 MSK·동일 컨슈머 그룹 → dev 이벤트 ~2/3이 staging행. **녹화는 24h 사인오프(17:15) 후, 해당 staging Application auto-sync 일시중지 → 컨슈머 scale 0 순서로 조치한 뒤** 진행(selfHeal이 scale-down을 원복시키므로 순서 중요) |
 | 시드 계정 | `demo-w5-recording2@synapse.app` 가입 완료, 노트 1건(스프링 트랜잭션) 생성 |
 | Grafana | monitoring 네임스페이스 `kube-prometheus-stack-grafana` port-forward로 접근 |
 
