@@ -1,7 +1,13 @@
 # SYNAPSE 시연 스크립트 (5분) + 녹화 체크리스트
 
-> 용도: ① 06-12 staging 사전 녹화(제출용 영상 5~10분·100MB↓·음성 소개 포함) ② 06-15 발표 데모(영상 재생)
-> 환경: AWS EKS staging — SSM 터널 + port-forward (클러스터 destroy 전 녹화 필수)
+> 용도: ① 제출용 시연 영상(5~10분·100MB↓·음성 소개 포함) 녹화 ② 06-15 발표 데모(영상 재생)
+>
+> ⚠️ **갱신 2026-06-12 저녁 — 녹화 환경 변경**: EKS 클러스터는 24h 사인오프 후 destroy 완료. **녹화는 팀원이 로컬 E2E 환경에서 별도 진행.**
+> - 환경 기동: `synapse-shared` main 최신 pull → `docker-compose.yml` + `docker-compose.e2e.yml` (origin/main worktree 실빌드) — 절차는 [E2E_SMOKE_W5_DAY1 §1](../reports/E2E_SMOKE_W5_DAY1.md) 참조. 13/13 healthy 후 시작
+> - knowledge Kafka는 #66/#67로 기본 활성 — 전 체인(노트→AI카드→복습→검색) 동작
+> - **AI 카드 구간(③)**: 실 키를 셸 환경변수(`OPENAI_API_KEY` 또는 `ANTHROPIC_API_KEY`)로만 주입 — 파일·커밋 금지
+> - **단일 환경이라 gitops#199(컨슈머 그룹 충돌) 영향 없음** — 아래 §0-A의 클러스터 시퀀스는 폐기, §0 체크리스트 중 인프라 항목은 docker 항목으로 갈음
+> - 접속: frontend Flutter web(dev 빌드)이 `localhost:8080`(gateway)·`8084`(learning-card)·`8090`(learning-ai)을 호출 — compose가 동일 포트로 노출하므로 추가 설정 불요. 가입 경로: `POST http://localhost:8080/api/platform/api/v1/auth/signup` (gateway 프리픽스 = `/api/{service}/api/v1/...`)
 
 ---
 
