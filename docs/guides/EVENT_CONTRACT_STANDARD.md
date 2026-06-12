@@ -45,6 +45,30 @@
 
 ---
 
+## 2.1 환경 프리픽스 — 멀티환경 격리 (필수, [#199](https://github.com/team-project-final/synapse-gitops/issues/199))
+
+> **갱신 2026-06-12**: dev·staging이 **같은 MSK 클러스터**를 공유하므로, 토픽명을 환경별로 분리하지 않으면 **같은 컨슈머 그룹의 파티션이 환경 간 교차 분산**되어 이벤트가 누수된다(실측: dev 노트의 검색 인덱싱 이벤트 ~2/3이 staging 컨슈머로 가 dev ES 0건·staging DLQ). 결정: **옵션 B — 토픽 환경 프리픽스**.
+
+### 규칙
+1. **실제 토픽명 = `${KAFKA_TOPIC_PREFIX}<§2 베이스명>`**. 예: `dev.knowledge.note.note-created-v1`, `staging.platform.auth.user-registered-v1`.
+2. **프리픽스 값**: `dev.` / `staging.` / `prod.` (환경별). **미설정 = 빈 문자열**(로컬 docker-compose·단위테스트·하위호환 — 레거시 미접두 토픽).
+3. **주입 출처(단일)**: gitops 오버레이가 환경별 ConfigMap으로 주입.
+   - Spring 서비스(platform·knowledge·learning-card·engagement): **`KAFKA_TOPIC_PREFIX`**
+   - learning-ai(Python): **`LEARNING_AI_KAFKA_TOPIC_PREFIX`**
+4. **적용 범위(서비스 MUST)**: 프로듀서 `send(topic, …)`, `@KafkaListener(topics=…)`, 컨슈머 `subscribe(…)`, **하드코딩 상수**(예: `NoteSearchSyncRequested.TOPIC`)와 **그 DLQ**(`<topic>.dlq`) **전부** 베이스명 앞에 프리픽스를 붙인다. 토픽명 리터럴을 코드에 박지 말고 **프리픽스+베이스 조합 1곳(설정/리졸버)** 으로 모은다.
+5. **컨슈머 그룹**: §4의 `{서비스명}-svc-group` 규칙은 유지(그룹명은 환경 접미사 불필요 — 토픽이 이미 환경별이므로 그룹이 같아도 환경 간 파티션 공유가 발생하지 않는다).
+
+### Schema Registry 영향
+- subject = `<topic>-value`(TopicNameStrategy)이므로 프리픽스 토픽은 `dev.<...>-value` 등 **환경별 subject로 자동 분리 등록**된다(스키마 본문은 동일, BACKWARD 그대로). 추가 작업 없음. RecordNameStrategy를 쓰는 경우 subject는 토픽명과 무관해 영향 없음.
+
+### 토픽 생성 / 마이그레이션
+- gitops `bring-up phase_kafka_topics`가 각 베이스 토픽을 `""`(레거시)·`dev.`·`staging.`·`prod.` 4종으로 멱등 생성한다(gitops PR #206). 레거시(미접두) 토픽은 **모든 서비스가 프리픽스를 채택할 때까지 병존**, 채택 완료 후 정리.
+- 서비스 채택 전까지 dev·staging 동시 가동 시 충돌이 잔존하므로, 데모/검증 시 **staging 컨슈머 일시 scale-down**(ArgoCD auto-sync 중지 후 scale 0)이 임시책.
+
+> 서비스별 적용 지시: 각 서비스 레포 이슈(platform/knowledge/learning/engagement) 참조.
+
+---
+
 ## 3. synapse-shared 스키마 사용법
 
 **스키마 출처**: synapse-shared `src/main/avro/**/*.avsc` (단일 출처). 가져오는 방법 2가지:
